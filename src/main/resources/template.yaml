@@ -1,0 +1,28 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Template API
+  license:
+    name: The 3-Clause BSD License
+servers:
+  - url: http://github.com/ksclarke/template
+paths:
+  /status:
+    get:
+      summary: Get Application Status
+      description: "A response indicating the current status of the application. This may include information about the
+      health of the server, details about which configuration options are engaged, and other things."
+      operationId: getStatus
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+        '500':
+          description: There was an internal server error

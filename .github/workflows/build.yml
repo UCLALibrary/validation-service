@@ -1,0 +1,28 @@
+name: Maven PR Build
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  build:
+    name: Maven PR Builder (JDK ${{ matrix.java }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [ 17 ]
+    steps:
+      - name: Check out code
+        uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # v3.0.2
+      - name: Install JDK ${{ matrix.java }}
+        uses: actions/setup-java@860f60056505705214d223b91ed7a30f173f6142 # v3.3.0
+        with:
+          cache: maven
+          distribution: 'adopt'
+          java-version: ${{ matrix.java }}
+      - name: Build with Maven
+        uses: samuelmeuli/action-maven-publish@201a45a3f311b2ee888f252ba9f4194257545709 # v1.4.0
+        with:
+          maven_goals_phases: "clean compile formatter:validate javadoc:javadoc verify"
+          maven_profiles: default
+          maven_args: >
+            -V -ntp -DlogLevel=DEBUG -Ddocker.showLogs=true

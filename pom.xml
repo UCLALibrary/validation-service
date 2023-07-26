@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>vertx-template</artifactId>
+  <version>${revision}</version>
+  <name>Vert.x Template</name>
+  <description></description>
+  <url>https://github.com/ksclarke/vertx-template</url>
+
+  <licenses>
+    <license>
+      <name>Mozilla Public License 2.0</name>
+      <url>https://opensource.org/licenses/MPL-2.0</url>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:git:git@github.com:ksclarke/vertx-template.git</connection>
+    <developerConnection>scm:git:git@github.com:ksclarke/vertx-template.git</developerConnection>
+    <url>git@github.com:ksclarke/vertx-template.git</url>
+  </scm>
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/ksclarke/vertx-template/issues</url>
+  </issueManagement>
+
+  <developers>
+    <!-- Also https://github.com/UCLALibrary/prl-harvester/graphs/contributors -->
+  </developers>
+
+  <properties>
+    <vertx.version>4.4.4</vertx.version>
+    <freelib.utils.version>4.0.2</freelib.utils.version>
+    <freelib.maven.version>0.4.7</freelib.maven.version>
+
+    <!-- Security update overrides -->
+
+    <!-- Build plugin versions -->
+    <vertx.plugin.version>1.0.28</vertx.plugin.version>
+    <clean.plugin.version>3.3.1</clean.plugin.version>
+    <docker.plugin.version>0.43.0</docker.plugin.version>
+    <deploy.plugin.version>3.1.1</deploy.plugin.version>
+    <jar.plugin.version>3.3.0</jar.plugin.version>
+
+    <!-- Test dependency versions -->
+    <testcontainers.version>1.18.3</testcontainers.version>
+    <junit.version>5.9.3</junit.version>
+
+    <!-- Docker component versions -->
+    <docker.alpine.version>3.17.3</docker.alpine.version>
+
+    <!-- Name of the main Vert.x verticle -->
+    <vertx.verticle>info.freelibrary.vertx.template.verticles.MainVerticle</vertx.verticle>
+
+    <!-- The default logging levels for the application -->
+    <logLevel>ERROR</logLevel>
+    <testLogLevel>DEBUG</testLogLevel>
+
+    <!-- Testing properties -->
+    <live.test.reloads>false</live.test.reloads>
+
+    <!-- The Docker registry user and password used for publishing images -->
+    <docker.registry.username />
+    <docker.registry.password />
+    <!-- The Docker registry account, if supplied, must end with a slash (e.g. "account/") -->
+    <docker.registry.account />
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers-bom</artifactId>
+        <version>${testcontainers.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.vertx</groupId>
+        <artifactId>vertx-stack-depchain</artifactId>
+        <version>${vertx.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>${junit.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>info.freelibrary</groupId>
+      <artifactId>freelib-utils</artifactId>
+      <version>${freelib.utils.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-web-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-web-openapi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-config</artifactId>
+    </dependency>
+
+    <!-- Below dependencies only used for testing -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-junit5</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>logback-test.xml</include>
+        </includes>
+      </testResource>
+    </testResources>
+
+    <plugins>
+      <!-- Cleans up generated source code -->
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>${clean.plugin.version}</version>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>src/main/generated</directory>
+              <followSymlinks>false</followSymlinks>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+
+      <!-- Configures the compiler to work with the vertx-codegen dependency (if necessary) -->
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <!-- Incremental compilation causes problems with vertx-codegen: https://bitly.com/3LpCY0A+ -->
+          <useIncrementalCompilation>false</useIncrementalCompilation>
+        </configuration>
+      </plugin>
+
+      <!-- Sets test.http.port for testing the application -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+      </plugin>
+
+      <!-- Processes resources codes and generates media types -->
+      <plugin>
+        <groupId>info.freelibrary</groupId>
+        <artifactId>freelib-maven-plugins</artifactId>
+        <executions>
+          <execution>
+            <id>generate-media-types</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>generate-mediatype</goal>
+            </goals>
+            <configuration>
+              <mediaTypePackage>info.freelibrary.vertx.template</mediaTypePackage>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Checks code for best practices, performance, etc. -->
+      <plugin>
+        <artifactId>maven-pmd-plugin</artifactId>
+      </plugin>
+
+      <!-- Formats code according to our project's rules -->
+      <plugin>
+        <groupId>net.revelc.code.formatter</groupId>
+        <artifactId>formatter-maven-plugin</artifactId>
+      </plugin>
+
+      <!-- Generates Javadocs documentation -->
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <additionalJOptions>
+            <additionalJOption>
+              -J-Dhttp.agent=maven-javadoc-plugin-${project.name}</additionalJOption>
+          </additionalJOptions>
+          <links>
+            <link>https://vertx.io/docs/apidocs/</link>
+          </links>
+        </configuration>
+      </plugin>
+
+      <!-- Checks that conforms to our project's rules -->
+      <plugin>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+      </plugin>
+
+      <!-- Enforces rules like: no snapshot dependencies, etc. -->
+      <plugin>
+        <artifactId>maven-enforcer-plugin</artifactId>
+      </plugin>
+
+      <!-- Unpacks build tools from upstream parent project -->
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+      </plugin>
+
+      <!-- Runs unit tests on the application's code -->
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>${jacoco.agent.arg}</argLine>
+          <systemPropertyVariables>
+            <vertx.logger-delegate-factory-class-name>
+              io.vertx.core.logging.SLF4JLogDelegateFactory</vertx.logger-delegate-factory-class-name>
+          </systemPropertyVariables>
+          <environmentVariables>
+            <HTTP_PORT>${test.http.port}</HTTP_PORT>
+          </environmentVariables>
+        </configuration>
+      </plugin>
+
+      <!-- Runs functional tests on the application's code -->
+      <plugin>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <argLine>${jacoco.agent.arg}</argLine>
+          <environmentVariables></environmentVariables>
+          <systemPropertyVariables>
+            <vertx.logger-delegate-factory-class-name>
+              io.vertx.core.logging.SLF4JLogDelegateFactory
+            </vertx.logger-delegate-factory-class-name>
+          </systemPropertyVariables>
+          <environmentVariables>
+            <HTTP_PORT>${test.http.port}</HTTP_PORT>
+          </environmentVariables>
+        </configuration>
+      </plugin>
+
+      <!-- Disable standard deploy; we publish a Docker image, not Jar file -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>${deploy.plugin.version}</version>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>io.reactiverse</groupId>
+        <artifactId>vertx-maven-plugin</artifactId>
+        <version>${vertx.plugin.version}</version>
+        <executions>
+          <execution>
+            <id>vertx-package</id>
+            <goals>
+              <goal>initialize</goal>
+              <goal>package</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Creates a Docker image and uses it for functional testing -->
+      <plugin>
+        <groupId>io.fabric8</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <version>${docker.plugin.version}</version>
+        <configuration>
+          <imagesMap>
+            <image>
+              <!-- Registry account, if supplied, must end in a slash (e.g. "account/") -->
+              <!-- The %l at the end translates to "latest" if version ends in "-SNAPSHOT" -->
+              <name>${docker.registry.account}${project.artifactId}:%l</name>
+              <build>
+                <args>
+                  <ALPINE_TAG>${docker.alpine.version}</ALPINE_TAG>
+                </args>
+                <dockerFile>${project.basedir}/src/main/docker/Dockerfile</dockerFile>
+                <assembly>
+                  <inline>
+                    <fileSets>
+                      <fileSet>
+                        <!-- The directory where we can find our Maven-built artifact -->
+                        <directory>${project.basedir}/target/</directory>
+                        <!-- We don't want directory structure on output, just the artifact -->
+                        <outputDirectory>.</outputDirectory>
+                        <includes>
+                          <include>${project.artifactId}-${project.version}.jar</include>
+                        </includes>
+                      </fileSet>
+                    </fileSets>
+                  </inline>
+                </assembly>
+              </build>
+              <run>
+                <containerNamePattern>${project.artifactId}</containerNamePattern>
+                <ports>
+                  <!-- Start test container on an available host port -->
+                  <port>${test.http.port}:${test.http.port}</port>
+                </ports>
+                <env>
+                  <HTTP_PORT>${test.http.port}</HTTP_PORT>
+                </env>
+                <!-- Test to make sure the server started as expected -->
+                <wait>
+                  <http>
+                    <url>http://localhost:${test.http.port}/status</url>
+                    <method>GET</method>
+                    <status>200</status>
+                  </http>
+                </wait>
+              </run>
+            </image>
+          </imagesMap>
+        </configuration>
+        <executions>
+
+          <!-- Builds the Docker image -->
+          <execution>
+            <id>docker-build</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>build</goal>
+            </goals>
+          </execution>
+
+          <!-- Creates and starts the Docker containers for integration testing -->
+          <execution>
+            <id>docker-start</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>start</goal>
+            </goals>
+          </execution>
+
+          <!-- Stops and removes the integration tests' Docker containers -->
+          <execution>
+            <id>docker-stop</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>stop</goal>
+            </goals>
+            <configuration>
+              <allContainers>true</allContainers>
+            </configuration>
+          </execution>
+
+          <!-- Deploys the application's Docker image -->
+          <execution>
+            <id>docker-deploy</id>
+            <phase>deploy</phase>
+            <goals>
+              <goal>push</goal>
+            </goals>
+            <configuration>
+              <images>
+                <image>
+                  <!-- Registry account, if supplied, must end in a slash (e.g. "account/") -->
+                  <!-- The %l at the end translates to "latest" if version ends in "-SNAPSHOT" -->
+                  <name>${docker.registry.account}${project.artifactId}:%l</name>
+                </image>
+              </images>
+              <authConfig>
+                <username>${docker.registry.username}</username>
+                <password>${docker.registry.password}</password>
+              </authConfig>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>linux-os</id>
+      <activation>
+        <os>
+          <family>unix</family>
+          <arch>amd64</arch>
+        </os>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-transport-native-epoll</artifactId>
+          <classifier>linux-x86_64</classifier>
+        </dependency>
+      </dependencies>
+    </profile>
+
+    <!-- A profile for running the server in a live test mode -->
+    <profile>
+      <id>live</id>
+      <properties>
+        <!-- We don't need to run the standard tests in this mode -->
+        <maven.test.skip>true</maven.test.skip>
+        <jacoco.skip>true</jacoco.skip>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-resources-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>copy-logging-config-for-testing</id>
+                <phase>test</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${basedir}/target/classes/</outputDirectory>
+                  <resources>
+                    <resource>
+                      <directory>${basedir}/src/main/resources</directory>
+                      <filtering>true</filtering>
+                      <includes>
+                        <include>template.yaml</include>
+                      </includes>
+                    </resource>
+                    <resource>
+                      <directory>${basedir}</directory>
+                      <filtering>true</filtering>
+                      <includes>
+                        <include>logback-test.xml</include>
+                      </includes>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>io.reactiverse</groupId>
+            <artifactId>vertx-maven-plugin</artifactId>
+            <version>${vertx.plugin.version}</version>
+            <executions>
+              <execution>
+                <id>test-vertx-startup</id>
+                <phase>test</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <verticle>${vertx.verticle}</verticle>
+              <redeploy>${live.test.reloads}</redeploy>
+              <jvmArgs>
+                <jvmArg>
+                  -Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.SLF4JLogDelegateFactory</jvmArg>
+                <!-- Pass system props because the plugin doesn't take ENVs (and the config library doesn't care) -->
+                <jvmArg>-DHTTP_PORT=${test.http.port}</jvmArg>
+              </jvmArgs>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>snyk-check</id>
+      <activation>
+        <property>
+          <name>env.SNYK_TOKEN</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>io.snyk</groupId>
+            <artifactId>snyk-maven-plugin</artifactId>
+            <!-- Configurations have to be overridden in the executions' configuration elements -->
+            <executions>
+              <execution>
+                <id>snyk-test</id>
+                <goals>
+                  <goal>test</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <!-- The parent project still uses the older repo locations; new projects use the below -->
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
+
+  <!-- The parent project to this project -->
+  <parent>
+    <artifactId>freelib-parent</artifactId>
+    <groupId>info.freelibrary</groupId>
+    <version>8.0.3</version>
+  </parent>
+
+</project>
