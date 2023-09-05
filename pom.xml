@@ -193,7 +193,7 @@
               <goal>generate-mediatype</goal>
             </goals>
             <configuration>
-              <mediaTypePackage>info.freelibrary.edu.ucla.library.validation</mediaTypePackage>
+              <mediaTypePackage>edu.ucla.library.validation</mediaTypePackage>
             </configuration>
           </execution>
         </executions>

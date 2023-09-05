@@ -1,7 +1,7 @@
 
 package edu.ucla.library.validation.handlers;
 
-import static info.freelibrary.edu.ucla.library.validation.MediaType.APPLICATION_JSON;
+import static edu.ucla.library.validation.MediaType.APPLICATION_JSON;
 
 import info.freelibrary.util.HTTP;
 
