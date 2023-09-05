@@ -26,4 +26,14 @@ paths:
                     example: ok
         '500':
           description: There was an internal server error
- 
+  /ui:
+    get:
+      summary: Requests to this endpoint retrieve the administrative interface
+      description: A single-page application where users can upload a file
+      operationId: getUI
+      responses:
+        '200':
+          description: The admin interface
+          content:
+            text/html:
+              example: <html><body>Hello World!</body></html>

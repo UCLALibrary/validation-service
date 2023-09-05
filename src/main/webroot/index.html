@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<title>CSV Validation Upload</title>
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<link rel="stylesheet" type="text/css" href="./styles.css">
+
+</head>
+
+<body>
+
+  <div class="container-fluid">
+    <h1 id="csv-upload-title">CSV Upload</h1>
+    <p>The CSV upload form can be used to upload CSV files for processing.</p>
+    <div class="row csv-upload-form">
+      <div class="col-sm-3 offset-sm-1">
+        <div class="info-form">
+          <form class="form-inlin justify-content-center" action="/upload" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+              <label for="csv-file">File to upload:</label> <input type="file" name="csv-file" id="csv-file">
+            </div>
+            <div class="form-group">
+              <input type="submit" value="Upload" name="submit">
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

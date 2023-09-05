@@ -13,6 +13,7 @@ import edu.ucla.library.validation.MessageCodes;
 import edu.ucla.library.validation.Op;
 import edu.ucla.library.validation.handlers.StatusHandler;
 
+import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.config.ConfigRetriever;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
@@ -69,6 +70,7 @@ public class MainVerticle extends AbstractVerticle {
 
             // Associate handlers with operation IDs from the application's OpenAPI specification
             routeBuilder.operation(Op.GET_STATUS.id()).handler(new StatusHandler(getVertx()));
+            routeBuilder.operation(Op.GET_UI.id()).handler(StaticHandler.create("src/main/webroot"));
 
             myServer = getVertx().createHttpServer(serverOptions).requestHandler(routeBuilder.createRouter());
             myServer.listen().onFailure(aPromise::fail).onSuccess(result -> {
