@@ -193,7 +193,11 @@
               <goal>generate-mediatype</goal>
             </goals>
             <configuration>
+<<<<<<< HEAD
               <mediaTypePackage>edu.ucla.library.validation</mediaTypePackage>
+=======
+              <mediaTypePackage>info.freelibrary.edu.ucla.library.validation</mediaTypePackage>
+>>>>>>> 763cea9 (more renaming)
             </configuration>
           </execution>
         </executions>
