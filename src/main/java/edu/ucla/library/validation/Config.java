@@ -1,5 +1,5 @@
 
-package info.freelibrary.vertx.template;
+package edu.ucla.library.validation;
 
 /**
  * Properties that are used to configure the application.

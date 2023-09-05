@@ -1,11 +1,11 @@
 openapi: "3.0.0"
 info:
   version: 1.0.0
-  title: Template API
+  title: Validation Service
   license:
     name: The 3-Clause BSD License
 servers:
-  - url: http://github.com/ksclarke/template
+  - url: https://github.com/UCLALibrary/validation-service
 paths:
   /status:
     get:
@@ -26,3 +26,4 @@ paths:
                     example: ok
         '500':
           description: There was an internal server error
+ 
