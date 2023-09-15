@@ -66,8 +66,6 @@ public class MainVerticle extends AbstractVerticle {
         final String host = aConfig.getString(Config.HTTP_HOST, INADDR_ANY);
         final int port = aConfig.getInteger(Config.HTTP_PORT, 8888);
 
-        Router router = Router.router(vertx);
-
         RouterBuilder.create(vertx, getRouterSpec()).onFailure(aPromise::fail).onSuccess(routeBuilder -> {
 
             final HttpServerOptions serverOptions = new HttpServerOptions().setPort(port).setHost(host);
@@ -75,9 +73,11 @@ public class MainVerticle extends AbstractVerticle {
             // Associate handlers with operation IDs from the application's OpenAPI specification
             routeBuilder.operation(Op.GET_STATUS.id()).handler(new StatusHandler(getVertx()));
 
-            routeBuilder.operation(Op.GET_UI.id()).handler(StaticHandler.create("src/main/webroot"));
+            final Router router = routeBuilder.createRouter();
 
-            myServer = getVertx().createHttpServer(serverOptions).requestHandler(routeBuilder.createRouter());
+            router.route("/ui/*").handler(StaticHandler.create("src/main/webroot"));
+
+            myServer = getVertx().createHttpServer(serverOptions).requestHandler(router);
             myServer.listen().onFailure(aPromise::fail).onSuccess(result -> {
                 LOGGER.info(MessageCodes.CODE_001, port);
                 aPromise.complete();
