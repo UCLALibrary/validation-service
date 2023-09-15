@@ -9,3 +9,6 @@ src/main/tools/eclipse
 # Vert.x test artifacts
 file-uploads/
 vertx-start-process.id
+
+# Mac specific files
+.DS_Store

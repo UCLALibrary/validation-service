@@ -1,5 +1,5 @@
 
-package info.freelibrary.vertx.template;
+package edu.ucla.library.validation;
 
 /**
  * Template API operation IDs.

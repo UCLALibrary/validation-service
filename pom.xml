@@ -4,11 +4,11 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>vertx-template</artifactId>
+  <artifactId>validation-service</artifactId>
   <version>${revision}</version>
-  <name>Vert.x Template</name>
+  <name>Validation Service</name>
   <description></description>
-  <url>https://github.com/ksclarke/vertx-template</url>
+  <url>https://github.com/uclalibrary/validation-service</url>
 
   <licenses>
     <license>
@@ -18,14 +18,14 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:git@github.com:ksclarke/vertx-template.git</connection>
-    <developerConnection>scm:git:git@github.com:ksclarke/vertx-template.git</developerConnection>
-    <url>git@github.com:ksclarke/vertx-template.git</url>
+    <connection>scm:git:git@github.com:uclalibrary/validation-service.git</connection>
+    <developerConnection>scm:git:git@github.com:uclalibrary/validation-service.git</developerConnection>
+    <url>git@github.com:uclalibrary/validation-service.git</url>
   </scm>
 
   <issueManagement>
     <system>GitHub</system>
-    <url>https://github.com/ksclarke/vertx-template/issues</url>
+    <url>https://github.com/uclalibrary/validation-service/issues</url>
   </issueManagement>
 
   <developers>
@@ -54,7 +54,7 @@
     <docker.alpine.version>3.17.3</docker.alpine.version>
 
     <!-- Name of the main Vert.x verticle -->
-    <vertx.verticle>info.freelibrary.vertx.template.verticles.MainVerticle</vertx.verticle>
+    <vertx.verticle>edu.ucla.library.validation.verticles.MainVerticle</vertx.verticle>
 
     <!-- The default logging levels for the application -->
     <logLevel>ERROR</logLevel>
@@ -193,7 +193,7 @@
               <goal>generate-mediatype</goal>
             </goals>
             <configuration>
-              <mediaTypePackage>info.freelibrary.vertx.template</mediaTypePackage>
+              <mediaTypePackage>edu.ucla.library.validation</mediaTypePackage>
             </configuration>
           </execution>
         </executions>
@@ -451,7 +451,7 @@
                       <directory>${basedir}/src/main/resources</directory>
                       <filtering>true</filtering>
                       <includes>
-                        <include>template.yaml</include>
+                        <include>validation.yaml</include>
                       </includes>
                     </resource>
                     <resource>

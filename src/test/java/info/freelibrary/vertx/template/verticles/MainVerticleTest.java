@@ -1,5 +1,5 @@
 
-package info.freelibrary.vertx.template.verticles;
+package edu.ucla.library.validation.verticles;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -9,8 +9,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import info.freelibrary.util.Constants;
 import info.freelibrary.util.HTTP;
 
-import info.freelibrary.vertx.template.Config;
-import info.freelibrary.vertx.template.Op;
+import edu.ucla.library.validation.Config;
+import edu.ucla.library.validation.Op;
 
 import io.vertx.config.ConfigRetriever;
 import io.vertx.core.DeploymentOptions;
