@@ -1,5 +1,5 @@
 
-package info.freelibrary.vertx.template.verticles;
+package edu.ucla.library.validation.verticles;
 
 import static info.freelibrary.util.Constants.INADDR_ANY;
 
@@ -8,10 +8,10 @@ import java.io.File;
 import info.freelibrary.util.Logger;
 import info.freelibrary.util.LoggerFactory;
 
-import info.freelibrary.vertx.template.Config;
-import info.freelibrary.vertx.template.MessageCodes;
-import info.freelibrary.vertx.template.Op;
-import info.freelibrary.vertx.template.handlers.StatusHandler;
+import edu.ucla.library.validation.Config;
+import edu.ucla.library.validation.MessageCodes;
+import edu.ucla.library.validation.Op;
+import edu.ucla.library.validation.handlers.StatusHandler;
 
 import io.vertx.config.ConfigRetriever;
 import io.vertx.core.AbstractVerticle;
@@ -33,9 +33,9 @@ public class MainVerticle extends AbstractVerticle {
     private static final Logger LOGGER = LoggerFactory.getLogger(MainVerticle.class, MessageCodes.BUNDLE);
 
     /**
-     * An OpenAPI definition that the main verticle users to route requests.
+     * An OpenAPI definition that the main verticle uses to route requests.
      */
-    private static final String API_SPEC = "src/main/resources/template.yaml";
+    private static final String API_SPEC = "src/main/resources/validation.yaml";
 
     /**
      * The main verticle's HTTP server.
@@ -64,6 +64,7 @@ public class MainVerticle extends AbstractVerticle {
         final int port = aConfig.getInteger(Config.HTTP_PORT, 8888);
 
         RouterBuilder.create(vertx, getRouterSpec()).onFailure(aPromise::fail).onSuccess(routeBuilder -> {
+
             final HttpServerOptions serverOptions = new HttpServerOptions().setPort(port).setHost(host);
 
             // Associate handlers with operation IDs from the application's OpenAPI specification
@@ -74,6 +75,7 @@ public class MainVerticle extends AbstractVerticle {
                 LOGGER.info(MessageCodes.CODE_001, port);
                 aPromise.complete();
             });
+
         });
     }
 
