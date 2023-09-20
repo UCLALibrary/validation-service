@@ -7,10 +7,7 @@ package edu.ucla.library.validation;
 public enum Op {
 
     /** An operation for the status functionality. */
-    GET_STATUS("getStatus", "/status"),
-
-    /** An operation to display a ui. */
-    GET_UI("getUI", "/ui");
+    GET_STATUS("getStatus", "/status");
 
     /** An operation's ID. */
     private String myID;
