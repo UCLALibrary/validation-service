@@ -1,0 +1,32 @@
+#csv-upload-title {
+    color:#2774AE
+}
+
+.container-fluid {
+    display: flex;
+    padding-top: 15px; 
+    margin-left: 20px; 
+    font-family: Montserrat, sans-serif
+}
+
+.body-row {
+    display: flex
+}
+
+.body-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-form {
+    padding-top: 15px;
+    margin-left: 50px;
+}
+
+.form-group {
+    padding-top: 15px;
+}
+
+#csv-file {
+    padding-top: 10px;
+}

@@ -26,4 +26,3 @@ paths:
                     example: ok
         '500':
           description: There was an internal server error
- 
