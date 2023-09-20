@@ -16,23 +16,43 @@
 <body>
 
   <div class="container-fluid">
+    <div class="body-column">
+    <div>
     <h1 id="csv-upload-title">CSV Upload</h1>
-    <p style="padding-top: 15px;">The CSV upload form can be used to upload CSV files for validation.</p>
+    <p style="padding-top: 15px;">Welcome! The CSV upload form can be used to upload CSV files for validation.</p>
+    <br>
+  </div>
+  <div>
+    <div class="body-row">
     <div class="row csv-upload-form">
       <div class="col-sm-3 offset-sm-1">
         <div class="info-form">
           <form class="form-inlin justify-content-center" action="/upload" method="post" enctype="multipart/form-data">
             <div class="form-group">
-              <label for="csv-file">File to upload:</label> <input type="file" name="csv-file" id="csv-file">
+              <label for="csv-file">File to upload: </label> <input type="file" name="csv-file" id="csv-file">
             </div>
-            <div class="form-group" >
+            <div class="form-group">
               <input type="submit" value="Upload" name="submit">
             </div>
           </form>
         </div>
       </div>
     </div>
+    <div class="col-sm-4 offset-sm-1">
+      <h4>Instructions</h4>
+      <p>
+        Placeholder Text
+      </p>
+      <br />
+      <h4>Problems?</h4>
+      <p>
+        Placeholder Text
+      </p>
+    </div>
   </div>
+  </div>
+  </div>
+</div>
 
 </body>
 
