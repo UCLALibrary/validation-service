@@ -12,9 +12,11 @@ import edu.ucla.library.validation.Config;
 import edu.ucla.library.validation.MessageCodes;
 import edu.ucla.library.validation.Op;
 import edu.ucla.library.validation.handlers.StatusHandler;
+import edu.ucla.library.validation.handlers.UploadHandler;
 
 import io.vertx.ext.web.handler.StaticHandler;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.BodyHandler;
 
 import io.vertx.config.ConfigRetriever;
 import io.vertx.core.AbstractVerticle;
@@ -69,12 +71,13 @@ public class MainVerticle extends AbstractVerticle {
         RouterBuilder.create(vertx, getRouterSpec()).onFailure(aPromise::fail).onSuccess(routeBuilder -> {
 
             final HttpServerOptions serverOptions = new HttpServerOptions().setPort(port).setHost(host);
-
             // Associate handlers with operation IDs from the application's OpenAPI specification
             routeBuilder.operation(Op.GET_STATUS.id()).handler(new StatusHandler(getVertx()));
 
             final Router router = routeBuilder.createRouter();
 
+            router.route().handler(BodyHandler.create().setUploadsDirectory("uploads"));
+            router.post("/upload").handler(new UploadHandler(getVertx()));
             router.route("/ui/*").handler(StaticHandler.create("src/main/webroot"));
 
             myServer = getVertx().createHttpServer(serverOptions).requestHandler(router);
