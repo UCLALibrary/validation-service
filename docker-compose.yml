@@ -1,5 +1,5 @@
 services:
-  service-template:
+  validation-service:
     build:
       context: .
       dockerfile: Dockerfile
