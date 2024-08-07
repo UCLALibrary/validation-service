@@ -2,7 +2,7 @@
 ## A Dockefile for UCLA Library's GoLang microservices.
 ##
 
-ARG SERVICE_NAME="service-template"
+ARG SERVICE_NAME="validation-service"
 
 ##
 ## STEP 1 - BUILD

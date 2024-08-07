@@ -1,6 +1,6 @@
-# Service Template
+# Validation Service
 
-This is a simple GoLang service template that utilizes Echo. It is meant to serve as the foundation for a variety of microservices.
+This is our validation service for our CSV validation project.
 
 ## Building the Project
 
@@ -12,15 +12,15 @@ To run the project run:
 
 To run on Docker first build the Docker image: 
 
-`docker build -t service-template .`
+`docker build -t validation-service .`
 
 To specify what version of Go you would like to use with the Docker image:
 
-`docker build --build-arg GO_VERSION=[YOUR_VERSION] -t service-template .`
+`docker build --build-arg GO_VERSION=[YOUR_VERSION] -t validation-service .`
 
 To run the Docker image: 
 
-`docker run -d -p 8888:8888 service-template`
+`docker run -d -p 8888:8888 validation-service`
 
 ## Building and Running with Docker Compose
 
@@ -48,4 +48,4 @@ Now that ACT is installed, you can see the workflow run locally by running:
 
 ## Contact
 
-If you have any questions or suggestions, feel free to [open a ticket](https://github.com/UCLALibrary/service-template/issues) on project's GitHub repo.
+If you have any questions or suggestions, feel free to [open a ticket](https://github.com/UCLALibrary/validation-service/issues) on project's GitHub repo.
