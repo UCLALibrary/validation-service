@@ -7,7 +7,7 @@ ARG SERVICE_NAME="service-template"
 ##
 ## STEP 1 - BUILD
 ##
-FROM golang:1.22.5-alpine3.20 AS build
+FROM golang:1.22.6-alpine3.20 AS build
 
 LABEL org.opencontainers.image.source="https://github.com/uclalibrary/${SERVICE_NAME}"
 LABEL org.opencontainers.image.description="UCLA Library's ${SERVICE_NAME} container"
