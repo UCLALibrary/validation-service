@@ -52,7 +52,7 @@ This Makefile provides another convenient way to build, test, lint, and manage D
 
 ### Variables
 
-`DOCKER_IMAGE`: The name of the Docker image (default: service-template).
+`DOCKER_IMAGE`: The name of the Docker image (default: validation-service).
 `DOCKER_TAG`: The tag for the Docker image (default: latest).
 
 ### Commands
