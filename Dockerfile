@@ -7,7 +7,7 @@ ARG SERVICE_NAME="validation-service"
 ##
 ## STEP 1 - BUILD
 ##
-FROM golang:1.23.1-alpine3.20 AS build
+FROM golang:1.23.2-alpine3.20 AS build
 
 LABEL org.opencontainers.image.source="https://github.com/uclalibrary/${SERVICE_NAME}"
 LABEL org.opencontainers.image.description="UCLA Library's ${SERVICE_NAME} container"
