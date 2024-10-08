@@ -1,6 +1,6 @@
 module github.com/UCLALibrary/validation-service.git
 
-go 1.23.1
+go 1.23.2
 
 require (
 	github.com/labstack/echo/v4 v4.12.0
