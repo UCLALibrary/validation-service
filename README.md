@@ -76,9 +76,9 @@ below) are also available. It's also worth noting that there are the two optiona
 
 ### Commands
 
-To build and run the Go project locally:
+To build the Go project locally:
 
-    make run
+    make build
 
 To run all Go tests with verbose output:
 
