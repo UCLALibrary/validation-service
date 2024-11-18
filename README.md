@@ -57,7 +57,11 @@ To get started, ensure that [ACT is installed](https://nektosact.com/installatio
 
 Now that ACT is installed, you can run the build by typing the below:
 
-`act -j build`
+`act -W .github/workflows/build.yml`
+
+If you've installed ACT as an extension to the GitHub CLI, you'd type:
+
+`gh act -W .github/workflows/build.yml`
 
 ## Building and Running with Make
 
