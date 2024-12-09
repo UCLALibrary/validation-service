@@ -24,7 +24,7 @@ RUN go build -o /service
 ##
 ## STEP 2 - DEPLOY
 ##
-FROM alpine:3.20
+FROM alpine:3.21
 
 # Create a non--root user
 RUN addgroup -S service && adduser -S service -G service
