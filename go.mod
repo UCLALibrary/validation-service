@@ -3,7 +3,7 @@ module github.com/UCLALibrary/validation-service.git
 go 1.23.4
 
 require (
-	github.com/labstack/echo/v4 v4.12.0
+	github.com/labstack/echo/v4 v4.13.0
 	github.com/stretchr/testify v1.10.0
 	github.com/testcontainers/testcontainers-go v0.34.0
 )
