@@ -7,7 +7,7 @@ ARG SERVICE_NAME="validation-service"
 ##
 ## STEP 1 - BUILD
 ##
-FROM golang:1.23.3-alpine3.20 AS build
+FROM golang:1.23.4-alpine3.20 AS build
 
 ARG SERVICE_NAME
 ENV SERVICE_NAME=${SERVICE_NAME}
@@ -38,8 +38,14 @@ RUN apk add --no-cache curl
 # Create a non--root user
 RUN addgroup -S "${SERVICE_NAME}" && adduser -S "${SERVICE_NAME}" -G "${SERVICE_NAME}"
 
-# Copy the executable from the build stage
-COPY --from=build --chown="${SERVICE_NAME}":"${SERVICE_NAME}" --chmod=0700 "/${SERVICE_NAME}" "/sbin/${SERVICE_NAME}"
+# Copy the executable from the build stage (BuildKit required, but not working with TestContainers-Go)
+# COPY --from=build --chown="${SERVICE_NAME}":"${SERVICE_NAME}" --chmod=0700 "/${SERVICE_NAME}" "/sbin/${SERVICE_NAME}"
+
+# Copy the file without --chown or --chmod (BuildKit not required)
+COPY --from=build "/${SERVICE_NAME}" "/sbin/${SERVICE_NAME}"
+
+# Now, modify ownership and permissions in a separate RUN step
+RUN chown "${SERVICE_NAME}":"${SERVICE_NAME}" "/sbin/${SERVICE_NAME}" && chmod 0700 "/sbin/${SERVICE_NAME}"
 
 # Expose the port on which the application will run
 EXPOSE 8888
@@ -47,8 +53,8 @@ EXPOSE 8888
 # Create a non-root user
 USER "${SERVICE_NAME}"
 
-# Specify the command to be used when the image is used to start a container
+# Specify the command to be used when the image is used to start a container; use shell to support ENV name
 ENTRYPOINT [ "sh", "-c", "exec /sbin/${SERVICE_NAME}" ]
 
 # Confirm the service started as expected
-HEALTHCHECK CMD curl -f http://localhost:8888/ || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD curl -f http://localhost:8888/ || exit 1

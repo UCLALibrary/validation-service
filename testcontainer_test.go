@@ -1,3 +1,5 @@
+//go:build functional
+
 package main
 
 import (
@@ -5,7 +7,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"strconv"
 	"testing"
 	"time"
 
@@ -15,9 +16,13 @@ import (
 )
 
 func TestApp(t *testing.T) {
+
 	// Define the container request
 	req := testcontainers.ContainerRequest{
-		Image:        "validation-service",
+		FromDockerfile: testcontainers.FromDockerfile{
+			Context:    ".",
+			Dockerfile: "Dockerfile",
+		},
 		ExposedPorts: []string{"8888/tcp"},
 		WaitingFor:   wait.ForHTTP("/").WithPort("8888/tcp"),
 	}
@@ -58,8 +63,7 @@ func TestApp(t *testing.T) {
 	}
 
 	// Make requests to the containerized app and assert the responses
-	// Example: Make an HTTP request to the root endpoint
-	resp, err := client.Get("http://" + host + ":" + strconv.Itoa(port.Int()) + "/")
+	resp, err := client.Get(fmt.Sprintf("http://%s:%d/", host, port.Int()))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -67,10 +71,10 @@ func TestApp(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-	// Any requeset body will work since POST requests are not currently allowed
+	// Any request body will work since POST requests are not currently allowed
 	requestBody := []byte(`{"key": "value"}`)
 
-	resp, err = client.Post("http://" + host + ":" + strconv.Itoa(port.Int()) + "/", "application/json",
+	resp, err = client.Post(fmt.Sprintf("http://%s:%d/", host, port.Int()), "application/json",
 		bytes.NewBuffer(requestBody))
 	if err != nil {
 		t.Fatal(err)
