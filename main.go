@@ -17,7 +17,11 @@ type App struct {
 func main() {
 	app := NewApp()
 	app.Routes()
-	app.Router.Start(":" + strconv.Itoa(Port))
+	err := app.Router.Start(":" + strconv.Itoa(Port))
+
+	if err != nil {
+		panic(err)
+	}
 }
 
 // NewApp initializes a new instance of your application.
@@ -26,7 +30,7 @@ func NewApp() *App {
 	return &App{Router: e}
 }
 
-// Run starts the server.
+// Routes configure the server's endpoints.
 func (app *App) Routes() {
 	app.Router.GET("/", helloWorld)
 	app.Router.RouteNotFound("/*", NotFoundHandler)
