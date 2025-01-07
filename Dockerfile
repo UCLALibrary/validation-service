@@ -1,17 +1,19 @@
 ##
-## A Dockefile for UCLA Library's validation microservice.
+## Dockerfile for a UCLA Library microservice.
 ##
 
-ARG SERVICE_NAME="validation-service"
+ARG SERVICE_NAME
 
 ##
 ## STEP 1 - BUILD
 ##
 FROM golang:1.23.4-alpine3.20 AS build
 
+# Inherit SERVICE_NAME arg and set as ENV
 ARG SERVICE_NAME
 ENV SERVICE_NAME=${SERVICE_NAME}
 
+# Set image metadata
 LABEL org.opencontainers.image.source="https://github.com/uclalibrary/${SERVICE_NAME}"
 LABEL org.opencontainers.image.description="UCLA Library's ${SERVICE_NAME} container"
 
@@ -25,21 +27,19 @@ COPY . .
 RUN go build -o "/${SERVICE_NAME}"
 
 ##
-## STEP 2 - DEPLOY
+## STEP 2 - PACKAGE
 ##
 FROM alpine:3.21
 
+# Inherit SERVICE_NAME arg and set as ENV
 ARG SERVICE_NAME
 ENV SERVICE_NAME=${SERVICE_NAME}
 
-# Prepare tools for container healthcheck
+# Install curl to be used in container healthcheck
 RUN apk add --no-cache curl
 
-# Create a non--root user
+# Create a non-root user
 RUN addgroup -S "${SERVICE_NAME}" && adduser -S "${SERVICE_NAME}" -G "${SERVICE_NAME}"
-
-# Copy the executable from the build stage (BuildKit required, but not working with TestContainers-Go)
-# COPY --from=build --chown="${SERVICE_NAME}":"${SERVICE_NAME}" --chmod=0700 "/${SERVICE_NAME}" "/sbin/${SERVICE_NAME}"
 
 # Copy the file without --chown or --chmod (BuildKit not required)
 COPY --from=build "/${SERVICE_NAME}" "/sbin/${SERVICE_NAME}"
@@ -57,4 +57,4 @@ USER "${SERVICE_NAME}"
 ENTRYPOINT [ "sh", "-c", "exec /sbin/${SERVICE_NAME}" ]
 
 # Confirm the service started as expected
-HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD curl -f http://localhost:8888/ || exit 1
+HEALTHCHECK CMD curl -f http://localhost:8888/ || exit 1

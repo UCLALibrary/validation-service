@@ -1,4 +1,4 @@
-# Variables
+# Build variables
 SERVICE_NAME := validation-service
 
 # Do a full build of the project
@@ -16,9 +16,13 @@ test:
 lint:
 	golangci-lint run
 
+# Build the Docker container (an optional debugging step)
+docker-build:
+	docker build .
+
 # Run tests inside the Docker container
 docker-test:
-	go test -tags=functional ./... -v
+	go test -tags=functional ./... -v -args -service-name=$(SERVICE_NAME)
 
 # Clean up all artifacts of the build
 clean:

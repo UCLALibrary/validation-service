@@ -5,6 +5,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"flag"
 	"fmt"
 	"net/http"
 	"testing"
@@ -15,20 +16,28 @@ import (
 	"github.com/testcontainers/testcontainers-go/wait"
 )
 
+// Configure our service name flag
+var serviceNameFlag = flag.String("service-name", "service", "A build arg for Dockerfile")
+
+// TestApp spins up a Docker container with the application and runs simple tests against its Web API
 func TestApp(t *testing.T) {
+	flag.Parse()
+
+	// Define a Docker context
+	ctx := context.Background()
 
 	// Define the container request
 	req := testcontainers.ContainerRequest{
 		FromDockerfile: testcontainers.FromDockerfile{
 			Context:    ".",
 			Dockerfile: "Dockerfile",
+			BuildArgs: map[string]*string{
+				"SERVICE_NAME": serviceNameFlag,
+			},
 		},
 		ExposedPorts: []string{"8888/tcp"},
 		WaitingFor:   wait.ForHTTP("/").WithPort("8888/tcp"),
 	}
-
-	// Create a context for the container
-	ctx := context.Background()
 
 	// Start the container
 	container, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
@@ -62,7 +71,7 @@ func TestApp(t *testing.T) {
 		Timeout: 5 * time.Second,
 	}
 
-	// Make requests to the containerized app and assert the responses
+	// Make a GET request to the containerized app and check the response
 	resp, err := client.Get(fmt.Sprintf("http://%s:%d/", host, port.Int()))
 	if err != nil {
 		t.Fatal(err)
@@ -71,7 +80,7 @@ func TestApp(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-	// Any request body will work since POST requests are not currently allowed
+	// Make a POST request and confirm that POST is not currently supported
 	requestBody := []byte(`{"key": "value"}`)
 
 	resp, err = client.Post(fmt.Sprintf("http://%s:%d/", host, port.Int()), "application/json",
@@ -80,5 +89,6 @@ func TestApp(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer resp.Body.Close()
+
 	assert.Equal(t, http.StatusNotFound, resp.StatusCode)
 }
