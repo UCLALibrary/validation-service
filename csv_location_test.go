@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-// TestCsvLocation tests the CsvLocation's behavior
+// TestCsvIndex tests the CsvLocation's behavior
 func TestCsvIndex(t *testing.T) {
 	// Create an instance of CsvLocation
 	location := CsvLocation{RowIndex: 2, ColIndex: 5}

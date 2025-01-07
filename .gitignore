@@ -24,5 +24,4 @@ go.work
 .idea/
 
 # Build artifacts
-service
-validation-service
+*-service

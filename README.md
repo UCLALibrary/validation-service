@@ -1,6 +1,6 @@
 # Validation Service
 
-This is our microservice for CSV validation. It validations CSVs according to a prescribed set of rules. These rule
+This is a microservice for CSV validation. It validations CSVs according to a prescribed set of rules. These rule
 sets may be incorporated into specific validation profiles.
 
 Note: This project is in its infancy and is not ready for general use.
@@ -8,46 +8,109 @@ Note: This project is in its infancy and is not ready for general use.
 ## Getting Started
 
 There are multiple ways to build the project. You are free to use whichever you prefer. A series of manual steps is
-provided below, but there are also more concise build processes available for [Make](#using-the-makefile) and [ACT]
-(#building-and-running-with-act).
+provided below, but there are also more concise build processes available for [Make](#building-and-running-with-make)
+and [ACT](#building-and-running-with-act).
+
+### Prerequisites
+
+* A [GoLang](https://go.dev/doc/install) build environment
+* A functional [Docker](https://docs.docker.com/get-started/get-docker/) installation
+* The [golangci-lint](https://github.com/golangci/golangci-lint) linter for checking code style conformance
+
+Optionally, if you want to test (or build using) the project's GitHub Actions:
+
+* [ACT](https://github.com/nektos/act): A local GitHub Action runner that will also build and test the project
+
+Additionally, Make can be used as a simpler build tool for the project. It should be installed through your OS' 
+standard packaging system.
 
 ### Building the Application
 
-To build the project run:
+To build the project, type:
 
 `go build -o validation-service`
 
-### Creating a Docker Image
+To run the service locally, type:
 
-To run on Docker first build the Docker image:
+`./validation-service`
 
-`docker build -t validation-service .`
+Typing `Ctrl-C` will stop the service.
 
-To specify what version of Go you would like to use with the Docker image:
+### Running the Test Suite
 
-`docker build --build-arg GO_VERSION=[YOUR_VERSION] -t validation-service .`
+There are unit and functional tests (the latter of which require a working Docker installation).
 
-To run the Docker image:
+To run the unit tests, type:
 
-`docker run -d -p 8888:8888 validation-service`
+`go test -tags=unit ./... -v`
+
+To run the functional tests, type:
+
+`go test -tags=functional ./... -v -args -service-name=validation-service`
+
+Note that the functional tests will spin up a Docker container and run tests against that.
+
+### Running the Linter
+
+To run the project's linter, type:
+
+`golangci-lint run`
+
+### Spinning up the Docker Container (Independent of the Tests)
+
+To build the Docker image, type:
+
+`docker build -t validation-service --build-arg SERVICE_NAME="validation-service" .`
+
+To run the newly built Docker image, type:
+
+`docker run -d -p 8888:8888 --name validation-service validation-service`
 
 Once the container is running, you can access the service at:
 
-`http://localhost:8888`
+`http://localhost:8888/`
 
-### Running Using Docker Compose
+To stop the service and remove the Docker container, type:
 
-To run the validator using Docker Compose, use the following command:
+`docker rm -f validation-service`
 
-`docker-compose up --build`
+### Cleaning up the Project's Build Artifacts
 
-Once the container is running, you can access the service at:
+To clean up the project's build artifacts, type:
 
-`http://localhost:8888`
+`rm -rf validation-service`
 
-To stop the running containers, use the following command:
+To simplify your processes, though, we recommend that you use Make, which has a simpler command line interface.
 
-`docker-compose down`
+## Building and Running with Make
+
+The project's [Makefile](Makefile) provides another convenient way to build, test, lint, and manage Docker containers
+for the project. This is the method we recommend.
+
+The TL;DR is that running `make all` will perform all the project's required build and testing steps. Individual steps
+(listed below) are also available, though, for a more targeted approach.
+
+### Commands
+
+To build the Go project:
+
+    make build
+
+To run all the unit tests:
+
+    make test
+
+To run the linter:
+
+    make lint
+
+To run the functional tests, which includes building the Docker container:
+
+    make docker-test
+
+To clean up the project's build artifacts, run:
+
+    make clean
 
 ## Building and Running with ACT
 
@@ -57,48 +120,26 @@ To get started, ensure that [ACT is installed](https://nektosact.com/installatio
 
 Now that ACT is installed, you can run the build by typing the below:
 
-`act -W .github/workflows/build.yml`
+`act -j build`
 
 If you've installed ACT as an extension to the GitHub CLI, you'd type:
 
-`gh act -W .github/workflows/build.yml`
+`gh act -j build`
 
-## Building and Running with Make
+To test the 'nightly' or 'release' builds, you will need to provide some additional details through ENVs and GitHub 
+Actions/ACT secrets. You'll also need to have a DockerHub repo for validation-services setup before running the below:
 
-The project's [Makefile](Makefile) provides another convenient way to build, test, lint, and manage Docker containers
-for the project. Running `make all` will perform all the required build steps, but individual build steps (listed
-below) are also available. It's also worth noting that there are the two optional build variables for the Makefile.
+`act --env DOCKER_REGISTRY_ACCOUNT=uclalibrary -s DOCKER_USERNAME=[YOURS] -s DOCKER_PASSWORD=[YOURS] -j nightly`
 
-### Variables
+or
 
-`DOCKER_IMAGE`: The name of the Docker image (default: validation-service).
-`DOCKER_TAG`: The tag for the Docker image (default: latest).
+`act --env DOCKER_REGISTRY_ACCOUNT=uclalibrary -s DOCKER_USERNAME=[YOURS] -s DOCKER_PASSWORD=[YOURS] -j release`
 
-### Commands
+This is mostly documented for UCLA Library's use. The shared passwords should be in our LastPass password store. If 
+you are running ACT through the GitHub extension, you'll need to use the `gh act` format for these commands.
 
-To build the Go project locally:
-
-    make build
-
-To run all Go tests with verbose output:
-
-    make test
-
-To run the linter using `golangci-lint` to check the code for style and correctness:
-
-    make lint
-
-To build a Docker image using the specified `DOCKER_IMAGE` and `DOCKER_TAG`:
-
-    make docker-build
-
-To run Go tests inside a Docker container built from the project:
-
-    make docker-test
-
-To clean up the project's build artifacts, run:
-
-    make clean
+Note that ACT also supports supplying secrets through a secrets file instead of by passing them on the command line. 
+Check the documentation for more information on how to use this more secure method.
 
 ## Contact
 
