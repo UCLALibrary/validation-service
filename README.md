@@ -1,6 +1,6 @@
 # Validation Service
 
-This is a microservice for CSV validation. It validations CSVs according to a prescribed set of rules. These rule
+This is a microservice for CSV validation. It validates CSVs according to a prescribed set of rules. These rule
 sets may be incorporated into specific validation profiles.
 
 Note: This project is in its infancy and is not ready for general use.
