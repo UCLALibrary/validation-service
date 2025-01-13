@@ -5,7 +5,7 @@ go 1.23.4
 require (
 	github.com/labstack/echo/v4 v4.13.3
 	github.com/stretchr/testify v1.10.0
-	github.com/testcontainers/testcontainers-go v0.34.0
+	github.com/testcontainers/testcontainers-go v0.35.0
 )
 
 require (
