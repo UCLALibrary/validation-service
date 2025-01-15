@@ -1,9 +1,7 @@
 name: Build and Publish Docker Image
 
 env:
-    GO_VERSION: '1.22.4'
-    SERVICE_NAME: 'validation-service'
-    ALPINE_VERSION: '3.20'
+  DOCKER_REGISTRY_ACCOUNT: ${{ vars.DOCKER_REGISTRY_ACCOUNT }}
 
 on:
   push:
@@ -12,10 +10,13 @@ on:
   workflow_dispatch:
     
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Extract service name from repo name
+      run: echo "SERVICE_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f2)" >> $GITHUB_ENV
+
     - name: Checkout code
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
@@ -37,11 +38,6 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: ${{ vars.DOCKER_REGISTRY_ACCOUNT }}/${{ env.SERVICE_NAME }}:${{ github.ref_name }}
+        tags: ${{ env.DOCKER_REGISTRY_ACCOUNT }}/${{ env.SERVICE_NAME }}:${{ github.ref_name }}
         build-args: |
-          GO_VERSION=${{ env.GO_VERSION }}
-          ALPINE_VERSION=${{ env.ALPINE_VERSION }}
           SERVICE_NAME=${{ env.SERVICE_NAME }}
-        labels: |
-          org.opencontainers.image.source=https://github.com/uclalibrary/${{ env.SERVICE_NAME }}
-          org.opencontainers.image.description=UCLA Library's ${{ env.SERVICE_NAME }}

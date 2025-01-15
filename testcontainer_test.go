@@ -1,10 +1,13 @@
+//go:build functional
+
 package main
 
 import (
 	"bytes"
 	"context"
+	"flag"
+	"fmt"
 	"net/http"
-	"strconv"
 	"testing"
 	"time"
 
@@ -13,27 +16,44 @@ import (
 	"github.com/testcontainers/testcontainers-go/wait"
 )
 
+// Configure our service name flag
+var serviceNameFlag = flag.String("service-name", "service", "A build arg for Dockerfile")
+
+// TestApp spins up a Docker container with the application and runs simple tests against its Web API
 func TestApp(t *testing.T) {
+	flag.Parse()
+
+	// Define a Docker context
+	ctx := context.Background()
+
 	// Define the container request
 	req := testcontainers.ContainerRequest{
-		Image:        "validation-service",
+		FromDockerfile: testcontainers.FromDockerfile{
+			Context:    ".",
+			Dockerfile: "Dockerfile",
+			BuildArgs: map[string]*string{
+				"SERVICE_NAME": serviceNameFlag,
+			},
+		},
 		ExposedPorts: []string{"8888/tcp"},
-		SkipReaper:   true,
 		WaitingFor:   wait.ForHTTP("/").WithPort("8888/tcp"),
 	}
-
-	// Create a context for the container
-	ctx := context.Background()
 
 	// Start the container
 	container, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
 		ContainerRequest: req,
 		Started:          true,
 	})
+
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer container.Terminate(ctx)
+
+	defer func() {
+		if err := container.Terminate(ctx); err != nil {
+			fmt.Printf("Error terminating container: %v\n", err)
+		}
+	}()
 
 	// Get the host and port for the running container
 	host, err := container.Host(ctx)
@@ -51,9 +71,8 @@ func TestApp(t *testing.T) {
 		Timeout: 5 * time.Second,
 	}
 
-	// Make requests to the containerized app and assert the responses
-	// Example: Make an HTTP request to the root endpoint
-	resp, err := client.Get("http://" + host + ":" + strconv.Itoa(port.Int()) + "/")
+	// Make a GET request to the containerized app and check the response
+	resp, err := client.Get(fmt.Sprintf("http://%s:%d/", host, port.Int()))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -61,13 +80,15 @@ func TestApp(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-	// Any requeset body will work since POST requests are not currently allowed
+	// Make a POST request and confirm that POST is not currently supported
 	requestBody := []byte(`{"key": "value"}`)
 
-	resp, err = client.Post("http://" + host + ":" + strconv.Itoa(port.Int()) + "/", "application/json", bytes.NewBuffer(requestBody))
+	resp, err = client.Post(fmt.Sprintf("http://%s:%d/", host, port.Int()), "application/json",
+		bytes.NewBuffer(requestBody))
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer resp.Body.Close()
+
 	assert.Equal(t, http.StatusNotFound, resp.StatusCode)
 }
