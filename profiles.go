@@ -113,7 +113,7 @@ func (profiles *Profiles) Refresh() error {
 	}
 
 	// Check that our JSON file actually has some profiles
-	if refreshedProfiles.Profile == nil || len(refreshedProfiles.Profile) == 0 {
+	if len(refreshedProfiles.Profile) == 0 {
 		return fmt.Errorf("no profiles found in refreshed data")
 	}
 
