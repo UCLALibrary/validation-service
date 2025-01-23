@@ -83,7 +83,7 @@ func NewProfiles() *Profiles {
 	}
 }
 
-// Refresh Profiles from the last persisted version.
+// Refresh Profiles from the last persisted version on disk.
 //
 // This overwrites the current in-memory values.
 func (profiles *Profiles) Refresh() error {
@@ -146,7 +146,7 @@ func (profiles *Profiles) Refresh() error {
 	return nil
 }
 
-// Save the Profiles to a pre-configured JSON file path
+// Save the Profiles to a pre-configured JSON file path location.
 func (profiles *Profiles) Save() error {
 	// Get the JSON file path from the environment variable
 	filePath := os.Getenv(ProfilesFile)
