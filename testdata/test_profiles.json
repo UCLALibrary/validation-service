@@ -1,0 +1,15 @@
+{
+  "profiles": {
+    "example": {
+      "name": "example",
+      "lastUpdate": "2025-01-01T12:00:00Z",
+      "validations": ["Validation1", "Validation2"]
+    },
+    "test": {
+      "name": "test",
+      "lastUpdate": "2025-01-10T15:30:00Z",
+      "validations": ["TestValidation1"]
+    }
+  },
+  "lastUpdate": "2025-01-10T16:00:00Z"
+}

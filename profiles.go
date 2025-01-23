@@ -21,11 +21,17 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
+	"path/filepath"
 	"sort"
 	"sync"
 	"time"
 )
+
+// ProfilesFile is the ENV property for the location of the persisted JSON Profiles file
+const ProfilesFile string = "PROFILES_FILE"
 
 // Profile is a single thread-safe validation profile.
 type Profile struct {
@@ -75,6 +81,120 @@ func NewProfiles() *Profiles {
 	return &Profiles{
 		profile: make(map[string]*Profile),
 	}
+}
+
+// Refresh Profiles from the last persisted version.
+//
+// This overwrites the current in-memory values.
+func (profiles *Profiles) Refresh() error {
+	var refreshedProfiles ProfilesSnapshot
+
+	// Get the location of the persisted Profiles file
+	filePath := os.Getenv(ProfilesFile)
+	if filePath == "" {
+		return fmt.Errorf("environment variable %s is not set or empty", ProfilesFile)
+	}
+
+	// Open the persisted JSON file
+	file, err := os.Open(filePath)
+	if err != nil {
+		return fmt.Errorf("failed to open '%s' file: %w", filePath, err)
+	}
+	defer func() {
+		if closeErr := file.Close(); closeErr != nil {
+			fmt.Printf("warning: failed to close file '%s': %v\n", filePath, closeErr)
+		}
+	}()
+
+	// Decode the persisted JSON file into a ProfilesSnapshot
+	decoder := json.NewDecoder(file)
+	if err := decoder.Decode(&refreshedProfiles); err != nil {
+		return fmt.Errorf("failed to decode JSON: %w", err)
+	}
+
+	// Check that our JSON file actually has some profiles
+	if refreshedProfiles.Profile == nil || len(refreshedProfiles.Profile) == 0 {
+		return fmt.Errorf("no profiles found in refreshed data")
+	}
+
+	// Create a new temporary map for refreshed *Profile(s)
+	tempMap := make(map[string]*Profile)
+
+	// Convert ProfileSnapshot(s) to *Profile(s)
+	for _, refreshedProfile := range refreshedProfiles.Profile {
+		profile, err := NewProfile(refreshedProfile.Name, refreshedProfile.Validations)
+		if err != nil {
+			return fmt.Errorf("failed to create new profile '%s': %w", refreshedProfile.Name, err)
+		}
+
+		// Check to see if our tempMap already has a Profile with the same name
+		profileName := profile.GetName()
+		if _, exists := tempMap[profileName]; exists {
+			return fmt.Errorf("profile '%s' already exists", profileName)
+		}
+
+		tempMap[profileName] = profile
+	}
+
+	profiles.mutex.Lock()
+	defer profiles.mutex.Unlock()
+
+	// Update the Profiles map and set a new lastUpdate time
+	profiles.profile = tempMap
+	profiles.lastUpdate = refreshedProfiles.LastUpdate
+
+	return nil
+}
+
+// Save the Profiles to a pre-configured JSON file path
+func (profiles *Profiles) Save() error {
+	// Get the JSON file path from the environment variable
+	filePath := os.Getenv(ProfilesFile)
+	if filePath == "" {
+		return fmt.Errorf("environment variable '%s' is not set or empty", ProfilesFile)
+	}
+
+	// Ensure the directory with the JSON file exists
+	dirPath := filepath.Dir(filePath)
+	if err := os.MkdirAll(dirPath, 0755); err != nil {
+		return fmt.Errorf("failed to create directory '%s': %w", dirPath, err)
+	}
+
+	// Lock the profiles struct for thread-safe access
+	profiles.mutex.RLock()
+	defer profiles.mutex.RUnlock()
+
+	// Take a snapshot of the current profiles for serialization
+	snapshot := profiles.Snapshot()
+
+	// Serialize the snapshot to JSON
+	jsonData, jsonErr := json.MarshalIndent(snapshot, "", "  ")
+	if jsonErr != nil {
+		return fmt.Errorf("failed to serialize profiles to JSON: %w", jsonErr)
+	}
+
+	// Write to a temporary file first for atomic updates
+	tempFile, tempFileErr := os.CreateTemp("", "profile-*.json")
+	if tempFileErr != nil {
+		return fmt.Errorf("failed to create temporary file '%s': %w", tempFile.Name(), tempFileErr)
+	}
+
+	// Write the JSON data to the temporary file
+	if _, err := tempFile.Write(jsonData); err != nil {
+		return fmt.Errorf("failed to write JSON data to temporary file '%s': %w", tempFile.Name(), err)
+	}
+
+	// Close the temporary file
+	if err := tempFile.Close(); err != nil {
+		return fmt.Errorf("failed to close temporary file '%s': %w", tempFile.Name(), err)
+	}
+
+	// Rename the temporary file to the final file
+	if err := os.Rename(tempFile.Name(), filePath); err != nil {
+		return fmt.Errorf("failed to rename temporary file '%s' to '%s': %w", tempFile.Name(), filePath, err)
+	}
+
+	return nil
 }
 
 // Count the number of Profile(s) in this Profiles instance.
