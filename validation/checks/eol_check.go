@@ -33,7 +33,7 @@ func (check *EOLCheck) Validate(profile string, location csv.Location, csvData [
 
 	value := csvData[location.RowIndex][location.ColIndex]
 
-	// Check if the profile matches the value in the CSV data at the given location
+	// Check if the CSV data cell under review has any unexpected EOLs in it
 	if strings.Contains(value, "\n") || strings.Contains(value, "\r") {
 		return fmt.Errorf("character for EOL found in cell at (row: %d, column: %d)[profile: %s]",
 			location.RowIndex, location.ColIndex, profile)
