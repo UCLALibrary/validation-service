@@ -7,8 +7,8 @@ import (
 	"testing"
 )
 
-// TestNewLineCheck_Validate tests the Validate method on EOLCheck.
-func TestNewLineCheck_Validate(t *testing.T) {
+// TestEOLCheck_Validate tests the Validate method on EOLCheck.
+func TestEOLCheck_Validate(t *testing.T) {
 	check := &EOLCheck{}
 
 	// Data variations to check the EOLCheck.Validate method against
