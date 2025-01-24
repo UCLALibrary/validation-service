@@ -1,5 +1,5 @@
 # Build variables
-SERVICE_NAME ?= validation-service
+SERVICE_NAME := validation-service
 
 # Do a full build of the project
 all: lint build test docker-test
