@@ -1,4 +1,4 @@
-module github.com/UCLALibrary/validation-service.git
+module github.com/UCLALibrary/validation-service
 
 go 1.23.5
 
