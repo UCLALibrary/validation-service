@@ -1,6 +1,6 @@
 //go:build unit
 
-package main
+package validation
 
 import (
 	"bytes"
@@ -53,7 +53,7 @@ func TestProfiles_Snapshot(t *testing.T) {
 // TestProfiles_Refresh tests refreshing a Profiles instance from a persisted JSON file.
 func TestProfiles_Refresh(t *testing.T) {
 	// Set the PROFILES_FILE for testing purposes
-	err := os.Setenv(ProfilesFile, "testdata/test_profiles.json")
+	err := os.Setenv(ProfilesFile, "../testdata/test_profiles.json")
 	require.NoError(t, err)
 	defer func() {
 		err := os.Unsetenv(ProfilesFile)

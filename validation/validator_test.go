@@ -1,15 +1,16 @@
 //go:build unit
 
-package main
+package validation
 
 import (
 	"fmt"
+	csv "github.com/UCLALibrary/validation-service/csvutils"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-var location = CsvLocation{RowIndex: 2, ColIndex: 5}
+var location = csv.Location{RowIndex: 2, ColIndex: 5}
 var csvData = [][]string{
 	{"header0", "header1", "header2", "header3", "header4", "header5"},
 	{"value10", "value11", "value12", "value13", "value14", "value15"},
@@ -18,19 +19,19 @@ var csvData = [][]string{
 
 // MockValidator implements the Validator interface so it can be tested.
 type MockValidator struct {
-	ValidateFunc func(profile string, location CsvLocation, csvData [][]string) error
+	ValidateFunc func(profile string, location csv.Location, csvData [][]string) error
 }
 
 // Validate forwards the method call to the function stored in ValidateFunc, passing along the input arguments and
 // returning the possible error.
-func (m *MockValidator) Validate(profile string, location CsvLocation, csvData [][]string) error {
+func (m *MockValidator) Validate(profile string, location csv.Location, csvData [][]string) error {
 	return m.ValidateFunc(profile, location, csvData)
 }
 
 // TestValidatorSuccess tests the Validate interface with a mock validator and expects a successful result.
 func TestValidatorSuccess(t *testing.T) {
 	mock := &MockValidator{
-		ValidateFunc: func(profile string, location CsvLocation, csvData [][]string) error {
+		ValidateFunc: func(profile string, location csv.Location, csvData [][]string) error {
 			assert.Equal(t, "profile1", profile)
 			assert.Equal(t, "value24", csvData[2][4])
 			return nil
@@ -46,7 +47,7 @@ func TestValidatorSuccess(t *testing.T) {
 // TestValidatorError tests the Validate interface with a mock validator and expects an error.
 func TestValidatorError(t *testing.T) {
 	mock := &MockValidator{
-		ValidateFunc: func(profile string, location CsvLocation, csvData [][]string) error {
+		ValidateFunc: func(profile string, location csv.Location, csvData [][]string) error {
 			if profile != "profile1" {
 				return fmt.Errorf("Expected 'profile1' as profile, but found '%s'", profile)
 			}

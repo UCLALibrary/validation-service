@@ -1,4 +1,6 @@
-// This code provides utilities for creating and working with validation profiles.
+// Package validation provides tools to validate CSV data.
+//
+// This file contains utilities for creating and working with validation profiles.
 //
 // Example usage:
 //
@@ -18,7 +20,7 @@
 //	} else {
 //		fmt.Println(string(jsonData))
 //	}
-package main
+package validation
 
 import (
 	"encoding/json"

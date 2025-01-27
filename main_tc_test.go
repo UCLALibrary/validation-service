@@ -17,7 +17,12 @@ import (
 )
 
 // Configure our service name flag
-var serviceNameFlag = flag.String("service-name", "service", "A build arg for Dockerfile")
+var serviceName string
+
+// Initialize our service name flag
+func init() {
+	flag.StringVar(&serviceName, "service-name", "service", "Name of service being tested")
+}
 
 // TestApp spins up a Docker container with the application and runs simple tests against its Web API
 func TestApp(t *testing.T) {
@@ -32,7 +37,7 @@ func TestApp(t *testing.T) {
 			Context:    ".",
 			Dockerfile: "Dockerfile",
 			BuildArgs: map[string]*string{
-				"SERVICE_NAME": serviceNameFlag,
+				"SERVICE_NAME": &serviceName,
 			},
 		},
 		ExposedPorts: []string{"8888/tcp"},
