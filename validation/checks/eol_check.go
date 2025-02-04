@@ -1,26 +1,28 @@
-//go:build unit
-
 package checks
 
 import (
 	"fmt"
 	csv "github.com/UCLALibrary/validation-service/csvutils"
-	"github.com/UCLALibrary/validation-service/validation"
+	"github.com/UCLALibrary/validation-service/validation/config"
 	"strings"
 )
 
 // EOLCheck type is a validator that checks for the presence of stray new lines.
 //
 // It implements the Validator interface and returns an error on failure to validate.
-type EOLCheck struct{}
+type EOLCheck struct {
+	profiles *config.Profiles
+}
 
 // NewEOLCheck checks that there are no EOLs in a CSV data cell.
-func (check *EOLCheck) NewEOLCheck(profiles *validation.Profiles) (*EOLCheck, error) {
+func (check *EOLCheck) NewEOLCheck(profiles *config.Profiles) (*EOLCheck, error) {
 	if profiles == nil {
 		return nil, fmt.Errorf("supplied Profiles cannot be nil")
 	}
 
-	return &EOLCheck{}, nil
+	return &EOLCheck{
+		profiles: profiles,
+	}, nil
 }
 
 // Validate checks a data cell has a new line character in it.
