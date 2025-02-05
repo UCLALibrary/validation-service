@@ -67,7 +67,7 @@ func TestEngine_GetLogger(t *testing.T) {
 
 // TestEngine_GetValidators tests that an engine can return the validators its using
 func TestEngine_Validate(t *testing.T) {
-	logger := zaptest.NewLogger(t, zaptest.Level(testflags.GetLogLevel(testflags.LogLevel)))
+	logger := zaptest.NewLogger(t, zaptest.Level(testflags.GetLogLevel()))
 
 	// Configure the location of the test profiles file
 	if err := os.Setenv(config.ProfilesFile, "../testdata/test_profiles.json"); err != nil {
