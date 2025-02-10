@@ -7,7 +7,7 @@ ARG SERVICE_NAME
 ##
 ## STEP 1 - BUILD
 ##
-FROM golang:1.23.5-alpine3.20 AS build
+FROM golang:1.23.6-alpine3.20 AS build
 
 # Inherit SERVICE_NAME arg and set as ENV
 ARG SERVICE_NAME
