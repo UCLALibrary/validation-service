@@ -112,6 +112,11 @@ To clean up the project's build artifacts, run:
 
     make clean
 
+Note: If you want to change the values defined in the Makefile (e.g., the `LOG_LEVEL`), these can be supplied to the 
+`make` command:
+
+    make test LOG_LEVEL=debug
+
 ## Building and Running with ACT
 
 Using [ACT](https://github.com/nektos/act) is another way to build the project.

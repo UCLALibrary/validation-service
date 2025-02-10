@@ -1,5 +1,6 @@
 # Build variables
 SERVICE_NAME := validation-service
+LOG_LEVEL := info
 
 # Do a full build of the project
 all: lint build test docker-test
@@ -10,7 +11,7 @@ build:
 
 # Run Go tests
 test:
-	go test -tags=unit ./... -v
+	go test -tags=unit ./... -v -args -log-level=$(LOG_LEVEL)
 
 # Lint the code
 lint:
@@ -22,7 +23,7 @@ docker-build:
 
 # Run tests inside the Docker container
 docker-test:
-	go test -tags=functional ./... -v -args -service-name=$(SERVICE_NAME)
+	go test -tags=functional . -v -args -service-name=$(SERVICE_NAME)
 
 # Clean up all artifacts of the build
 clean:

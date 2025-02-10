@@ -3,13 +3,25 @@
 package main
 
 import (
+	"flag"
+	"fmt"
+	"github.com/UCLALibrary/validation-service/testflags"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
+// TestMain configures our log level flag for the main package.
+func TestMain(m *testing.M) {
+	flag.Parse()
+	fmt.Println("TestMain's log level:", *testflags.LogLevel)
+	os.Exit(m.Run())
+}
+
+// TestHelloWorld is a very simple initial test for the validation service application.
 func TestHelloWorld(t *testing.T) {
 	app := NewApp()
 	app.Routes()
