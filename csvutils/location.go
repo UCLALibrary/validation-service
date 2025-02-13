@@ -1,7 +1,10 @@
 // Package csvutils has structures and utilities useful for working with CSVs.
 package csvutils
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 // Location represents an index-based location in a CSV file.
 //
@@ -26,4 +29,21 @@ func IsValidLocation(location Location, csvData [][]string) error {
 
 	// Supplied Location is valid for the supplied csvData
 	return nil
+}
+
+// GetHeader returns the header within the first row given the index
+func GetHeader(location Location, csvData [][]string) (string, error) {
+	if err := IsValidLocation(location, csvData); err != nil {
+		return "", err
+	}
+
+	index := location.ColIndex
+
+	// Ensure the first row exists
+	headers := csvData[0]
+	if len(headers) == 0 {
+		return "", errors.New("the first row of csvData is empty")
+	}
+
+	return headers[index], nil
 }
