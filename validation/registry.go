@@ -44,6 +44,21 @@ var constructors = map[string]constructor{
 		defaultProfiles := config.NewProfiles() // Assume a default constructor exists
 		return (&checks.EOLCheck{}).NewEOLCheck(defaultProfiles)
 	},
+	"ARKCheck": func(args ...interface{}) (Validator, error) {
+		if len(args) > 0 {
+			// Check if the first argument is of the type *Profiles
+			if profiles, ok := args[0].(*config.Profiles); ok {
+				return (&checks.ARKCheck{}).NewARKCheck(profiles)
+			}
+
+			// ARKCheck expects *Profiles to be passed to it
+			return nil, fmt.Errorf("invalid argument: expected *Profiles, found: %T", args[0])
+		}
+
+		// Default instance if no arguments are passed
+		defaultProfiles := config.NewProfiles() // Assume a default constructor exists
+		return (&checks.ARKCheck{}).NewARKCheck(defaultProfiles)
+	},
 }
 
 // NewRegistry creates a new registry of validators
