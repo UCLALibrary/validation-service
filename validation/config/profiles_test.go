@@ -1,11 +1,13 @@
 //go:build unit
 
-package validation
+package config
 
 import (
 	"bytes"
 	"encoding/json"
+	"flag"
 	"fmt"
+	"github.com/UCLALibrary/validation-service/testflags"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"log"
@@ -13,6 +15,12 @@ import (
 	"strings"
 	"testing"
 )
+
+// TestConfig loads the flags for the tests in the 'config' package.
+func TestConfig(t *testing.T) {
+	flag.Parse()
+	fmt.Printf("%s's log level: %s\n", t.Name(), *testflags.LogLevel)
+}
 
 // TestProfiles tests basic Get/Set functionality.
 func TestProfiles(t *testing.T) {
@@ -53,7 +61,7 @@ func TestProfiles_Snapshot(t *testing.T) {
 // TestProfiles_Refresh tests refreshing a Profiles instance from a persisted JSON file.
 func TestProfiles_Refresh(t *testing.T) {
 	// Set the PROFILES_FILE for testing purposes
-	err := os.Setenv(ProfilesFile, "../testdata/test_profiles.json")
+	err := os.Setenv(ProfilesFile, "../../testdata/test_profiles.json")
 	require.NoError(t, err)
 	defer func() {
 		err := os.Unsetenv(ProfilesFile)
