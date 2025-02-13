@@ -1,5 +1,3 @@
-//go:build unit
-
 package checks
 
 import (
@@ -44,7 +42,7 @@ func TestVerifyArk(t *testing.T) {
 			expectedErr: noPrefixErr,
 		},
 		{
-			name:        "Invalid ARK structure",
+			name:        "Invalid ARK structure no object identifier",
 			ark:         "ark:/12345",
 			profile:     "random",
 			expectError: true,

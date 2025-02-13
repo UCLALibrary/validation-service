@@ -84,9 +84,7 @@ func verifyArk(ark string, profile string) error {
 	// Extract NAAN and ObjectIdentifier for further validation
 	naan := naanMatch[1]
 	objectID := strings.TrimPrefix(arkBody, naan)
-	if strings.HasPrefix(objectID, "/") {
-		objectID = strings.TrimPrefix(objectID, "/")
-	}
+	objectID = strings.TrimPrefix(objectID, "/")
 	// Additional validation if the profile is "default"
 	if profile == "default" && naan != "21198" {
 		errs = multierr.Combine(errs, defaultProErr)
