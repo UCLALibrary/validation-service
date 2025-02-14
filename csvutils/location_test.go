@@ -5,6 +5,8 @@ package csvutils
 
 import (
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // TestIsValidLocation tests whether a supplied csv.Location is valid considering the supplied csvData.
@@ -36,6 +38,75 @@ func TestIsValidLocation(t *testing.T) {
 				// Shouldn't have an err on true shouldPass results and should have an err on false shouldPass results
 				t.Errorf("IsValidLocation(%v, csvData); found error: %v, expected error: %v", test.location,
 					!test.shouldPass, test.shouldPass)
+			}
+		})
+	}
+}
+
+// TestGetHeader verifys that GetHeader returns the expected header in the first row
+func TestGetHeader(t *testing.T) {
+	tests := []struct {
+		name        string
+		location    Location
+		csvData     [][]string
+		expected    string
+		expectError bool
+	}{
+		{
+			name:     "Valid header retrieval",
+			location: Location{ColIndex: 1},
+			csvData: [][]string{
+				{"ID", "Name", "Age"},
+				{"1", "Alice", "30"},
+			},
+			expected:    "Name",
+			expectError: false,
+		},
+		{
+			name:     "First column retrieval",
+			location: Location{ColIndex: 0},
+			csvData: [][]string{
+				{"ID", "Name", "Age"},
+				{"1", "Alice", "30"},
+			},
+			expected:    "ID",
+			expectError: false,
+		},
+		{
+			name:     "Out of bounds column index",
+			location: Location{ColIndex: 3},
+			csvData: [][]string{
+				{"ID", "Name", "Age"},
+				{"1", "Alice", "30"},
+			},
+			expected:    "",
+			expectError: true,
+		},
+		{
+			name:        "Empty first row",
+			location:    Location{ColIndex: 0},
+			csvData:     [][]string{{}, {"1", "Alice", "30"}},
+			expected:    "",
+			expectError: true,
+		},
+		{
+			name:        "Empty CSV data",
+			location:    Location{ColIndex: 0},
+			csvData:     [][]string{},
+			expected:    "",
+			expectError: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result, err := GetHeader(tt.location, tt.csvData)
+
+			if tt.expectError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expected, result)
 			}
 		})
 	}
