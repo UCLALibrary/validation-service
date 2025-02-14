@@ -2,6 +2,7 @@ package checks
 
 import (
 	"errors"
+	"fmt"
 	"regexp"
 	"strings"
 
@@ -23,24 +24,24 @@ var (
 	invalidObjIdenErr = errors.New("The object identifier and qualifier is not valid")
 )
 
-// ArkCheck type is a validator that checks for a valid Ark
+// ARKCheck type is a validator that checks for a valid Ark
 //
 // It implements the Validator interface and returns an error on failure to validate.
-type ArkCheck struct{}
+type ARKCheck struct{}
 
-// NewArkCheck checks that an Ark is valid
-func (check *ArkCheck) NewArkCheck(profiles *config.Profiles) (*ArkCheck, error) {
+// NewARKCheck checks that an Ark is valid
+func (check *ARKCheck) NewARKCheck(profiles *config.Profiles) (*ARKCheck, error) {
 	if profiles == nil {
 		return nil, profileErr
 	}
 
-	return &ArkCheck{}, nil
+	return &ARKCheck{}, nil
 }
 
 // Validate checks a data cell has a valid Ark in it.
 //
 // If the supplied “profile” is “default” the institutional prefix in the ARK must be 21198
-func (check *ArkCheck) Validate(profile string, location csv.Location, csvData [][]string) error {
+func (check *ARKCheck) Validate(profile string, location csv.Location, csvData [][]string) error {
 	if err := csv.IsValidLocation(location, csvData); err != nil {
 		return err
 	}
@@ -59,7 +60,12 @@ func (check *ArkCheck) Validate(profile string, location csv.Location, csvData [
 	value := csvData[location.RowIndex][location.ColIndex]
 
 	// Check if the CSV data cell has a valid Ark
-	return verifyArk(value, profile)
+	if err := verifyArk(value, profile); err != nil {
+		return fmt.Errorf("ARK validation failed at (row: %d, column: %d) [profile: %s]: %w",
+			location.RowIndex, location.ColIndex, profile, err)
+	}
+
+	return nil
 }
 
 // VerifyARK validates if the given string is a valid ARK
