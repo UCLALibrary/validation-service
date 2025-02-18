@@ -1,4 +1,4 @@
-// Package validation provides tools to validate CSV data.
+// Package config provides resources useful in the configuration of the validation process.
 //
 // This file contains utilities for creating and working with validation profiles.
 //
@@ -20,7 +20,7 @@
 //	} else {
 //		fmt.Println(string(jsonData))
 //	}
-package validation
+package config
 
 import (
 	"encoding/json"
@@ -32,7 +32,10 @@ import (
 	"time"
 )
 
-// ProfilesFile is the ENV property for the location of the persisted JSON Profiles file
+// LogLevel is the ENV property for the validation engine's configurable logging level.
+const LogLevel string = "ZAP_LOG_LEVEL"
+
+// ProfilesFile is the ENV property for the location of the persisted JSON Profiles file.
 const ProfilesFile string = "PROFILES_FILE"
 
 // Profile is a single thread-safe validation profile.
