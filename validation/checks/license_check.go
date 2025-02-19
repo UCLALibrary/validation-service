@@ -1,20 +1,18 @@
-//go:build unit
-
 package checks
 
 import (
 	"fmt"
-	csv "github.com/UCLALibrary/validation-service/csvutils"
-	"github.com/UCLALibrary/validation-service/validation"
 	"io"
 	"net/http"
 	"regexp"
-	"strings"
+
+	csv "github.com/UCLALibrary/validation-service/csvutils"
+	"github.com/UCLALibrary/validation-service/validation/config"
 )
 
 type LicenseCheck struct{}
 
-func (check *LicenseCheck) NewLicenseLCheck(profiles *validation.Profiles) (*LicenseCheck, error) {
+func (check *LicenseCheck) NewLicenseLCheck(profiles *config.Profiles) (*LicenseCheck, error) {
 	if profiles == nil {
 		return nil, fmt.Errorf("supplied Profiles cannot be nil")
 	}
@@ -43,8 +41,8 @@ func (check *LicenseCheck) Validate(profile string, location csv.Location, csvDa
 	return nil
 }
 
-ifunc verifyLicense(license string) error {
-        r := regexp.MustCompile('^http\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\+&amp;%\$#_]*)?$')
+func verifyLicense(license string) error {
+        r := regexp.MustCompile('^http\\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_]*)?$')
         if !r.MatchString(license) {
                 return fmt.Errorf("License URL %s is not in a proper format", license)
         }
