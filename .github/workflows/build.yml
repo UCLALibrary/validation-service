@@ -50,5 +50,5 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     # Build and test the application (also lints)
-    - name: Build Docker container
+    - name: Build project
       run: make all

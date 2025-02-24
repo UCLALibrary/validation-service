@@ -33,6 +33,16 @@ func NewEngine(suppliedLogger ...*zap.Logger) (*Engine, error) {
 			return nil, err
 		}
 	}
+	defer func() {
+		if syncErr := logger.Sync(); syncErr != nil {
+			// Combine the deferred sync error with a pre-existing existing error
+			if err == nil {
+				err = fmt.Errorf("error syncing logger: %w", syncErr)
+			} else {
+				err = fmt.Errorf("error syncing logger: %v; %w", syncErr, err)
+			}
+		}
+	}()
 
 	// Create a new Profiles instance and load its persisted data from disk
 	profiles := config.NewProfiles()
@@ -81,19 +91,22 @@ func (engine *Engine) GetValidators(profileNames ...string) ([]Validator, error)
 	// For each profile we've passed in... (the most common case will just be one)
 	for _, profileName := range profileNames {
 		profile := engine.profiles.GetProfile(profileName)
-		validations := removeExisting(profile.GetValidations(), existing)
 
-		// Right now, we're just passing Profiles as arguments to validator constructors
-		validators, err := engine.registry.GetValidators(validations, engine.profiles)
-		if err != nil {
-			return nil, err
-		}
+		if profile != nil {
+			validations := removeExisting(profile.GetValidations(), existing)
 
-		// In the case of profiles containing the same checks, we only want to add a check once
-		for index, validatorName := range validators.Names {
-			if _, exists := existing[validatorName]; !exists {
-				existing[validatorName] = struct{}{}
-				checks = append(checks, validators.Checks[index])
+			// Right now, we're just passing Profiles as arguments to validator constructors
+			validators, err := engine.registry.GetValidators(validations, engine.profiles)
+			if err != nil {
+				return nil, err
+			}
+
+			// In the case of profiles containing the same checks, we only want to add a check once
+			for index, validatorName := range validators.Names {
+				if _, exists := existing[validatorName]; !exists {
+					existing[validatorName] = struct{}{}
+					checks = append(checks, validators.Checks[index])
+				}
 			}
 		}
 	}
@@ -108,16 +121,15 @@ func (engine *Engine) Validate(profile string, csvData [][]string) error {
 		return fmt.Errorf("failed to get validators: %w", err)
 	}
 
+	// Check to see if we have validators associated with the supplied profile
+	if len(validators) == 0 {
+		return fmt.Errorf("no validators found for profile: %s", profile)
+	}
+
 	// Have each validator check each cell in the supplied csvData
 	for _, validator := range validators {
 		for rowIndex, row := range csvData {
-			for colIndex, cell := range row {
-				engine.logger.Debug("Checking CSV data cell",
-					zap.Int("row", rowIndex),
-					zap.Int("col", colIndex),
-					zap.String("value", cell),
-				)
-
+			for colIndex, _ := range row {
 				// Validate the data cell we're on, passing the entire CSV data matrix for additional context
 				err := validator.Validate(profile, csv.Location{RowIndex: rowIndex, ColIndex: colIndex}, csvData)
 				if err != nil {
@@ -149,8 +161,12 @@ func buildLogger() (*zap.Logger, error) {
 	loggerConfig := zap.NewProductionConfig()
 	loggerConfig.Sampling = nil // We want to see all the things we log at a given level
 
+	// Explicitly set logs to be written to stdout instead of stderr
+	loggerConfig.OutputPaths = []string{"stdout"}
+	loggerConfig.ErrorOutputPaths = []string{"stderr"}
+
 	// In the production code, we just care about the ENV settings, not arg flags
-	logLevel := os.Getenv("ZAP_LOG_LEVEL")
+	logLevel := os.Getenv("LOG_LEVEL")
 
 	// Set the log level based on the flag or environment variable
 	switch logLevel {
@@ -171,16 +187,6 @@ func buildLogger() (*zap.Logger, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize logger: %w", err)
 	}
-	defer func() {
-		if syncErr := logger.Sync(); syncErr != nil {
-			// Combine the deferred sync error with a pre-existing existing error
-			if err == nil {
-				err = fmt.Errorf("error syncing logger: %w", syncErr)
-			} else {
-				err = fmt.Errorf("error syncing logger: %v; %w", syncErr, err)
-			}
-		}
-	}()
 
 	return logger, nil
 }
