@@ -60,9 +60,20 @@ Note: If you want to change the values defined in the Makefile (echo.g., the `LO
 
     make test LOG_LEVEL=debug
 
-To run the validation service, locally, for testing purposes:
+To run the validation service, without a Docker container, for live testing purposes (i.e., the fastest way to test):
 
     make run
+
+or
+
+    make run LOG_LEVEL=debug
+
+The `run` or `all` targets can also be run with `FORCE` to force the API code to be regenerated, even if the OpenAPI
+spec hasn't changed since the last run:
+
+    make run LOG_LEVEL=debug FORCE
+
+The usual behavior of `run` or `all` is not to run the `api` target if the OpenAPI spec has not been touched/changed.
 
 ### Working with Docker
 

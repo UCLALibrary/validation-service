@@ -1,24 +1,36 @@
-# Build and runtime variables
+# Build and runtime variables that can be overridden
 SERVICE_NAME := validation-service
 LOG_LEVEL := info
 PORT := 8888
 
-# Do a full build of the project
-all: api lint build test docker-test
+# Force the API target to run even if the openapi.yml has not been touched/changed
+ifneq ($(filter FORCE,$(MAKECMDGOALS)),)
+.PHONY: api/api.go
+endif
 
-# Lint the code
+# Define FORCE as a target so accidentally using on other targets won't cause errors
+.PHONY: FORCE
+FORCE:
+	@echo "Makefile target(s) run with FORCE to require an API code rebuild"
+
+# Do a full build of the project
+all: config api lint build test docker-test
+
+# Lint the code for correctness
 lint:
 	golangci-lint run
 
-# Generate Go code from the OpenAPI specification only when it has changed
+# We generate Go API code from the OpenAPI specification only when it has changed
+# We assume Windows developers are using WSL, so we don't define $(CP) for this
 api/api.go: openapi.yml
 	oapi-codegen -package api -generate types,server,spec -o api/api.go openapi.yml
+	cp openapi.yml html/assets/openapi.yml
 
 # This is an alias for the longer API generation Makefile target api/api.go
 api: api/api.go
 
 # Build the Go project
-build:
+build: api
 	go build -o $(SERVICE_NAME)
 
 # Run Go tests, excluding tests in the 'integration' directory
@@ -31,7 +43,8 @@ docker-build:
 
 # A convenience target to assist with running the Docker container outside of the build (optional)
 docker-run:
-	docker run -p $(PORT):8888 --name $(SERVICE_NAME) -d $(shell docker image ls -q --filter=reference=$(SERVICE_NAME))
+	CONTAINER_ID=$(shell docker image ls -q --filter=reference=$(SERVICE_NAME)); \
+	docker run -p $(PORT):8888 --name $(SERVICE_NAME) -e LOG_LEVEL="$(LOG_LEVEL)" -d $$CONTAINER_ID
 
 docker-logs:
 	docker logs -f $(shell docker ps --filter "name=$(SERVICE_NAME)" --format "{{.ID}}")
@@ -48,6 +61,13 @@ docker-test:
 clean:
 	rm -rf $(SERVICE_NAME) api/api.go
 
-# Run the validation service locally
-run: api build
-	PROFILES_FILE="testdata/test_profiles.json" ./$(SERVICE_NAME)
+# Creates a new local profile configuration file if it doesn't already exist
+profile.json: profiles.example.json
+	@if [ ! -f profile.json ]; then cp profiles.example.json profiles.json; fi
+
+# An alias for the profile.json target
+config: profile.json
+
+# Run the validation service locally, independent of the Docker container
+run: config api build
+	PROFILES_FILE="profiles.json" LOG_LEVEL=$(LOG_LEVEL) ./$(SERVICE_NAME)

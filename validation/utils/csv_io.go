@@ -1,7 +1,7 @@
-// Package csvutils provides tools to work with CSV data.
+// Package utils provides utilities for the application.
 //
 // This file provides a reader and writer for CSV data.
-package csvutils
+package utils
 
 import (
 	"encoding/csv"

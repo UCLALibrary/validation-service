@@ -54,6 +54,9 @@ RUN addgroup -S "${SERVICE_NAME}" && adduser -S "${SERVICE_NAME}" -G "${SERVICE_
 # Create a directory for our profiles file
 RUN mkdir -p "$DATA_DIR"
 
+# Copy the templates directory into our container
+COPY "html/" "$DATA_DIR/html/"
+
 # Copy the file without --chown or --chmod (BuildKit not required)
 COPY --from=build "/${SERVICE_NAME}" "/sbin/${SERVICE_NAME}"
 COPY "testdata/test_profiles.json" "$PROFILES_FILE"

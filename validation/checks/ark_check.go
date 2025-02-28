@@ -3,10 +3,10 @@ package checks
 import (
 	"errors"
 	"fmt"
+	csv "github.com/UCLALibrary/validation-service/validation/utils"
 	"regexp"
 	"strings"
 
-	csv "github.com/UCLALibrary/validation-service/csvutils"
 	"github.com/UCLALibrary/validation-service/validation/config"
 	"go.uber.org/multierr"
 )

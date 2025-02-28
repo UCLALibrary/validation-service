@@ -1,0 +1,136 @@
+{{ define "index.html" }}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CSV Validation</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+        <style>
+            .navbar { background-color: #0074D9; } /* Blue navbar */
+            .navbar-item.validator-title {
+                color: #FFC107 !important; font-weight: bold; font-size: 2em; text-shadow: 1px 1px 0px #0056A6;
+            }
+            .navbar-item.nav-link { color: #FFF; }
+            .navbar-item.nav-link:hover { color: #0056A6; background-color: #EEE !important; }
+            body { background-color: #EEE; min-height: 100vh; }
+            .box { background-color: #FFF; }
+            .button.is-primary { background-color: #0074D9; border-color: #0074D9; }
+            .button.is-primary:hover { background-color: #0056A6; }
+            a.has-text-link { color: #0074D9 !important; }
+            a.has-text-link:hover { color: #0056A6 !important; }
+            .tab-success.react-tabs__tab--selected { background-color: green !important; color: white !important; }
+            div.redoc-json, code { background-color: white !important; font-size: 16px; padding: 3px; }
+            .token.property.string { color: #0074D9 !important; }
+            .token.string { color: green !important; }
+            .token.punctuation, div.hoverable { color: #0056A6 !important; background-color: white !important; }
+            h3 { margin-top: 15px; font-weight: bold; }
+            footer { font-size: smaller; text-align: right; }
+        </style>
+        <script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>
+        <script>
+            function showContent(contentId) {
+                let content;
+
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.style.display = 'none';
+                });
+
+                content = document.getElementById(contentId);
+                content["style"].display = 'block';
+
+                // When Redoc section is shown (un-hidden), reinitialize it so it loads
+                if (contentId === "api-docs") {
+                    Redoc.init("openapi.yml", document.getElementById("api-docs"));
+                }
+            }
+
+            document.addEventListener("DOMContentLoaded", function () {
+                showContent('csv-upload'); // Show CSV Upload by default
+            });
+        </script>
+    </head>
+    <body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-brand">
+                <a class="navbar-item validator-title" href="#">Validation Services</a>
+            </div>
+            <div class="navbar-menu">
+                <div class="navbar-end">
+                    <a class="navbar-item nav-link" onclick="showContent('csv-upload')">CSV Upload</a>
+                    <a class="navbar-item nav-link" onclick="showContent('api-docs')">API Documentation</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <section class="section">
+        <div class="container">
+            <div id="csv-upload" class="content-section">
+                <h1 class="title">CSV Validator</h1>
+                <p class="subtitle">
+                    Upload your CSV files for validation of their data and metadata&nbsp; 🚀
+                </p>
+
+                <div class="columns">
+                    <!-- Left Column: Upload Form -->
+                    <div class="column is-half">
+                        <div class="box">
+                            <div class="field">
+                                <label class="label">CSV file to upload:</label>
+                                <div class="control">
+                                    <input class="input" type="file" name="csvFile">
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <label class="label">Validation profile:</label>
+                                <div class="control">
+                                    <input class="input" type="text" name="profile" value="test">
+                                </div>
+                                <p class="help">
+                                    Specify the name of the validation profile to use with the uploaded CSV.
+                                </p>
+                            </div>
+
+                            <div class="field">
+                                <div class="control">
+                                    <button class="button is-primary">Upload</button>
+                                </div>
+                            </div>
+
+                            <footer>version: {{ .Version }}</footer>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Instructions -->
+                    <div class="column">
+                        <div class="box">
+                            <h2 class="title is-5">Instructions</h2>
+                            <div>CSV Validator will check the data files and metadata in uploaded CSV files to confirm
+                            there are not any issues that will cause problems when loading the CSV into any of our
+                            workflow services. At the start, there will be a small number of validators. But, as we
+                            encounter new issues with our workflow processes, additional validators will be added.</div>
+                            <p>
+                                To start a batch job, upload a CSV file (like one of those found in the
+                                <a href="#" class="has-text-link">Eureka</a> GitHub repository). If you would like image
+                                dimensions
+                                looked up in a different IIIF server, enter the base URL in the text box.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="api-docs" class="content-section" style="display: none;">
+                <redoc spec-url="openapi.yml"></redoc>
+            </div>
+        </div>
+    </section>
+
+    </body>
+    </html>
+{{ end }}
