@@ -7,7 +7,7 @@
         <title>CSV Validation</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
         <style>
-            .navbar { background-color: #0074D9; } /* Blue navbar */
+            .navbar { background-color: #0074D9; }
             .navbar-item.validator-title {
                 color: #FFC107 !important; font-weight: bold; font-size: 2em; text-shadow: 1px 1px 0px #0056A6;
             }
@@ -19,15 +19,34 @@
             .button.is-primary:hover { background-color: #0056A6; }
             a.has-text-link { color: #0074D9 !important; }
             a.has-text-link:hover { color: #0056A6 !important; }
-            .tab-success.react-tabs__tab--selected { background-color: green !important; color: white !important; }
-            div.redoc-json, code { background-color: white !important; font-size: 16px; padding: 3px; }
+
+            /* Right sidebar styles */
+            div[id^="operation/"] div:nth-child(2) div button, div[id^="panel"] { background-color: #333 !important; }
+            div.react-tabs__tab-panel div div:nth-child(1) { background-color: #555; } /* Content type box */
+            div.react-tabs__tab-panel div:nth-child(2) div { background-color: #333; } /* Copy button bg */
+            .tab-success.react-tabs__tab--selected {
+                background-color: green !important; color: white !important; margin-bottom: 5px;
+            }
+            div[id^="operation/"] > div:nth-child(2), div[id^="operation/"] + div, div.redoc-wrap > div:last-child {
+                background-color: #EEE; /* Right sidebar bg */
+            }
+
+            /* Code block changes below */
+            div.redoc-json, code { background-color: white !important; font-size: 16px; padding: 0px; }
             .token.property.string { color: #0074D9 !important; }
             .token.string { color: green !important; }
             .token.punctuation, div.hoverable { color: #0056A6 !important; background-color: white !important; }
-            h3 { margin-top: 15px; font-weight: bold; }
+
+            /* Response samples text */
+            h3 {
+                margin-top: 30px; margin-bottom: 5px; font-weight: bold; font-size: larger; background-color: #EEE;
+                color: #0056A6 !important;
+            }
+
+            /* Where we keep the version number */
             footer { font-size: smaller; text-align: right; }
         </style>
-        <script src="https://cdn.redoc.ly/redoc/latest/bundles/redoc.standalone.js"></script>
+        <script src="https://cdn.redoc.ly/redoc/v2.4.0/bundles/redoc.standalone.js"></script>
         <script>
             function showContent(contentId) {
                 let content;
@@ -48,6 +67,21 @@
             document.addEventListener("DOMContentLoaded", function () {
                 showContent('csv-upload'); // Show CSV Upload by default
             });
+
+            document.addEventListener("click", function (event) {
+                let button = event.target;
+
+                // Find the problematic response samples copy button (really a div) and fix it
+                if (button.tagName === "DIV" && button.innerText.trim().startsWith("Copy")) {
+                    button.querySelectorAll("div").forEach(div => {
+                        if (!div.innerText.trim() && div.children.length === 0) {
+                            div.remove(); // Remove the divs that display incorrectly when clicking copy
+                        } else {
+                            div.style.backgroundColor = "#fff"; // Give the working ones white backgrounds
+                        }
+                    });
+                }
+            });
         </script>
     </head>
     <body>
@@ -56,7 +90,7 @@
     <nav class="navbar">
         <div class="container">
             <div class="navbar-brand">
-                <a class="navbar-item validator-title" href="#">Validation Services</a>
+                <a class="navbar-item validator-title" href="#">Validation Service</a>
             </div>
             <div class="navbar-menu">
                 <div class="navbar-end">
@@ -111,16 +145,15 @@
                     <div class="column">
                         <div class="box">
                             <h2 class="title is-5">Instructions</h2>
-                            <div>CSV Validator will check the data files and metadata in uploaded CSV files to confirm
+                            <div class="content mb-4">CSV Validator will check the data files and metadata in uploaded CSV files to confirm
                             there are not any issues that will cause problems when loading the CSV into any of our
-                            workflow services. At the start, there will be a small number of validators. But, as we
-                            encounter new issues with our workflow processes, additional validators will be added.</div>
-                            <p>
+                            workflow services.</div>
+                            <div class="content mb-4">
                                 To start a batch job, upload a CSV file (like one of those found in the
                                 <a href="#" class="has-text-link">Eureka</a> GitHub repository). If you would like image
                                 dimensions
                                 looked up in a different IIIF server, enter the base URL in the text box.
-                            </p>
+                            </div>
                         </div>
                     </div>
                 </div>
