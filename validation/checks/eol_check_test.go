@@ -3,18 +3,9 @@
 package checks
 
 import (
-	"flag"
-	"fmt"
 	csv "github.com/UCLALibrary/validation-service/csvutils"
-	"github.com/UCLALibrary/validation-service/testflags"
 	"testing"
 )
-
-// TestCheck loads the flags for the tests in the 'check' package.
-func TestCheck(t *testing.T) {
-	flag.Parse()
-	fmt.Printf("%s's log level: %s\n", t.Name(), *testflags.LogLevel)
-}
 
 // TestEOLCheck_Validate tests the Validate method on EOLCheck.
 func TestEOLCheck_Validate(t *testing.T) {

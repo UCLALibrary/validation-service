@@ -1,11 +1,20 @@
 package checks
 
 import (
+	"flag"
+	"fmt"
+	"github.com/UCLALibrary/validation-service/testflags"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/multierr"
 )
+
+// TestCheck loads the flags for the tests in the 'check' package.
+func TestCheck(t *testing.T) {
+	flag.Parse()
+	fmt.Printf("%s's log level: %s\n", t.Name(), *testflags.LogLevel)
+}
 
 // TestVerifyArk checks if verifyArk throws the correct errors when given incorrect ARKs
 func TestVerifyArk(t *testing.T) {
@@ -79,8 +88,8 @@ func TestVerifyArk(t *testing.T) {
 				assert.Error(t, err)
 
 				// If expectedErr is a combined error, check each error individually
-				if merr, ok := tt.expectedErr.(interface{ Unwrap() []error }); ok {
-					for _, expectedErr := range merr.Unwrap() {
+				if multiErr, ok := tt.expectedErr.(interface{ Unwrap() []error }); ok {
+					for _, expectedErr := range multiErr.Unwrap() {
 						assert.ErrorIs(t, err, expectedErr, "expected error: %v", expectedErr)
 					}
 				} else {

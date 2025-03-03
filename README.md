@@ -7,92 +7,35 @@ Note: This project is in its infancy and is not ready for general use.
 
 ## Getting Started
 
-There are multiple ways to build the project. You are free to use whichever you prefer. A series of manual steps is
-provided below, but there are also more concise build processes available for [Make](#building-and-running-with-make)
-and [ACT](#building-and-running-with-act).
+The recommended way to build and start using the project is to use the project's [Makefile](Makefile). This will
+require installing GNU Make. How you do this will depend on which OS (Linux, Mac, Windows) you are using. Consult
+your system's documentation or package system for more details.
 
 ### Prerequisites
 
+* The [GNU Make](https://www.gnu.org/software/make/) tool to run the project's Makefile
 * A [GoLang](https://go.dev/doc/install) build environment
 * A functional [Docker](https://docs.docker.com/get-started/get-docker/) installation
 * The [golangci-lint](https://github.com/golangci/golangci-lint) linter for checking code style conformance
 
 Optionally, if you want to test (or build using) the project's GitHub Actions:
-
 * [ACT](https://github.com/nektos/act): A local GitHub Action runner that will also build and test the project
-
-Additionally, Make can be used as a simpler build tool for the project. It should be installed through your OS' 
-standard packaging system.
-
-### Building the Application
-
-To build the project, type:
-
-`go build -o validation-service`
-
-To run the service locally, type:
-
-`./validation-service`
-
-Typing `Ctrl-C` will stop the service.
-
-### Running the Test Suite
-
-There are unit and functional tests (the latter of which require a working Docker installation).
-
-To run the unit tests, type:
-
-`go test -tags=unit ./... -v`
-
-To run the functional tests, type:
-
-`go test -tags=functional ./... -v -args -service-name=validation-service`
-
-Note that the functional tests will spin up a Docker container and run tests against that.
-
-### Running the Linter
-
-To run the project's linter, type:
-
-`golangci-lint run`
-
-### Spinning up the Docker Container (Independent of the Tests)
-
-To build the Docker image, type:
-
-`docker build -t validation-service --build-arg SERVICE_NAME="validation-service" .`
-
-To run the newly built Docker image, type:
-
-`docker run -d -p 8888:8888 --name validation-service validation-service`
-
-Once the container is running, you can access the service at:
-
-`http://localhost:8888/`
-
-To stop the service and remove the Docker container, type:
-
-`docker rm -f validation-service`
-
-### Cleaning up the Project's Build Artifacts
-
-To clean up the project's build artifacts, type:
-
-`rm -rf validation-service`
-
-To simplify your processes, though, we recommend that you use Make, which has a simpler command line interface.
 
 ## Building and Running with Make
 
-The project's [Makefile](Makefile) provides another convenient way to build, test, lint, and manage Docker containers
-for the project. This is the method we recommend.
+The project's [Makefile](Makefile) provides a convenient way to build, test, lint, and manage Docker containers for the
+project. This is the method we recommend.
 
 The TL;DR is that running `make all` will perform all the project's required build and testing steps. Individual steps
 (listed below) are also available, though, for a more targeted approach.
 
 ### Commands
 
-To build the Go project:
+To generate Go code from the project's OpenAPI specification:
+
+    make api
+
+To build the project:
 
     make build
 
@@ -100,22 +43,50 @@ To run all the unit tests:
 
     make test
 
+To run the integration tests, which includes building the Docker container:
+
+    make docker-test
+
 To run the linter:
 
     make lint
-
-To run the functional tests, which includes building the Docker container:
-
-    make docker-test
 
 To clean up the project's build artifacts, run:
 
     make clean
 
-Note: If you want to change the values defined in the Makefile (e.g., the `LOG_LEVEL`), these can be supplied to the 
+Note: If you want to change the values defined in the Makefile (echo.g., the `LOG_LEVEL`), these can be supplied to the 
 `make` command:
 
     make test LOG_LEVEL=debug
+
+To run the validation service, locally, for testing purposes:
+
+    make run
+
+### Working with Docker
+
+One can also run Docker locally, for more hands-on testing, from the Makefile. Unlike the tests, which will not leave
+Docker containers in your local Docker repo, these targets build and run the container using the Docker command line.
+
+To build a Docker container to your local Docker repo:
+
+    make docker-build
+
+To run a Docker container that's already been built:
+
+    make docker-run
+
+To see the logs, in real time, from that Docker container:
+
+    make docker-logs
+
+To stop the Docker container when you are done with it:
+
+    make docker-stop
+
+Note: None of the Docker specific Makefile targets (except `docker-test`) are required to build or test the project.
+They are just additional conveniences for developers.
 
 ## Building and Running with ACT
 
