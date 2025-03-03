@@ -10,14 +10,14 @@ import (
 	"go.uber.org/multierr"
 )
 
-// TestCheck loads the flags for the tests in the 'check' package.
+// TestCheck loads the flags for the tests in the 'checks' package.
 func TestCheck(t *testing.T) {
 	flag.Parse()
 	fmt.Printf("%s's log level: %s\n", t.Name(), *testflags.LogLevel)
 }
 
-// TestVerifyArk checks if verifyARK throws the correct errors when given incorrect ARKs
-func TestVerifyArk(t *testing.T) {
+// TestVerifyARK checks if verifyARK throws the correct errors when given incorrect ARKs
+func TestVerifyARK(t *testing.T) {
 	tests := []struct {
 		name        string
 		ark         string
