@@ -19,6 +19,7 @@ your system's documentation or package system for more details.
 * The [golangci-lint](https://github.com/golangci/golangci-lint) linter for checking code style conformance
 
 Optionally, if you want to test (or build using) the project's GitHub Actions:
+
 * [ACT](https://github.com/nektos/act): A local GitHub Action runner that will also build and test the project
 
 ## Building and Running with Make
