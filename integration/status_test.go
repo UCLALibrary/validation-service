@@ -37,7 +37,7 @@ func TestStatusGet(t *testing.T) {
 	}
 
 	assert.Equal(t, http.StatusOK, response.StatusCode)
-	assert.Equal(t, "{\"fs\":\"ok\",\"s3\":\"ok\",\"service\":\"ok\"}\n", string(body))
+	assert.Equal(t, "{\"fester\":\"ok\",\"filesystem\":\"ok\",\"service\":\"ok\"}\n", string(body))
 }
 
 // TestStatusPost tests the status endpoint to confirm that the server doesn't respond to POST submissions.

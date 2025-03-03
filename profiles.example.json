@@ -1,12 +1,22 @@
 {
   "profiles": {
-    "example": {
-      "name": "example",
+    "default": {
+      "name": "default",
       "lastUpdate": "2025-01-01T12:00:00Z",
-      "validations": ["Validation1", "Validation2"]
+      "validations": ["EOLCheck"]
     },
     "test": {
       "name": "test",
+      "lastUpdate": "2025-01-10T15:30:00Z",
+      "validations": ["EOLCheck"]
+    },
+    "bucketeer": {
+      "name": "bucketeer",
+      "lastUpdate": "2025-01-01T12:00:00Z",
+      "validations": ["EOLCheck"]
+    },
+    "fester": {
+      "name": "fester",
       "lastUpdate": "2025-01-10T15:30:00Z",
       "validations": ["EOLCheck"]
     }

@@ -14,6 +14,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"sync"
 )
@@ -21,22 +22,28 @@ import (
 // Port is the default port for our server
 const Port = 8888
 
-// Service implements the generated API validation interface
-type Service struct {
-	Engine *validation.Engine
+// RouteMapping is a pairing of router path and file system path that can be used to configure request handlers.
+type RouteMapping struct {
+	RoutePath string
+	FilePath  string
 }
 
-// TemplateRegistry holds parsed HTML templates for the validation service's Web pages
-type TemplateRegistry struct {
+// TemplateRenderer holds parsed HTML templates for the validation service's Web pages
+type TemplateRenderer struct {
 	templates *template.Template
 	mu        sync.Mutex
 }
 
-// Render implements Echo's `Renderer` interface
-func (tmplReg *TemplateRegistry) Render(writer io.Writer, name string, data interface{}, context echo.Context) error {
-	tmplReg.mu.Lock()
-	defer tmplReg.mu.Unlock()
-	return tmplReg.templates.ExecuteTemplate(writer, name, data)
+// Render function on our TemplateRenderer implements Echo's `Renderer` interface
+func (renderer *TemplateRenderer) Render(writer io.Writer, name string, data interface{}, context echo.Context) error {
+	renderer.mu.Lock()
+	defer renderer.mu.Unlock()
+	return renderer.templates.ExecuteTemplate(writer, name, data)
+}
+
+// Service implements the generated OpenAPI interface (i.e., handles incoming requests)
+type Service struct {
+	Engine *validation.Engine
 }
 
 // GetStatus handles the GET /status request
@@ -96,14 +103,14 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Logger we can use to output information
+	// Get the validation engine's logger to use to configure Echo
 	logger := engine.GetLogger()
 
 	// Create a new validation application and configure its logger
 	echoApp := echo.New()
-	echoApp.Use(config.ZapLoggerMiddleware(engine.GetLogger()))
+	echoApp.Use(config.ZapLoggerMiddleware(logger))
 
-	// Hide Echo startup messages that don't play nicely with logger
+	// Hide application startup messages that don't play nicely with logger
 	echoApp.HideBanner = true
 	echoApp.HidePort = true
 
@@ -112,43 +119,12 @@ func main() {
 		echoApp.Debug = true
 	}
 
-	// Serves the service's OpenAPI specification at the expected endpoint
-	echoApp.GET("/openapi.yml", func(context echo.Context) error {
-		return context.File("html/assets/openapi.yml")
-	})
+	// Handle requests with and without a trailing slash using the trailingSlashMiddleware
+	echoApp.Pre(trailingSlashMiddleware)
 
-	// Sets the template renderer for the application
-	echoApp.Renderer = setTemplateRenderer(logger)
-
-	// Handle our SPA endpoint outside of the OpenAPI specification
-	echoApp.GET("/", func(context echo.Context) error {
-		data := map[string]interface{}{
-			"Version": "0.0.1",
-		}
-
-		return context.Render(http.StatusOK, "index.html", data)
-	})
-
-	// Handle requests with and without a trailing slash
-	echoApp.Pre(TrailingSlashMiddleware)
-
-	// Load the OpenAPI spec for request validation
-	swagger, swaggerErr := api.GetSwagger()
-	if swaggerErr != nil {
-		log.Fatalf("Failed to load OpenAPI spec: %v", swaggerErr)
-	}
-
-	// Register the Echo/OpenAPI validation middleware; have it ignore things served independent of the OpenAPI spec
-	echoApp.Use(middleware.OapiRequestValidatorWithOptions(swagger, &middleware.Options{
-		Skipper: func(context echo.Context) bool {
-			return context.Path() == "/openapi.yml" || context.Path() == "/"
-		},
-	}))
-
-	// Register request handlers for our service
-	api.RegisterHandlers(echoApp, &Service{
-		Engine: engine,
-	})
+	// Configure the application's route handling
+	routes := append(configStaticRoutes(echoApp), configTemplateRoutes(echoApp, getTemplateRenderer(logger))...)
+	echoApp.Use(routerConfigMiddleware(echoApp, engine, routes))
 
 	// Log the configured routes when we're running in debug mode
 	if debugging := logger.Check(zap.DebugLevel, "Loading routes"); debugging != nil {
@@ -162,34 +138,20 @@ func main() {
 		logger.Debug("Registered routes", fields...)
 	}
 
-	// Configure the validation echoApp
+	// Configure the validation server with the port number and the Echo application
 	server := &http.Server{
 		Addr:    fmt.Sprintf(":%d", Port),
 		Handler: echoApp,
 	}
 
-	// Start the validation echoApp
+	// Start the validation server
 	if err := echoApp.StartServer(server); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		log.Fatalf("Server failed: %v", err)
 	}
 }
 
-// TrailingSlashMiddleware handles paths with slashes at the end so they also resolve.
-func TrailingSlashMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(context echo.Context) error {
-		path := context.Request().URL.Path
-
-		// Strip trailing slashes if found in path
-		if path != "/" && path[len(path)-1] == '/' {
-			context.Request().URL.Path = path[:len(path)-1]
-		}
-
-		return next(context)
-	}
-}
-
-// SetTemplateRenderer loads the HTML templates and then provides a template registry that can render them.
-func setTemplateRenderer(logger *zap.Logger) *TemplateRegistry {
+// getTemplateRenderer loads the HTML templates and then provides a template registry that can render them.
+func getTemplateRenderer(logger *zap.Logger) *TemplateRenderer {
 	templates, templateErr := loadTemplates(logger)
 	if templateErr != nil {
 		logger.Error(templateErr.Error())
@@ -200,7 +162,7 @@ func setTemplateRenderer(logger *zap.Logger) *TemplateRegistry {
 		var fields []zap.Field
 
 		for _, tmpl := range templates.Templates() {
-			// We add a 'root' logger with an empty name, but it does nothing so delete it
+			// In loadTemplates we add a 'root' template with an empty name, but we delete it here it's not used
 			if tmpl.Name() != "" {
 				fields = append(fields, zap.String("template", tmpl.Name()))
 			}
@@ -209,7 +171,7 @@ func setTemplateRenderer(logger *zap.Logger) *TemplateRegistry {
 		logger.Debug("Loaded Web resources", fields...)
 	}
 
-	return &TemplateRegistry{templates: templates}
+	return &TemplateRenderer{templates: templates}
 }
 
 // loadTemplates loads the available HTML templates for the Web UI.
@@ -256,4 +218,84 @@ func loadTemplates(logger *zap.Logger) (*template.Template, error) {
 
 	// Return the set of template matches
 	return templates, nil
+}
+
+// configStaticRoutes configures our static resources with the Echo application.
+func configStaticRoutes(echoApp *echo.Echo) []RouteMapping {
+	staticRoutes := []RouteMapping{
+		{"/openapi.yml", "html/assets/openapi.yml"},
+		{"/validation.css", "html/assets/validation.css"},
+		{"/validation.js", "html/assets/validation.js"},
+	}
+
+	for _, route := range staticRoutes {
+		echoApp.GET(route.RoutePath, func(aContext echo.Context) error {
+			return aContext.File(route.FilePath)
+		})
+	}
+
+	return staticRoutes
+}
+
+// configTemplateRoutes configures our template resources with the Echo application.
+func configTemplateRoutes(echoApp *echo.Echo, renderer *TemplateRenderer) []RouteMapping {
+	templateRoutes := []RouteMapping{
+		{"/", ""},
+		{"index.html", ""},
+	}
+
+	// Set the Echo application's default template renderer
+	echoApp.Renderer = renderer
+
+	// Have the templates renderer handle incoming index requests
+	echoApp.GET(templateRoutes[0].RoutePath, func(context echo.Context) error {
+		data := map[string]interface{}{
+			"Version": os.Getenv("VERSION"),
+		}
+
+		return context.Render(http.StatusOK, templateRoutes[1].RoutePath, data)
+	})
+
+	return templateRoutes
+}
+
+// routerConfigMiddleware configures the application's router with a fully configured OpenAPI set of routes.
+func routerConfigMiddleware(echoApp *echo.Echo, engine *validation.Engine, routes []RouteMapping) echo.MiddlewareFunc {
+	swagger, swaggerErr := api.GetSwagger()
+	if swaggerErr != nil {
+		engine.GetLogger().Fatal("Failed to load OpenAPI spec", zap.Error(swaggerErr))
+	}
+
+	// Register OpenAPI defined request handlers for our service
+	api.RegisterHandlers(echoApp, &Service{
+		Engine: engine,
+	})
+
+	// We return the oapi-codegen middleware that handles our OpenAPI defined routes
+	return middleware.OapiRequestValidatorWithOptions(swagger, &middleware.Options{
+		Skipper: func(aContext echo.Context) bool {
+			for index, _ := range routes {
+				// We ignore paths that we've already configured through static or template handlers
+				if aContext.Path() == routes[index].RoutePath {
+					return true
+				}
+			}
+
+			return false
+		},
+	})
+}
+
+// trailingSlashMiddleware handles paths with slashes at the end so they also resolve.
+func trailingSlashMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(context echo.Context) error {
+		path := context.Request().URL.Path
+
+		// Strip trailing slashes if found in path
+		if path != "/" && path[len(path)-1] == '/' {
+			context.Request().URL.Path = path[:len(path)-1]
+		}
+
+		return next(context)
+	}
 }

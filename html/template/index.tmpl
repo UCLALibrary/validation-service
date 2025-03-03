@@ -6,83 +6,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>CSV Validation</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-        <style>
-            .navbar { background-color: #0074D9; }
-            .navbar-item.validator-title {
-                color: #FFC107 !important; font-weight: bold; font-size: 2em; text-shadow: 1px 1px 0px #0056A6;
-            }
-            .navbar-item.nav-link { color: #FFF; }
-            .navbar-item.nav-link:hover { color: #0056A6; background-color: #EEE !important; }
-            body { background-color: #EEE; min-height: 100vh; }
-            .box { background-color: #FFF; }
-            .button.is-primary { background-color: #0074D9; border-color: #0074D9; }
-            .button.is-primary:hover { background-color: #0056A6; }
-            a.has-text-link { color: #0074D9 !important; }
-            a.has-text-link:hover { color: #0056A6 !important; }
-
-            /* Right sidebar styles */
-            div[id^="operation/"] div:nth-child(2) div button, div[id^="panel"] { background-color: #333 !important; }
-            div.react-tabs__tab-panel div div:nth-child(1) { background-color: #555; } /* Content type box */
-            div.react-tabs__tab-panel div:nth-child(2) div { background-color: #333; } /* Copy button bg */
-            .tab-success.react-tabs__tab--selected {
-                background-color: green !important; color: white !important; margin-bottom: 5px;
-            }
-            div[id^="operation/"] > div:nth-child(2), div[id^="operation/"] + div, div.redoc-wrap > div:last-child {
-                background-color: #EEE; /* Right sidebar bg */
-            }
-
-            /* Code block changes below */
-            div.redoc-json, code { background-color: white !important; font-size: 16px; padding: 0px; }
-            .token.property.string { color: #0074D9 !important; }
-            .token.string { color: green !important; }
-            .token.punctuation, div.hoverable { color: #0056A6 !important; background-color: white !important; }
-
-            /* Response samples text */
-            h3 {
-                margin-top: 30px; margin-bottom: 5px; font-weight: bold; font-size: larger; background-color: #EEE;
-                color: #0056A6 !important;
-            }
-
-            /* Where we keep the version number */
-            footer { font-size: smaller; text-align: right; }
-        </style>
+        <link rel="stylesheet" href="validation.css">
         <script src="https://cdn.redoc.ly/redoc/v2.4.0/bundles/redoc.standalone.js"></script>
-        <script>
-            function showContent(contentId) {
-                let content;
-
-                document.querySelectorAll('.content-section').forEach(section => {
-                    section.style.display = 'none';
-                });
-
-                content = document.getElementById(contentId);
-                content["style"].display = 'block';
-
-                // When Redoc section is shown (un-hidden), reinitialize it so it loads
-                if (contentId === "api-docs") {
-                    Redoc.init("openapi.yml", document.getElementById("api-docs"));
-                }
-            }
-
-            document.addEventListener("DOMContentLoaded", function () {
-                showContent('csv-upload'); // Show CSV Upload by default
-            });
-
-            document.addEventListener("click", function (event) {
-                let button = event.target;
-
-                // Find the problematic response samples copy button (really a div) and fix it
-                if (button.tagName === "DIV" && button.innerText.trim().startsWith("Copy")) {
-                    button.querySelectorAll("div").forEach(div => {
-                        if (!div.innerText.trim() && div.children.length === 0) {
-                            div.remove(); // Remove the divs that display incorrectly when clicking copy
-                        } else {
-                            div.style.backgroundColor = "#fff"; // Give the working ones white backgrounds
-                        }
-                    });
-                }
-            });
-        </script>
+        <script src="validation.js"></script>
     </head>
     <body>
 
@@ -114,28 +40,38 @@
                     <!-- Left Column: Upload Form -->
                     <div class="column is-half">
                         <div class="box">
-                            <div class="field">
-                                <label class="label">CSV file to upload:</label>
-                                <div class="control">
-                                    <input class="input" type="file" name="csvFile">
+                            <form action="/upload/csv" method="POST" enctype="multipart/form-data">
+                                <div class="field">
+                                    <label class="label">CSV file to upload:</label>
+                                    <div class="control">
+                                        <input class="input" type="file" name="csvFile">
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="field">
-                                <label class="label">Validation profile:</label>
-                                <div class="control">
-                                    <input class="input" type="text" name="profile" value="test">
+                                <div class="field is-flex is-align-items-center">
+                                    <label class="label">Validation profile: &nbsp;</label>
+                                    <div class="field-body">
+                                        <div class="field">
+                                            <div class="control">
+                                                <div class="select is-fullwidth">
+                                                    <select id="profile" name="profile">
+                                                        <option value="default">Default</option>
+                                                        <option value="fester">Fester</option>
+                                                        <option value="bucketeer">Bucketeer</option>
+                                                        <option value="test">Test</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <p class="help">
-                                    Specify the name of the validation profile to use with the uploaded CSV.
-                                </p>
-                            </div>
 
-                            <div class="field">
-                                <div class="control">
-                                    <button class="button is-primary">Upload</button>
+                                <div class="field">
+                                    <div class="control">
+                                        <button type="submit" class="button is-primary">Upload</button>
+                                    </div>
                                 </div>
-                            </div>
+                            </form>
 
                             <footer>version: {{ .Version }}</footer>
                         </div>
@@ -144,15 +80,37 @@
                     <!-- Right Column: Instructions -->
                     <div class="column">
                         <div class="box">
+                            <h2 class="title is-5">Introduction</h2>
+                            <div class="content mb-4">This validator ensures that uploaded CSV files are free of issues
+                                that could disrupt their processing in our workflow services. Currently, it operates as
+                                a standalone service, but future integrations will enable automatic validation within
+                                our other services.
+                            </div>
+                            <div class="content mb-4">To use the validator, upload a CSV file, such as those in the <a
+                                href="https://github.com/uclalibrary/eureka" class="has-text-link">Eureka</a> GitHub
+                                repository. This service checks both data and metadata for compliance with standards
+                                (e.g., <a href="https://iiif.io/api/presentation/3.0/" class="has-text-link">IIIF
+                                Presentation</a>), even if the issues wouldn't affect our services. As a result, some
+                                CSVs that were previously accepted may be flagged as problematic.
+                            </div>
                             <h2 class="title is-5">Instructions</h2>
-                            <div class="content mb-4">CSV Validator will check the data files and metadata in uploaded CSV files to confirm
-                            there are not any issues that will cause problems when loading the CSV into any of our
-                            workflow services.</div>
                             <div class="content mb-4">
-                                To start a batch job, upload a CSV file (like one of those found in the
-                                <a href="#" class="has-text-link">Eureka</a> GitHub repository). If you would like image
-                                dimensions
-                                looked up in a different IIIF server, enter the base URL in the text box.
+                                <ul>
+                                    <li>Click the "Choose File" button and navigate to the file on your file system
+                                    </li>
+                                    <li>Select one of the following validation profile names:
+                                        <ul class=".list-unstyled">
+                                            <li>Default</li>
+                                            <li>Bucketeer</li>
+                                            <li>Fester</li>
+                                            <li>Test</li>
+                                        </ul>
+                                    </li>
+                                    <li>Submit the form</li>
+                                </ul>
+                                <div class="content mb-4"> The end result is you should receive a validation report with
+                                    information about any fixes that need to be made to your CSV file.
+                                </div>
                             </div>
                         </div>
                     </div>

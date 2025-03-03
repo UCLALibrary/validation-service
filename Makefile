@@ -2,6 +2,7 @@
 SERVICE_NAME := validation-service
 LOG_LEVEL := info
 PORT := 8888
+VERSION := dev-SNAPSHOT
 
 # Force the API target to run even if the openapi.yml has not been touched/changed
 ifneq ($(filter FORCE,$(MAKECMDGOALS)),)
@@ -39,7 +40,7 @@ test:
 
 # Build the Docker container (an optional debugging step)
 docker-build:
-	docker build . --tag $(SERVICE_NAME) --build-arg SERVICE_NAME=$(SERVICE_NAME)
+	docker build . --tag $(SERVICE_NAME) --build-arg SERVICE_NAME=$(SERVICE_NAME) --build-arg VERSION=$(VERSION)
 
 # A convenience target to assist with running the Docker container outside of the build (optional)
 docker-run:
@@ -70,4 +71,4 @@ config: profile.json
 
 # Run the validation service locally, independent of the Docker container
 run: config api build
-	PROFILES_FILE="profiles.json" LOG_LEVEL=$(LOG_LEVEL) ./$(SERVICE_NAME)
+	PROFILES_FILE="profiles.json" LOG_LEVEL=$(LOG_LEVEL) VERSION=$(VERSION) ./$(SERVICE_NAME)
