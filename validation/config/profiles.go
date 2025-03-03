@@ -33,7 +33,7 @@ import (
 )
 
 // LogLevel is the ENV property for the validation engine's configurable logging level.
-const LogLevel string = "ZAP_LOG_LEVEL"
+const LogLevel string = "LOG_LEVEL"
 
 // ProfilesFile is the ENV property for the location of the persisted JSON Profiles file.
 const ProfilesFile string = "PROFILES_FILE"
@@ -105,11 +105,8 @@ func (profiles *Profiles) Refresh() error {
 	if err != nil {
 		return fmt.Errorf("failed to open '%s' file: %w", filePath, err)
 	}
-	defer func() {
-		if closeErr := file.Close(); closeErr != nil {
-			fmt.Printf("warning: failed to close file '%s': %v\n", filePath, closeErr)
-		}
-	}()
+	//noinspection GoUnhandledErrorResult
+	defer file.Close()
 
 	// Decode the persisted JSON file into a ProfilesSnapshot
 	decoder := json.NewDecoder(file)
@@ -235,8 +232,8 @@ func (profile *Profile) AddValidation(validation string) {
 	profile.mutex.Lock()
 	defer profile.mutex.Unlock()
 
-	for _, v := range profile.validations {
-		if v == validation {
+	for _, profileValidation := range profile.validations {
+		if profileValidation == validation {
 			return // Skip duplicates
 		}
 	}
@@ -273,13 +270,14 @@ func (profile *Profile) SetValidations(validations []string) {
 
 	profile.lastUpdate = time.Now()
 	uniqueValidations := make(map[string]struct{})
-	for _, v := range validations {
-		uniqueValidations[v] = struct{}{}
+
+	for _, validation := range validations {
+		uniqueValidations[validation] = struct{}{}
 	}
 
 	profile.validations = make([]string, 0, len(uniqueValidations))
-	for v := range uniqueValidations {
-		profile.validations = append(profile.validations, v)
+	for validation := range uniqueValidations {
+		profile.validations = append(profile.validations, validation)
 	}
 
 	// Sort for consistency

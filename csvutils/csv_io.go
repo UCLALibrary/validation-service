@@ -7,8 +7,32 @@ import (
 	"encoding/csv"
 	"fmt"
 	"go.uber.org/zap"
+	"mime/multipart"
 	"os"
 )
+
+// ReadUpload reads the CSV file from the supplied FileHeader and returns a string matrix.
+func ReadUpload(fileHeader *multipart.FileHeader, logger *zap.Logger) ([][]string, error) {
+	file, err := fileHeader.Open()
+	if err != nil {
+		logger.Error("Failed to open uploaded file", zap.Error(err))
+	}
+	defer func() {
+		if err := file.Close(); err != nil {
+			logger.Error("failed to close file", zap.Error(err))
+		}
+	}()
+
+	// Create a new CSV reader from the opened CSV file
+	reader := csv.NewReader(file)
+
+	// Read all records from the CSV reader
+	if csvData, err := reader.ReadAll(); err != nil || len(csvData) < 1 {
+		return nil, fmt.Errorf("failed to parse file '%s': %w", fileHeader.Filename, err)
+	} else {
+		return csvData, nil
+	}
+}
 
 // ReadFile reads the CSV file at the supplied file path and returns a string matrix.
 func ReadFile(filePath string, logger *zap.Logger) ([][]string, error) {
