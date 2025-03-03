@@ -56,7 +56,8 @@ func (check *ARKCheck) Validate(profile string, location csv.Location, csvData [
 		return err
 	}
 
-	if header != ITEM_ARK && header != PARENT_ARK {
+	// Skip if we don't have an ARK cell or we're on the first (i.e., header) row
+	if header != ITEM_ARK && header != PARENT_ARK || location.RowIndex == 0 {
 		return nil
 	}
 
