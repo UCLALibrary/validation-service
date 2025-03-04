@@ -57,7 +57,7 @@ var constructors = map[string]constructor{
 
 		// Default instance if no arguments are passed
 		defaultProfiles := config.NewProfiles() // Assume a default constructor exists
-		return (&checks.EOLCheck{}).NewEOLCheck(defaultProfiles)
+		return (&checks.ARKCheck{}).NewARKCheck(defaultProfiles)
 	},
 }
 
