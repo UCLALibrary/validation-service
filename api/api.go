@@ -8,26 +8,21 @@ import (
 	"compress/gzip"
 	"encoding/base64"
 	"fmt"
-	"net/http"
 	"net/url"
 	"path"
 	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/labstack/echo/v4"
-	"github.com/oapi-codegen/runtime"
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 // Status A JSON document representing the service's runtime status. It's intentionally brief, for now.
 type Status struct {
-	FS      string `json:"fs"`
-	S3      string `json:"s3"`
-	Service string `json:"service"`
+	Fester     string `json:"fester"`
+	FileSystem string `json:"filesystem"`
+	Service    string `json:"service"`
 }
-
-// JobIDParam defines model for JobIDParam.
-type JobIDParam = string
 
 // StatusCreated A JSON document representing the service's runtime status. It's intentionally brief, for now.
 type StatusCreated = Status
@@ -52,10 +47,7 @@ type ServerInterface interface {
 	// Gets the validation service's current status
 	// (GET /status)
 	GetStatus(ctx echo.Context) error
-
-	// (GET /status/{jobID})
-	GetJobStatus(ctx echo.Context, jobID JobIDParam) error
-	// Start a new validation process
+	// Uploads and validates CSV files
 	// (POST /upload/csv)
 	UploadCSV(ctx echo.Context) error
 }
@@ -71,22 +63,6 @@ func (w *ServerInterfaceWrapper) GetStatus(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.GetStatus(ctx)
-	return err
-}
-
-// GetJobStatus converts echo context to params.
-func (w *ServerInterfaceWrapper) GetJobStatus(ctx echo.Context) error {
-	var err error
-	// ------------- Path parameter "jobID" -------------
-	var jobID JobIDParam
-
-	err = runtime.BindStyledParameterWithOptions("simple", "jobID", ctx.Param("jobID"), &jobID, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter jobID: %s", err))
-	}
-
-	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.GetJobStatus(ctx, jobID)
 	return err
 }
 
@@ -128,7 +104,6 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	}
 
 	router.GET(baseURL+"/status", wrapper.GetStatus)
-	router.GET(baseURL+"/status/:jobID", wrapper.GetJobStatus)
 	router.POST(baseURL+"/upload/csv", wrapper.UploadCSV)
 
 }
@@ -136,22 +111,21 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/7xWTW/jRgz9K8S0QC6K5e2mF9/SbFM4RXcXdZrLdg8jDW1NIs2oQ8qOEfi/Fxx9+CNK",
-	"E3SBvdnSzOPj4yOpJ5X7qvYOHZOaPalaB10hY4j/bnw2//BZHsk/g5QHW7P1Ts3UpYP5B1j6AFwgrHVp",
-	"jZZXcO8zlSgrZ2rNhUqU0xWqmboXNJWogP80NqBRMw4NJoryAistEXhby0HiYN1K7XY7OUy1d4SRz9wx",
-	"BqfLBYY1hl9D8EEe594xOo4I+MhpXWoJ/3SAjI+6qksBvy0QiDU3BEIEiWGpbYkGMsx1QxjzodJysQX2",
-	"ayQw1sBqG1AlYwyPZbktMCBsNIF2YDu+QJEwYGS8S9RHz9e+ceb/p9BxRwMByTchRzj7Y/tn9/sMct+U",
-	"BpxnyBCWEuuN7MeQJR2B0lmJwH4PuUvUImp5FVCzlPQoFV3Xpc2jLdJ78icJ/RhwqWbqh3RvwbR9S2mL",
-	"OkbxEnpLgHUmortVrNkI8UITZIgO8o7fQPjT79+XKxeaISA3wRFouFl8+gg+u8ecYWO56C1p3dKHKrJQ",
-	"gtfFEApdmOeN2IIZnzcVOglSByR0gy5iPpvjGUFoHNuq9/8E5nxG0aROsHRZbiELFpdJ7GvnNxOVqDr4",
-	"GgPbtgWXdOxF//DMV4l6PF/5867rrxciOr1/9Zqcapm+fnR3OEW+DPdinEQ4fh2utCK31RF1xwQ8mF4d",
-	"VFuvvMD8geBqcQdLWyJBQ2jAOvBNAGNXlnUJGx8elmWrFVuOnO/2gIsO8PLzXCVqjYHaqNPJdPJOkvY1",
-	"Ol1bNVPvJ9PJhSiuuYgypzTUfIX8nPltYQnQmdpb95/uOrAV6Mw33Bqj9ZxfHtpE0pCCx8Nzo2bqN+TO",
-	"eyfj+Kfp9KXeGM6lQ7vtEvXzWy6MDfnYCk1V6bBtCdHp1tmbPG9CkD6gvi2TXsf0Ka6g3Yt63lncnIyS",
-	"e5+dUY81osyNzwZxDpfnl/E090fSg+W6+/qtyl5ML16/cLx1vq0eUdamLr02aU7r+O3g6VWPEuvAYlGH",
-	"m8Py1cHnSNJgw9RqZCCjkVfSfKCdiZ3YBv3bPavGX/HF1eKu+8ZA4l+82Z7M+aop2dY6cCotcW406+NR",
-	"fzzvclpf2xLH8sJhMHQ7sWWGsmnbdlMzlVknph0Zdl1e48gyPPvG7AU4cXwvGRVx1TeEr87JPpl98PE5",
-	"efyFtntmzndvNefVfu1+d4ceToyF2O5F10U7/xsAAP//oXcG8woLAAA=",
+	"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",
+	"/y+FZAlECQAA",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

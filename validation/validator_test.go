@@ -4,7 +4,7 @@ package validation
 
 import (
 	"fmt"
-	csv "github.com/UCLALibrary/validation-service/csvutils"
+	csv "github.com/UCLALibrary/validation-service/validation/utils"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

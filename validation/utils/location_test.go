@@ -1,7 +1,7 @@
 //go:build unit
 
 // Package csvutils has structures and utilities useful for working with CSVs.
-package csvutils
+package utils
 
 import (
 	"testing"

@@ -8,9 +8,9 @@ package validation
 import (
 	"flag"
 	"fmt"
-	"github.com/UCLALibrary/validation-service/csvutils"
 	"github.com/UCLALibrary/validation-service/testflags"
 	"github.com/UCLALibrary/validation-service/validation/config"
+	"github.com/UCLALibrary/validation-service/validation/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
@@ -85,7 +85,7 @@ func TestEngine_Validate(t *testing.T) {
 	}
 
 	// Read in our CSV test data
-	csvData, csvErr := csvutils.ReadFile("../testdata/cct-works-simple.csv", engine.GetLogger())
+	csvData, csvErr := utils.ReadFile("../testdata/cct-works-simple.csv", engine.GetLogger())
 	if csvErr != nil {
 		require.NoError(t, csvErr)
 	}

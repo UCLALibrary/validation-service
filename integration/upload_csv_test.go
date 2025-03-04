@@ -77,6 +77,6 @@ func TestUploadCSV(t *testing.T) {
 	}
 
 	// Placeholder body check
-	assert.Equal(t, "{\"fs\":\"ok\",\"s3\":\"ok\",\"service\":\"created\"}\n", string(body))
+	assert.Equal(t, "{\"fester\":\"ok\",\"filesystem\":\"ok\",\"service\":\"created\"}\n", string(body))
 	assert.Equal(t, http.StatusCreated, response.StatusCode)
 }

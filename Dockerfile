@@ -42,6 +42,10 @@ ENV SERVICE_NAME=${SERVICE_NAME}
 ARG LOG_LEVEL
 ENV LOG_LEVEL=${LOG_LEVEL}
 
+# Set a version number for the application
+ARG VERSION
+ENV VERSION=${VERSION}
+
 # Set the location of the profiles config
 ENV PROFILES_FILE="$DATA_DIR/profiles.json"
 
@@ -54,9 +58,12 @@ RUN addgroup -S "${SERVICE_NAME}" && adduser -S "${SERVICE_NAME}" -G "${SERVICE_
 # Create a directory for our profiles file
 RUN mkdir -p "$DATA_DIR"
 
+# Copy the templates directory into our container
+COPY "html/" "$DATA_DIR/html/"
+
 # Copy the file without --chown or --chmod (BuildKit not required)
 COPY --from=build "/${SERVICE_NAME}" "/sbin/${SERVICE_NAME}"
-COPY "testdata/test_profiles.json" "$PROFILES_FILE"
+COPY "profiles.json" "$PROFILES_FILE"
 
 # Now, modify ownership and permissions in a separate RUN step
 RUN chown "${SERVICE_NAME}":"${SERVICE_NAME}" "/sbin/${SERVICE_NAME}" && chmod 0700 "/sbin/${SERVICE_NAME}"
