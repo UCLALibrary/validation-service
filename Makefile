@@ -64,7 +64,7 @@ clean:
 
 # Creates a new local profile configuration file if it doesn't already exist
 profiles.json: profiles.example.json
-	@if [ ! -f profile.json ]; then cp profiles.example.json profiles.json; fi
+	@if [ ! -f profiles.json ]; then cp profiles.example.json profiles.json; fi
 
 # An alias for the profile.json target
 config: profiles.json
