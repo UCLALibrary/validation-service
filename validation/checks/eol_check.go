@@ -2,8 +2,8 @@ package checks
 
 import (
 	"fmt"
-	csv "github.com/UCLALibrary/validation-service/csvutils"
 	"github.com/UCLALibrary/validation-service/validation/config"
+	csv "github.com/UCLALibrary/validation-service/validation/utils"
 	"strings"
 )
 

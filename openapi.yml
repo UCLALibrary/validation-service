@@ -1,7 +1,7 @@
 openapi: 3.0.4
 info:
   title: Validation Service API
-  description: A validation service that checks CSV files used in our digital workflow.
+  description: A validation service that checks CSV files used in our digital workflows.
   version: 0.0.1
 #servers:
 #  - url: 'https://validator.library.ucla.edu/'
@@ -16,22 +16,9 @@ paths:
           $ref: '#/components/responses/StatusOK'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  /status/{jobID}:
-    get:
-      description: View the requested job's status
-      operationId: getJobStatus
-      parameters:
-        - $ref: '#/components/parameters/JobIDParam'
-      responses:
-        '200':
-          $ref: '#/components/responses/StatusOK'
-        '404':
-          $ref: '#/components/responses/NotFoundError'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
   /upload/csv:
     post:
-      summary: Start a new validation process
+      summary: Uploads and validates CSV files
       description: |
         This endpoint starts a new validation process using the supplied profile and CSV upload
       operationId: uploadCSV
@@ -85,17 +72,17 @@ components:
         service:
           type: string
           example: ok
-        s3:
+        fester:
           type: string
           example: ok
-        fs:
+        filesystem:
           type: string
           example: ok
-          x-go-name: FS
+          x-go-name: FileSystem
       required:
         - service
-        - s3
-        - fs
+        - fester
+        - filesystem
 
   responses:
     StatusOK:

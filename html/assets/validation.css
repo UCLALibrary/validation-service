@@ -1,0 +1,40 @@
+/* CSS overrides for the validation service's SPA and its embedded reDoc OpenAPI viewer. */
+
+.navbar { background-color: #0074D9; }
+.navbar-item.validator-title {
+    color: #FFC107 !important; font-weight: bold; font-size: 2em; text-shadow: 1px 1px 0px #0056A6;
+}
+.navbar-item.nav-link { color: #FFF; }
+.navbar-item.nav-link:hover { color: #0056A6; background-color: #EEE !important; }
+body { background-color: #EEE; min-height: 100vh; }
+.box { background-color: #FFF; }
+.button.is-primary { background-color: #0074D9; border-color: #0074D9; }
+.button.is-primary:hover { background-color: #0056A6; }
+a.has-text-link { color: #0074D9 !important; }
+a.has-text-link:hover { color: #0056A6 !important; }
+
+/* Right sidebar styles */
+div[id^="operation/"] div:nth-child(2) div button, div[id^="panel"] { background-color: #333 !important; }
+div.react-tabs__tab-panel div div:nth-child(1) { background-color: #555; } /* Content type box */
+div.react-tabs__tab-panel div:nth-child(2) div { background-color: #333; } /* Copy button bg */
+.tab-success.react-tabs__tab--selected {
+    background-color: green !important; color: white !important; margin-bottom: 5px;
+}
+div[id^="operation/"] > div:nth-child(2), div[id^="operation/"] + div, div.redoc-wrap > div:last-child {
+    background-color: #EEE; /* Right sidebar bg */
+}
+
+/* Code block changes below */
+div.redoc-json, code { background-color: white !important; font-size: 16px; padding: 0px; }
+.token.property.string { color: #0074D9 !important; }
+.token.string { color: green !important; }
+.token.punctuation, div.hoverable { color: #0056A6 !important; background-color: white !important; }
+
+/* Response samples text */
+h3 {
+    margin-top: 30px; margin-bottom: 5px; font-weight: bold; font-size: larger; background-color: #EEE;
+    color: #0056A6 !important;
+}
+
+/* Where we keep the version number */
+footer { font-size: smaller; text-align: right; }

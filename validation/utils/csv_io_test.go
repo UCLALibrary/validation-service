@@ -3,7 +3,7 @@
 // Package csvutils provides tools to work with CSV data.
 //
 // This file provides tests for readers and writers of CSV data.
-package csvutils
+package utils
 
 import (
 	"encoding/csv"

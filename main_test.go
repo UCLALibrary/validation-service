@@ -88,5 +88,5 @@ func TestStatusEndpoint(t *testing.T) {
 
 	// Assertions
 	assert.Equal(t, http.StatusOK, recorder.Code)
-	assert.JSONEq(t, `{"service":"ok", "s3":"ok", "fs":"ok"}`, recorder.Body.String())
+	assert.JSONEq(t, `{"fester":"ok", "filesystem":"ok", "service":"ok"}`, recorder.Body.String())
 }

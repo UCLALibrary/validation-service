@@ -1,0 +1,127 @@
+{{ define "index.html" }}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CSV Validation</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+        <link rel="stylesheet" href="validation.css">
+        <script src="https://cdn.redoc.ly/redoc/v2.4.0/bundles/redoc.standalone.js"></script>
+        <script src="validation.js"></script>
+    </head>
+    <body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-brand">
+                <a class="navbar-item validator-title" href="#">Validation Service</a>
+            </div>
+            <div class="navbar-menu">
+                <div class="navbar-end">
+                    <a class="navbar-item nav-link" onclick="showContent('csv-upload')">CSV Upload</a>
+                    <a class="navbar-item nav-link" onclick="showContent('api-docs')">API Documentation</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <section class="section">
+        <div class="container">
+            <div id="csv-upload" class="content-section">
+                <h1 class="title">CSV Validator</h1>
+                <p class="subtitle">
+                    Upload your CSV files for validation of their data and metadata&nbsp; 🚀
+                </p>
+
+                <div class="columns">
+                    <!-- Left Column: Upload Form -->
+                    <div class="column is-half">
+                        <div class="box">
+                            <form action="/upload/csv" method="POST" enctype="multipart/form-data">
+                                <div class="field">
+                                    <label class="label">CSV file to upload:</label>
+                                    <div class="control">
+                                        <input class="input" type="file" name="csvFile">
+                                    </div>
+                                </div>
+
+                                <div class="field is-flex is-align-items-center">
+                                    <label class="label">Validation profile: &nbsp;</label>
+                                    <div class="field-body">
+                                        <div class="field">
+                                            <div class="control">
+                                                <div class="select is-fullwidth">
+                                                    <select id="profile" name="profile">
+                                                        <option value="default">Default</option>
+                                                        <option value="fester">Fester</option>
+                                                        <option value="bucketeer">Bucketeer</option>
+                                                        <option value="test">Test</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="field">
+                                    <div class="control">
+                                        <button type="submit" class="button is-primary">Upload</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <footer>version: {{ .Version }}</footer>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Instructions -->
+                    <div class="column">
+                        <div class="box">
+                            <h2 class="title is-5">Introduction</h2>
+                            <div class="content mb-4">This validator ensures that uploaded CSV files are free of issues
+                                that could disrupt their processing in our workflow services. Currently, it operates as
+                                a standalone service, but future integrations will enable automatic validation within
+                                our other services.
+                            </div>
+                            <div class="content mb-4">To use the validator, upload a CSV file, such as those in the <a
+                                href="https://github.com/uclalibrary/eureka" class="has-text-link">Eureka</a> GitHub
+                                repository. This service checks both data and metadata for compliance with standards
+                                (e.g., <a href="https://iiif.io/api/presentation/3.0/" class="has-text-link">IIIF
+                                Presentation</a>), even if the issues wouldn't affect our services. As a result, some
+                                CSVs that were previously accepted may be flagged as problematic.
+                            </div>
+                            <h2 class="title is-5">Instructions</h2>
+                            <div class="content mb-4">
+                                <ul>
+                                    <li>Click the "Choose File" button and navigate to the file on your file system
+                                    </li>
+                                    <li>Select one of the following validation profile names:
+                                        <ul class=".list-unstyled">
+                                            <li>Default</li>
+                                            <li>Bucketeer</li>
+                                            <li>Fester</li>
+                                            <li>Test</li>
+                                        </ul>
+                                    </li>
+                                    <li>Submit the form</li>
+                                </ul>
+                                <div class="content mb-4"> The end result is you should receive a validation report with
+                                    information about any fixes that need to be made to your CSV file.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="api-docs" class="content-section" style="display: none;">
+                <redoc spec-url="openapi.yml"></redoc>
+            </div>
+        </div>
+    </section>
+
+    </body>
+    </html>
+{{ end }}

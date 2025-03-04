@@ -5,8 +5,8 @@ package validation
 
 import (
 	"fmt"
-	csv "github.com/UCLALibrary/validation-service/csvutils"
 	"github.com/UCLALibrary/validation-service/validation/config"
+	csv "github.com/UCLALibrary/validation-service/validation/utils"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"os"
