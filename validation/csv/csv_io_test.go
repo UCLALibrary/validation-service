@@ -1,9 +1,9 @@
 //go:build unit
 
-// Package csvutils provides tools to work with CSV data.
+// Package csv has structures and utilities useful for working with CSVs.
 //
 // This file provides tests for readers and writers of CSV data.
-package utils
+package csv
 
 import (
 	"encoding/csv"

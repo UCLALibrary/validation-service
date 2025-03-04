@@ -6,7 +6,8 @@ package validation
 import (
 	"fmt"
 	"github.com/UCLALibrary/validation-service/validation/config"
-	csv "github.com/UCLALibrary/validation-service/validation/utils"
+	"github.com/UCLALibrary/validation-service/validation/csv"
+	"go.uber.org/multierr"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"os"
@@ -116,6 +117,8 @@ func (engine *Engine) GetValidators(profileNames ...string) ([]Validator, error)
 
 // Validate validates the supplied CSV data with the supplied profile name in mind.
 func (engine *Engine) Validate(profile string, csvData [][]string) error {
+	var errs error
+
 	validators, err := engine.GetValidators(profile)
 	if err != nil {
 		return fmt.Errorf("failed to get validators: %w", err)
@@ -133,14 +136,13 @@ func (engine *Engine) Validate(profile string, csvData [][]string) error {
 				// Validate the data cell we're on, passing the entire CSV data matrix for additional context
 				err := validator.Validate(profile, csv.Location{RowIndex: rowIndex, ColIndex: colIndex}, csvData)
 				if err != nil {
-					// TODO: We'll actually want to create a report with errors in the future
-					engine.logger.Error("Failed to validate CSV data", zap.Error(err))
+					errs = multierr.Combine(errs, err)
 				}
 			}
 		}
 	}
 
-	return nil
+	return errs
 }
 
 // removeExisting removes validations from a supplied slice if they already exist in the supplied map.

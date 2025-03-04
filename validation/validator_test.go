@@ -4,7 +4,7 @@ package validation
 
 import (
 	"fmt"
-	csv "github.com/UCLALibrary/validation-service/validation/utils"
+	"github.com/UCLALibrary/validation-service/validation/csv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -24,8 +24,8 @@ type MockValidator struct {
 
 // Validate forwards the method call to the function stored in ValidateFunc, passing along the input arguments and
 // returning the possible error.
-func (m *MockValidator) Validate(profile string, location csv.Location, csvData [][]string) error {
-	return m.ValidateFunc(profile, location, csvData)
+func (mock *MockValidator) Validate(profile string, location csv.Location, csvData [][]string) error {
+	return mock.ValidateFunc(profile, location, csvData)
 }
 
 // TestValidatorSuccess tests the Validate interface with a mock validator and expects a successful result.

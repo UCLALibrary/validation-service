@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"github.com/UCLALibrary/validation-service/testflags"
 	"github.com/UCLALibrary/validation-service/validation/config"
-	"github.com/UCLALibrary/validation-service/validation/utils"
+	"github.com/UCLALibrary/validation-service/validation/csv"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
@@ -85,7 +85,7 @@ func TestEngine_Validate(t *testing.T) {
 	}
 
 	// Read in our CSV test data
-	csvData, csvErr := utils.ReadFile("../testdata/cct-works-simple.csv", engine.GetLogger())
+	csvData, csvErr := csv.ReadFile("../testdata/cct-works-simple.csv", engine.GetLogger())
 	if csvErr != nil {
 		require.NoError(t, csvErr)
 	}

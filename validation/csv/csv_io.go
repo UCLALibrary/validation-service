@@ -1,7 +1,7 @@
-// Package utils provides utilities for the application.
+// Package csv has structures and utilities useful for working with CSVs.
 //
 // This file provides a reader and writer for CSV data.
-package utils
+package csv
 
 import (
 	"encoding/csv"
