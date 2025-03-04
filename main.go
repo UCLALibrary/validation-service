@@ -3,13 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/UCLALibrary/validation-service/api"
-	"github.com/UCLALibrary/validation-service/validation"
-	"github.com/UCLALibrary/validation-service/validation/config"
-	"github.com/UCLALibrary/validation-service/validation/utils"
-	"github.com/labstack/echo/v4"
-	middleware "github.com/oapi-codegen/echo-middleware"
-	"go.uber.org/zap"
 	"html/template"
 	"io"
 	"log"
@@ -17,6 +10,14 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+
+	"github.com/UCLALibrary/validation-service/api"
+	"github.com/UCLALibrary/validation-service/validation"
+	"github.com/UCLALibrary/validation-service/validation/config"
+	"github.com/UCLALibrary/validation-service/validation/utils"
+	"github.com/labstack/echo/v4"
+	middleware "github.com/oapi-codegen/echo-middleware"
+	"go.uber.org/zap"
 )
 
 // Port is the default port for our server
@@ -274,7 +275,7 @@ func routerConfigMiddleware(echoApp *echo.Echo, engine *validation.Engine, route
 	// We return the oapi-codegen middleware that handles our OpenAPI defined routes
 	return middleware.OapiRequestValidatorWithOptions(swagger, &middleware.Options{
 		Skipper: func(aContext echo.Context) bool {
-			for index, _ := range routes {
+			for index := range routes {
 				// We ignore paths that we've already configured through static or template handlers
 				if aContext.Path() == routes[index].RoutePath {
 					return true

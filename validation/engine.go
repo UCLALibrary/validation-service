@@ -5,11 +5,12 @@ package validation
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/UCLALibrary/validation-service/validation/config"
 	csv "github.com/UCLALibrary/validation-service/validation/utils"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"os"
 )
 
 // Engine performs the CSV file validations.
@@ -129,7 +130,7 @@ func (engine *Engine) Validate(profile string, csvData [][]string) error {
 	// Have each validator check each cell in the supplied csvData
 	for _, validator := range validators {
 		for rowIndex, row := range csvData {
-			for colIndex, _ := range row {
+			for colIndex := range row {
 				// Validate the data cell we're on, passing the entire CSV data matrix for additional context
 				err := validator.Validate(profile, csv.Location{RowIndex: rowIndex, ColIndex: colIndex}, csvData)
 				if err != nil {
