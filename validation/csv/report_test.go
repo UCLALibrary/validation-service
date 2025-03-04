@@ -41,12 +41,14 @@ func TestNewReport(t *testing.T) {
 				Warnings: []Warning{
 					{
 						Message:  "Error: Invalid value (Row: 2, Col: 1) [profile: default]",
+						Header:   "Header2",
 						ColIndex: 1,
 						RowIndex: 2,
 						Value:    "Row2Col2",
 					},
 					{
 						Message:  "Error: Missing field (Row: 2, Col: 2) [profile: default]",
+						Header:   "Header3",
 						ColIndex: 2,
 						RowIndex: 2,
 						Value:    "Row2Col3",
@@ -97,6 +99,7 @@ func TestNewReport(t *testing.T) {
 			// Check each warning
 			for index, warning := range report.Warnings {
 				assert.Equal(t, tt.expected.Warnings[index].Message, warning.Message)
+				assert.Equal(t, tt.expected.Warnings[index].Header, warning.Header)
 				assert.Equal(t, tt.expected.Warnings[index].ColIndex, warning.ColIndex)
 				assert.Equal(t, tt.expected.Warnings[index].RowIndex, warning.RowIndex)
 				assert.Equal(t, tt.expected.Warnings[index].Value, warning.Value)

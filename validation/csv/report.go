@@ -14,6 +14,7 @@ import (
 // Warning is an individual validation warning.
 type Warning struct {
 	Message  string `json:"message"`
+	Header   string `json:"header"`
 	ColIndex int    `json:"column"`
 	RowIndex int    `json:"row"`
 	Value    string `json:"value"`
@@ -46,10 +47,17 @@ func NewReport(multiErr error, csvData [][]string, logger *zap.Logger) (*Report,
 				report.Profile = err.Profile
 			}
 
+			header, headerErr := GetHeader(location, csvData, report.Profile)
+			if headerErr != nil {
+				// At this point in the process, this shouldn't be able to happen
+				logger.Error("header error", zap.Error(headerErr), zap.Stack("stacktrace"))
+			}
+
 			report.Warnings = append(report.Warnings, Warning{
 				err.Error(),
-				err.Location.ColIndex,
-				err.Location.RowIndex,
+				header,
+				err.Location.ColIndex, // The front-end should make this 1-based
+				err.Location.RowIndex, // The front-end should make this 1-based
 				csvData[location.RowIndex][location.ColIndex],
 			})
 		} else {

@@ -279,7 +279,7 @@ func routerConfigMiddleware(echoApp *echo.Echo, engine *validation.Engine, route
 	// We return the oapi-codegen middleware that handles our OpenAPI defined routes
 	return middleware.OapiRequestValidatorWithOptions(swagger, &middleware.Options{
 		Skipper: func(aContext echo.Context) bool {
-			for index, _ := range routes {
+			for index := range routes {
 				// We ignore paths that we've already configured through static or template handlers
 				if aContext.Path() == routes[index].RoutePath {
 					return true
