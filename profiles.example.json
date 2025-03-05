@@ -3,22 +3,22 @@
     "default": {
       "name": "default",
       "lastUpdate": "2025-01-01T12:00:00Z",
-      "validations": ["EOLCheck"]
+      "validations": ["EOLCheck", "ARKCheck"]
     },
     "test": {
       "name": "test",
       "lastUpdate": "2025-01-10T15:30:00Z",
-      "validations": ["EOLCheck"]
+      "validations": ["EOLCheck", "ARKCheck"]
     },
     "bucketeer": {
       "name": "bucketeer",
       "lastUpdate": "2025-01-01T12:00:00Z",
-      "validations": ["EOLCheck"]
+      "validations": ["EOLCheck", "ARKCheck"]
     },
     "fester": {
       "name": "fester",
       "lastUpdate": "2025-01-10T15:30:00Z",
-      "validations": ["EOLCheck"]
+      "validations": ["EOLCheck", "ARKCheck"]
     }
   },
   "lastUpdate": "2025-01-10T16:00:00Z"

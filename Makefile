@@ -63,11 +63,11 @@ clean:
 	rm -rf $(SERVICE_NAME) api/api.go
 
 # Creates a new local profile configuration file if it doesn't already exist
-profile.json: profiles.example.json
-	@if [ ! -f profile.json ]; then cp profiles.example.json profiles.json; fi
+profiles.json: profiles.example.json
+	@if [ ! -f profiles.json ]; then cp profiles.example.json profiles.json; fi
 
 # An alias for the profile.json target
-config: profile.json
+config: profiles.json
 
 # Run the validation service locally, independent of the Docker container
 run: config api build

@@ -10,14 +10,14 @@ import (
 	"go.uber.org/multierr"
 )
 
-// TestCheck loads the flags for the tests in the 'check' package.
+// TestCheck loads the flags for the tests in the 'checks' package.
 func TestCheck(t *testing.T) {
 	flag.Parse()
 	fmt.Printf("%s's log level: %s\n", t.Name(), *testflags.LogLevel)
 }
 
-// TestVerifyArk checks if verifyArk throws the correct errors when given incorrect ARKs
-func TestVerifyArk(t *testing.T) {
+// TestVerifyARK checks if verifyARK throws the correct errors when given incorrect ARKs
+func TestVerifyARK(t *testing.T) {
 	tests := []struct {
 		name        string
 		ark         string
@@ -55,34 +55,34 @@ func TestVerifyArk(t *testing.T) {
 			ark:         "ark:/12345",
 			profile:     "random",
 			expectError: true,
-			expectedErr: noObjIdentErr,
+			expectedErr: noObjIdErr,
 		},
 		{
 			name:        "Invalid NAAN - less than 5 digits",
 			ark:         "ark:/123/",
 			profile:     "default",
 			expectError: true,
-			expectedErr: multierr.Combine(naanTooShortErr, defaultProErr, noObjIdentErr),
+			expectedErr: multierr.Combine(naanTooShortErr, naanProfileErr, noObjIdErr),
 		},
 		{
 			name:        "Invalid NAAN for default profile",
 			ark:         "ark:/12345/xyz123",
 			profile:     "default",
 			expectError: true,
-			expectedErr: defaultProErr,
+			expectedErr: naanProfileErr,
 		},
 		{
 			name:        "Invalid object identifier",
 			ark:         "ark:/12345/my identifier",
 			profile:     "random",
 			expectError: true,
-			expectedErr: invalidObjIdenErr,
+			expectedErr: invalidObjIdErr,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := verifyArk(tt.ark, tt.profile)
+			err := verifyARK(tt.ark, tt.profile)
 
 			if tt.expectError {
 				assert.Error(t, err)

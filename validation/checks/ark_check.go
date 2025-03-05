@@ -11,20 +11,23 @@ import (
 	"go.uber.org/multierr"
 )
 
-var ITEMARK = "Item ARK"
-var PARENTARK = "Parent ARK"
+// ITEM_ARK is the ARK of the current item.
+const ITEM_ARK = "Item ARK"
+
+// PARENT_ARK is the ARK of the parent item.
+const PARENT_ARK = "Parent ARK"
 
 // Error messages
 var (
-	profileErr        = errors.New("supplied Profiles cannot be nil")
-	noPrefixErr       = errors.New("ARK must start with 'ark:/'")
-	naanTooShortErr   = errors.New("NAAN must be at least 5 digits long")
-	defaultProErr     = errors.New("For the 'default' profile, the NAAN must be '21198'")
-	noObjIdentErr     = errors.New("The ARK must contain an object identifier")
-	invalidObjIdenErr = errors.New("The object identifier and qualifier is not valid")
+	profileErr      = errors.New("supplied Profiles cannot be nil")
+	noPrefixErr     = errors.New("ARK must start with 'ark:/'")
+	naanTooShortErr = errors.New("NAAN must be at least 5 digits long")
+	naanProfileErr  = errors.New("For the supplied profile, the NAAN must be '21198'")
+	noObjIdErr      = errors.New("The ARK must contain an object identifier")
+	invalidObjIdErr = errors.New("The object identifier and qualifier is not valid")
 )
 
-// ARKCheck type is a validator that checks for a valid Ark
+// ARKCheck type is a validator that checks for a valid ARK.
 //
 // It implements the Validator interface and returns an error on failure to validate.
 type ARKCheck struct{}
@@ -38,7 +41,7 @@ func (check *ARKCheck) NewARKCheck(profiles *config.Profiles) (*ARKCheck, error)
 	return &ARKCheck{}, nil
 }
 
-// Validate checks a data cell has a valid Ark in it.
+// Validate checks a data cell has a valid ARK in it.
 //
 // If the supplied “profile” is “default” the institutional prefix in the ARK must be 21198
 func (check *ARKCheck) Validate(profile string, location csv.Location, csvData [][]string) error {
@@ -53,14 +56,15 @@ func (check *ARKCheck) Validate(profile string, location csv.Location, csvData [
 		return err
 	}
 
-	if header != ITEMARK && header != PARENTARK {
+	// Skip if we don't have an ARK cell or we're on the first (i.e., header) row
+	if header != ITEM_ARK && header != PARENT_ARK || location.RowIndex == 0 {
 		return nil
 	}
 
 	value := csvData[location.RowIndex][location.ColIndex]
 
 	// Check if the CSV data cell has a valid Ark
-	if err := verifyArk(value, profile); err != nil {
+	if err := verifyARK(value, profile); err != nil {
 		return fmt.Errorf("ARK validation failed at (row: %d, column: %d) [profile: %s]: %w",
 			location.RowIndex, location.ColIndex, profile, err)
 	}
@@ -68,8 +72,8 @@ func (check *ARKCheck) Validate(profile string, location csv.Location, csvData [
 	return nil
 }
 
-// VerifyARK validates if the given string is a valid ARK
-func verifyArk(ark string, profile string) error {
+// VerifyARK validates if the given string is a valid ARK.
+func verifyARK(ark string, profile string) error {
 	var errs error
 
 	// Ensure the ARK starts with "ark:/"
@@ -87,23 +91,26 @@ func verifyArk(ark string, profile string) error {
 	if naanMatch == nil || len(naanMatch[1]) < 5 {
 		errs = multierr.Combine(errs, naanTooShortErr)
 	}
+
 	// Extract NAAN and ObjectIdentifier for further validation
 	naan := naanMatch[1]
 	objectID := strings.TrimPrefix(arkBody, naan)
 	objectID = strings.TrimPrefix(objectID, "/")
+
 	// Additional validation if the profile is "default"
 	if profile == "default" && naan != "21198" {
-		errs = multierr.Combine(errs, defaultProErr)
+		errs = multierr.Combine(errs, naanProfileErr)
 	}
 
 	if objectID == "" {
-		errs = multierr.Combine(errs, noObjIdentErr)
+		errs = multierr.Combine(errs, noObjIdErr)
 		return errs
 	}
+
 	// Validate the remaining ARK structure (ObjectIdentifier + Qualifier)
 	arkRegex := regexp.MustCompile(`^([\w\-./]+)(\?.*)?$`)
 	if !arkRegex.MatchString(objectID) {
-		errs = multierr.Combine(errs, invalidObjIdenErr)
+		errs = multierr.Combine(errs, invalidObjIdErr)
 	}
 
 	return errs
