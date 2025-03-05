@@ -3,6 +3,14 @@ package main
 import (
 	"errors"
 	"fmt"
+	"html/template"
+	"io"
+	"log"
+	"net/http"
+	"os"
+	"path/filepath"
+	"sync"
+
 	"github.com/UCLALibrary/validation-service/api"
 	"github.com/UCLALibrary/validation-service/validation"
 	"github.com/UCLALibrary/validation-service/validation/config"
@@ -81,6 +89,7 @@ func (service *Service) UploadCSV(context echo.Context) error {
 
 	// Parse the CSV data
 	csvData, readErr := csv.ReadUpload(file, logger)
+
 	if readErr != nil {
 		return context.JSON(http.StatusBadRequest, map[string]string{"error": "Uploaded CSV file could not be parsed"})
 	}
