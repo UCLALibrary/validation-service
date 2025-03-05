@@ -49,8 +49,6 @@ func (check *ARKCheck) NewARKCheck(profiles *config.Profiles) (*ARKCheck, error)
 }
 
 // Validate checks that a data cell has a valid ARK in it.
-//
-// Our institutional prefix in the ARK must be 21198.
 func (check *ARKCheck) Validate(profile string, location csv.Location, csvData [][]string) error {
 	if err := csv.IsValidLocation(location, csvData, profile); err != nil {
 		return err
