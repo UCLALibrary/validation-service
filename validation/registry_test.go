@@ -1,5 +1,8 @@
 //go:build unit
 
+// Package validation provides tools to validate CSV data.
+//
+// This file provides tests of the validation Registry.
 package validation
 
 import (
@@ -40,6 +43,11 @@ func TestGetValidators(t *testing.T) {
 		t.Errorf("NewRegistry() error = %v", err)
 	}
 
+	// Delete map's entries so we have a fresh start to test with
+	for key := range constructors {
+		delete(constructors, key)
+	}
+
 	// Override constructors for controlled testing
 	constructors["MockValidator"] = mockConstructor
 	constructors["FailingValidator"] = failingConstructor
@@ -47,7 +55,8 @@ func TestGetValidators(t *testing.T) {
 	t.Run("Returns all validators when validatorNames is empty", func(t *testing.T) {
 		validators, err := reg.GetValidators(nil) // Request all validators
 		assert.NoError(t, err)
-		assert.Len(t, validators.Checks, 2) // MockValidator + FailingValidator
+		assert.Len(t, validators.Checks, 1) // MockValidator only, FailingValidator isn't a valid check
+		assert.Len(t, constructors, 2)      // MockValidator + FailingValidator
 	})
 
 	t.Run("Returns only requested validators", func(t *testing.T) {

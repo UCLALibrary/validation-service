@@ -1,0 +1,116 @@
+openapi: 3.0.4
+info:
+  title: Validation Service API
+  description: A validation service that checks CSV files used in our digital workflows.
+  version: 0.0.1
+#servers:
+#  - url: 'https://validator.library.ucla.edu/'
+paths:
+  /status:
+    get:
+      summary: Gets the validation service's current status
+      description: This endpoint returns a JSON object with information about the status of the service.
+      operationId: getStatus
+      responses:
+        '200':
+          $ref: '#/components/responses/StatusOK'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /upload/csv:
+    post:
+      summary: Uploads and validates CSV files
+      description: |
+        This endpoint starts a new validation process using the supplied profile and CSV upload
+      operationId: uploadCSV
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - csvFile
+                - profile
+              properties:
+                csvFile:
+                  type: string
+                  format: binary
+                  description: The CSV file to be uploaded
+                profile:
+                  type: string
+                  description: The name of the profile the validation process should use
+      responses:
+        '201':
+          $ref: '#/components/responses/StatusCreated'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  parameters:
+    ProfileIDParam:
+      name: profileID
+      in: path
+      required: true
+      schema:
+        type: string
+      description: The ID of the profile to use
+    JobIDParam:
+      name: jobID
+      in: path
+      required: true
+      schema:
+        type: string
+      description: An ID for the validation job
+
+  schemas:
+    Status:
+      description: A JSON document representing the service's runtime status. It's intentionally brief, for now.
+      type: object
+      properties:
+        service:
+          type: string
+          example: ok
+        fester:
+          type: string
+          example: ok
+        filesystem:
+          type: string
+          example: ok
+          x-go-name: FileSystem
+      required:
+        - service
+        - fester
+        - filesystem
+
+  responses:
+    StatusOK:
+      description: A response that returns a JSON object with status information
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Status'
+    StatusCreated:
+      description: A response indicating the requested resource has been created
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Status'
+    StatusNoContent:
+      description: A response that successfully acknowledges a request has been completed
+      content: {}
+    NotFoundError:
+      description: The requested resource was not able to be found
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: The requested resource 'MyResource' could not be found
+    InternalServerError:
+      description: There was an internal server error
+      content:
+        text/plain:
+          schema:
+            type: string
+            example: The status request failed because the slithy toves did gyre

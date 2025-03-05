@@ -25,3 +25,9 @@ go.work
 
 # Build artifacts
 *-service
+
+# The automatically duplicated version of the OpenAPI spec file
+html/assets/openapi.yml
+
+# A customizable config file that the service will use
+profiles.json

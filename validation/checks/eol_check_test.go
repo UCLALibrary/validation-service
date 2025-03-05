@@ -1,20 +1,14 @@
 //go:build unit
 
+// Package checks consists of individual validation checks.
+//
+// This file checks for EOL characters in the CSV data.
 package checks
 
 import (
-	"flag"
-	"fmt"
-	csv "github.com/UCLALibrary/validation-service/csvutils"
-	"github.com/UCLALibrary/validation-service/testflags"
+	"github.com/UCLALibrary/validation-service/validation/csv"
 	"testing"
 )
-
-// TestCheck loads the flags for the tests in the 'check' package.
-func TestCheck(t *testing.T) {
-	flag.Parse()
-	fmt.Printf("%s's log level: %s\n", t.Name(), *testflags.LogLevel)
-}
 
 // TestEOLCheck_Validate tests the Validate method on EOLCheck.
 func TestEOLCheck_Validate(t *testing.T) {

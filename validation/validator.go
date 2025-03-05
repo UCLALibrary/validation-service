@@ -3,7 +3,9 @@
 // This file provides a Validator interface that individual checks should implement.
 package validation
 
-import csv "github.com/UCLALibrary/validation-service/csvutils"
+import (
+	"github.com/UCLALibrary/validation-service/validation/csv"
+)
 
 // Validator interface defines how implementations should be called.
 type Validator interface {

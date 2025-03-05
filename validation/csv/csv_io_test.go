@@ -1,27 +1,18 @@
 //go:build unit
 
-// Package csvutils provides tools to work with CSV data.
+// Package csv has structures and utilities useful for working with CSVs.
 //
 // This file provides tests for readers and writers of CSV data.
-package csvutils
+package csv
 
 import (
 	"encoding/csv"
-	"flag"
-	"fmt"
-	"github.com/UCLALibrary/validation-service/testflags"
 	"go.uber.org/zap"
 	"os"
 	"testing"
 
 	"go.uber.org/zap/zaptest"
 )
-
-// TestCsvUtils loads the flags for the tests in the 'csvutils' package.
-func TestCsvUtils(t *testing.T) {
-	flag.Parse()
-	fmt.Printf("%s's log level: %s\n", t.Name(), *testflags.LogLevel)
-}
 
 // TestWriteFile checks if WriteFile correctly writes data to a CSV file.
 func TestWriteFile(t *testing.T) {

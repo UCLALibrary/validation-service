@@ -1,13 +1,14 @@
 //go:build unit
 
+// Package config provides resources useful in the configuration of the validation service.
+//
+// This file contains tests of the validation profiles.
 package config
 
 import (
 	"bytes"
 	"encoding/json"
-	"flag"
 	"fmt"
-	"github.com/UCLALibrary/validation-service/testflags"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"log"
@@ -15,12 +16,6 @@ import (
 	"strings"
 	"testing"
 )
-
-// TestConfig loads the flags for the tests in the 'config' package.
-func TestConfig(t *testing.T) {
-	flag.Parse()
-	fmt.Printf("%s's log level: %s\n", t.Name(), *testflags.LogLevel)
-}
 
 // TestProfiles tests basic Get/Set functionality.
 func TestProfiles(t *testing.T) {

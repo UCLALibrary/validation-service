@@ -1,8 +1,9 @@
-// Package csvutils has structures and utilities useful for working with CSVs.
-package csvutils
+// Package csv has structures and utilities useful for working with CSVs.
+//
+// This file defines types for working with CSV locations.
+package csv
 
 import (
-	"errors"
 	"fmt"
 )
 
@@ -18,13 +19,15 @@ type Location struct {
 }
 
 // IsValidLocation checks if a Location is within bounds of our CSV Location struct.
-func IsValidLocation(location Location, csvData [][]string) error {
+func IsValidLocation(location Location, csvData [][]string, profile string) error {
 	if location.RowIndex < 0 || location.RowIndex >= len(csvData) {
-		return fmt.Errorf("row %d is out of bounds", location.RowIndex)
+		message := fmt.Sprintf("row %d is out of bounds", location.RowIndex)
+		return NewError(message, location, profile)
 	}
 
 	if location.ColIndex < 0 || location.ColIndex >= len(csvData[location.RowIndex]) {
-		return fmt.Errorf("column %d is out of bounds", location.ColIndex)
+		message := fmt.Sprintf("column %d is out of bounds", location.ColIndex)
+		return NewError(message, location, profile)
 	}
 
 	// Supplied Location is valid for the supplied csvData
@@ -32,8 +35,8 @@ func IsValidLocation(location Location, csvData [][]string) error {
 }
 
 // GetHeader returns the header within the first row given the index
-func GetHeader(location Location, csvData [][]string) (string, error) {
-	if err := IsValidLocation(location, csvData); err != nil {
+func GetHeader(location Location, csvData [][]string, profile string) (string, error) {
+	if err := IsValidLocation(location, csvData, profile); err != nil {
 		return "", err
 	}
 
@@ -42,7 +45,7 @@ func GetHeader(location Location, csvData [][]string) (string, error) {
 	// Ensure the first row exists
 	headers := csvData[0]
 	if len(headers) == 0 {
-		return "", errors.New("the first row of csvData is empty")
+		return "", NewError("the first row of csvData is empty", location, profile)
 	}
 
 	return headers[index], nil
