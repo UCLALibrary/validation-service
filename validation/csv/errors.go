@@ -19,7 +19,7 @@ type Error struct {
 }
 
 // Error implements an interface that allows an error to be returned as a string.
-func (err Error) Error() string {
+func (err *Error) Error() string {
 	if err.ParentErr != nil {
 		// Wrapped exceptions will have a duplicate label that we can strip
 		cause := strings.TrimPrefix(err.ParentErr.Error(), "Error: ")
@@ -36,8 +36,24 @@ func (err Error) Error() string {
 		err.Message, err.Location.RowIndex, err.Location.ColIndex, err.Profile)
 }
 
+// String outputs a string version of the error for display to non-programmers.
+func (err *Error) String() string {
+	if err.ParentErr != nil {
+		// Wrapped exceptions will have a duplicate label that we can strip
+		cause := strings.TrimPrefix(err.ParentErr.Error(), "Error: ")
+
+		// We strip location and profile info when outputting string form of an error
+		regex := regexp.MustCompile(`\s*\(Row: \d+, Col: \d+\) \[profile: .*?\]`)
+		cause = regex.ReplaceAllString(cause, "") // 'All' means all for String()
+
+		return fmt.Sprintf("Error: %s [Cause: %s]", err.Message, cause)
+	}
+
+	return fmt.Sprintf("Error: %s", err.Message)
+}
+
 // Is checks two errors (this one and a supplied one) for equality.
-func (err Error) Is(other error) bool {
+func (err *Error) Is(other error) bool {
 	var target *Error
 
 	if errors.As(other, &target) {
@@ -48,7 +64,7 @@ func (err Error) Is(other error) bool {
 }
 
 // Unwrap ensures report.Error compatibility with errors.Is() and errors.As().
-func (err Error) Unwrap() error {
+func (err *Error) Unwrap() error {
 	return err.ParentErr
 }
 

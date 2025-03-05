@@ -6,7 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/UCLALibrary/validation-service/api"
-	"github.com/UCLALibrary/validation-service/testflags"
+	"github.com/UCLALibrary/validation-service/pkg/utils"
 	"github.com/UCLALibrary/validation-service/validation"
 	"github.com/UCLALibrary/validation-service/validation/config"
 	"github.com/labstack/echo/v4"
@@ -20,10 +20,12 @@ import (
 )
 
 // TestMain configures our log level flag for the main package.
-func TestMain(m *testing.M) {
+//
+// Usually this would go in a setup_test.go file, but there is only one test file in this package.
+func TestMain(main *testing.M) {
 	flag.Parse()
-	fmt.Println("TestMain's log level:", *testflags.LogLevel)
-	os.Exit(m.Run())
+	fmt.Printf("*** Package %s's log level: %s ***\n", utils.GetPackageName(), *utils.LogLevel)
+	os.Exit(main.Run())
 }
 
 // TestServerHealth checks if the Echo server initializes properly

@@ -1,9 +1,9 @@
 //go:build unit
 
-// Package testflags provides flags that can be used in testing.
+// Package utils provides utilities that can be used in testing.
 //
 // This file tests that the default settings are correct on parsing.
-package testflags
+package utils
 
 import (
 	"flag"

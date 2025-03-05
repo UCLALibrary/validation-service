@@ -1,9 +1,9 @@
 //go:build unit
 
-// Package checks consists of individual validation checks.
+// Package config provides resources useful in the configuration of the validation service.
 //
 // This file sets up the testing environment for the package.
-package checks
+package config
 
 import (
 	"flag"

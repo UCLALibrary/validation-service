@@ -1,19 +1,13 @@
 //go:build unit
 
+// Package api consists of API handling code.
+//
+// This file sets up the testing environment for the tests.
 package api
 
 import (
-	"flag"
-	"fmt"
-	"github.com/UCLALibrary/validation-service/testflags"
 	"testing"
 )
-
-// TestAPI loads the flags for the tests in the 'api' package.
-func TestAPI(t *testing.T) {
-	flag.Parse()
-	fmt.Printf("%s's log level: %s\n", t.Name(), *testflags.LogLevel)
-}
 
 // TestForTheSakeOfSuccess is a simple brain-dead test that just prevents the build from failing for lack of tests.
 //

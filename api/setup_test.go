@@ -1,9 +1,9 @@
 //go:build unit
 
-// Package checks consists of individual validation checks.
+// Package api consists of API handling code.
 //
-// This file sets up the testing environment for the package.
-package checks
+// This file sets up the testing environment for the tests.
+package api
 
 import (
 	"flag"

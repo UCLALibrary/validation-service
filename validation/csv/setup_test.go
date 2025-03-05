@@ -1,9 +1,9 @@
 //go:build unit
 
-// Package checks consists of individual validation checks.
+// Package csv has structures and utilities useful for working with CSVs.
 //
 // This file sets up the testing environment for the package.
-package checks
+package csv
 
 import (
 	"flag"

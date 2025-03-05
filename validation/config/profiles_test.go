@@ -1,5 +1,8 @@
 //go:build unit
 
+// Package config provides resources useful in the configuration of the validation service.
+//
+// This file contains tests of the validation profiles.
 package config
 
 import (

@@ -6,9 +6,7 @@
 package validation
 
 import (
-	"flag"
-	"fmt"
-	"github.com/UCLALibrary/validation-service/testflags"
+	"github.com/UCLALibrary/validation-service/pkg/utils"
 	"github.com/UCLALibrary/validation-service/validation/config"
 	"github.com/UCLALibrary/validation-service/validation/csv"
 	"github.com/stretchr/testify/assert"
@@ -17,12 +15,6 @@ import (
 	"os"
 	"testing"
 )
-
-// TestValidation loads the flags for the tests in the 'validation' package.
-func TestValidation(t *testing.T) {
-	flag.Parse()
-	fmt.Printf("%s's log level: %s\n", t.Name(), *testflags.LogLevel)
-}
 
 // TestEngine_NewEngine tests the construction of a validation engine.
 func TestEngine_NewEngine(t *testing.T) {
@@ -67,7 +59,7 @@ func TestEngine_GetLogger(t *testing.T) {
 
 // TestEngine_GetValidators tests that an engine can return the validators its using
 func TestEngine_Validate(t *testing.T) {
-	logger := zaptest.NewLogger(t, zaptest.Level(testflags.GetLogLevel()))
+	logger := zaptest.NewLogger(t, zaptest.Level(utils.GetLogLevel()))
 
 	// Configure the location of the test profiles file
 	if err := os.Setenv(config.ProfilesFile, "../testdata/test_profiles.json"); err != nil {

@@ -1,9 +1,9 @@
 //go:build unit
 
-// Package checks consists of individual validation checks.
+// Package validation provides tools to validate CSV data.
 //
-// This file sets up the testing environment for the package.
-package checks
+// This file sets up the package's testing environment.
+package validation
 
 import (
 	"flag"

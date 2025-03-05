@@ -12,7 +12,7 @@ import (
 	"testing"
 )
 
-// TestNewError_NoParent tests creating a validation.Error without a parent error
+// TestNewError_NoParent tests creating a validation.Error without a parent error.
 func TestNewError_NoParent(t *testing.T) {
 	var valErr *Error
 
@@ -34,7 +34,7 @@ func TestNewError_NoParent(t *testing.T) {
 	assert.Equal(t, expectedMsg, valErr.Error())
 }
 
-// TestNewError_WithParent tests creating a validation.Error with a parent error
+// TestNewError_WithParent tests creating a validation.Error with a parent error.
 func TestNewError_WithParent(t *testing.T) {
 	var valErr *Error
 
@@ -57,7 +57,7 @@ func TestNewError_WithParent(t *testing.T) {
 	assert.Equal(t, expected, valErr.Error())
 }
 
-// TestError_Unwrap tests that Unwrap works properly for error wrapping
+// TestError_Unwrap tests that Unwrap works properly for error wrapping.
 func TestError_Unwrap(t *testing.T) {
 	var valErr *Error
 
@@ -73,7 +73,7 @@ func TestError_Unwrap(t *testing.T) {
 	assert.Equal(t, parentErr, valErr.ParentErr)
 }
 
-// TestError_ErrorFormatting ensures the error message format is correct
+// TestError_ErrorFormatting ensures the error message format is correct.
 func TestError_ErrorFormatting(t *testing.T) {
 	tests := []struct {
 		name        string
@@ -103,11 +103,52 @@ func TestError_ErrorFormatting(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
+			var valErr *Error
+
 			err := NewError(tc.message, tc.location, tc.profile, tc.parentErr)
 
-			var valErr *Error
 			assert.ErrorAs(t, err, &valErr)
 			assert.Equal(t, tc.expectedStr, valErr.Error())
+		})
+	}
+}
+
+// TestError_StringFormatting ensures the error message format is correct.
+func TestError_StringFormatting(t *testing.T) {
+	tests := []struct {
+		name        string
+		message     string
+		location    Location
+		profile     string
+		parentErr   error
+		expectedStr string
+	}{
+		{
+			name:        "No parent error",
+			message:     "Invalid header",
+			location:    Location{RowIndex: 1, ColIndex: 2},
+			profile:     "default",
+			parentErr:   nil,
+			expectedStr: "Error: Invalid header",
+		},
+		{
+			name:        "With parent error",
+			message:     "Incorrect format",
+			location:    Location{RowIndex: 4, ColIndex: 8},
+			profile:     "default",
+			parentErr:   errors.New("unexpected EOF"),
+			expectedStr: "Error: Incorrect format [Cause: unexpected EOF]",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			var valErr *Error
+
+			err := NewError(tc.message, tc.location, tc.profile, tc.parentErr)
+
+			assert.ErrorAs(t, err, &valErr)
+			assert.Equal(t, tc.expectedStr, valErr.String())
 		})
 	}
 }

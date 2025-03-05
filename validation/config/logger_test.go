@@ -6,9 +6,7 @@
 package config
 
 import (
-	"flag"
-	"fmt"
-	"github.com/UCLALibrary/validation-service/testflags"
+	"github.com/UCLALibrary/validation-service/pkg/utils"
 	"go.uber.org/zap"
 	"net/http"
 	"net/http/httptest"
@@ -17,12 +15,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
-
-// TestConfig loads the flags for the tests in the 'config' package.
-func TestConfig(t *testing.T) {
-	flag.Parse()
-	fmt.Printf("%s's log level: %s\n", t.Name(), *testflags.LogLevel)
-}
 
 // TestZapLoggerMiddleware ensures the Zap middleware logs requests correctly
 func TestZapLoggerMiddleware(t *testing.T) {
@@ -50,7 +42,7 @@ func TestZapLoggerMiddleware(t *testing.T) {
 // newTestLogger gets a new logger to use in package's tests.
 func newTestLogger(t *testing.T) *zap.Logger {
 	config := zap.NewDevelopmentConfig()
-	config.Level = zap.NewAtomicLevelAt(testflags.GetLogLevel())
+	config.Level = zap.NewAtomicLevelAt(utils.GetLogLevel())
 	config.OutputPaths = []string{"stdout"}
 	config.ErrorOutputPaths = []string{"stderr"}
 
