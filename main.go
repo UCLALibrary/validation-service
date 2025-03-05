@@ -3,14 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"html/template"
-	"io"
-	"log"
-	"net/http"
-	"os"
-	"path/filepath"
-	"sync"
-
 	"github.com/UCLALibrary/validation-service/api"
 	"github.com/UCLALibrary/validation-service/validation"
 	"github.com/UCLALibrary/validation-service/validation/config"
