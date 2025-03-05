@@ -3,6 +3,13 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/UCLALibrary/validation-service/api"
+	"github.com/UCLALibrary/validation-service/validation"
+	"github.com/UCLALibrary/validation-service/validation/config"
+	"github.com/UCLALibrary/validation-service/validation/csv"
+	"github.com/labstack/echo/v4"
+	middleware "github.com/oapi-codegen/echo-middleware"
+	"go.uber.org/zap"
 	"html/template"
 	"io"
 	"log"
@@ -10,18 +17,17 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
-
-	"github.com/UCLALibrary/validation-service/api"
-	"github.com/UCLALibrary/validation-service/validation"
-	"github.com/UCLALibrary/validation-service/validation/config"
-	"github.com/UCLALibrary/validation-service/validation/utils"
-	"github.com/labstack/echo/v4"
-	middleware "github.com/oapi-codegen/echo-middleware"
-	"go.uber.org/zap"
+	"time"
 )
 
 // Port is the default port for our server
 const Port = 8888
+
+// ServiceError provides a generic error to use in HTTP responses.
+type ServiceError struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+}
 
 // RouteMapping is a pairing of router path and file system path that can be used to configure request handlers.
 type RouteMapping struct {
@@ -74,26 +80,25 @@ func (service *Service) UploadCSV(context echo.Context) error {
 		zap.String("profile", profile))
 
 	// Parse the CSV data
-	csvData, readErr := utils.ReadUpload(file, logger)
+	csvData, readErr := csv.ReadUpload(file, logger)
+
 	if readErr != nil {
 		return context.JSON(http.StatusBadRequest, map[string]string{"error": "Uploaded CSV file could not be parsed"})
 	}
 
 	if err := engine.Validate(profile, csvData); err != nil {
-		// Handle if there was a validation error
-		return context.JSON(http.StatusCreated, api.Status{
-			Service:    fmt.Sprintf("error: %v", err),
-			Fester:     "ok",
-			FileSystem: "ok",
-		})
+		report, reportErr := csv.NewReport(err, csvData, logger)
+		if reportErr != nil {
+			logger.Error("Failed to generate report", zap.Error(reportErr), zap.Stack("stacktrace"))
+
+			return context.JSON(http.StatusInternalServerError,
+				ServiceError{Code: http.StatusInternalServerError, Message: reportErr.Error()})
+		}
+
+		return context.JSON(http.StatusCreated, report)
 	}
 
-	// Handle if there were no validation errors
-	return context.JSON(http.StatusCreated, api.Status{
-		Service:    "created",
-		Fester:     "ok",
-		FileSystem: "ok",
-	})
+	return context.JSON(http.StatusCreated, &csv.Report{Profile: profile, Time: time.Now(), Warnings: []csv.Warning{}})
 }
 
 // Main function starts our Echo server

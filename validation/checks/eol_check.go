@@ -1,10 +1,15 @@
 package checks
 
 import (
-	"fmt"
 	"github.com/UCLALibrary/validation-service/validation/config"
-	csv "github.com/UCLALibrary/validation-service/validation/utils"
+	"github.com/UCLALibrary/validation-service/validation/csv"
 	"strings"
+)
+
+// Error messages
+var (
+	nilProfileErr = "supplied profile cannot be nil"
+	eolFoundErr   = "character for EOL found in cell"
 )
 
 // EOLCheck type is a validator that checks for the presence of stray new lines.
@@ -17,7 +22,7 @@ type EOLCheck struct {
 // NewEOLCheck checks that there are no EOLs in a CSV data cell.
 func (check *EOLCheck) NewEOLCheck(profiles *config.Profiles) (*EOLCheck, error) {
 	if profiles == nil {
-		return nil, fmt.Errorf("supplied Profiles cannot be nil")
+		return nil, csv.NewError(nilProfileErr, csv.Location{}, "nil")
 	}
 
 	return &EOLCheck{
@@ -29,7 +34,7 @@ func (check *EOLCheck) NewEOLCheck(profiles *config.Profiles) (*EOLCheck, error)
 //
 // This check doesn't care what profile is being used.
 func (check *EOLCheck) Validate(profile string, location csv.Location, csvData [][]string) error {
-	if err := csv.IsValidLocation(location, csvData); err != nil {
+	if err := csv.IsValidLocation(location, csvData, profile); err != nil {
 		return err
 	}
 
@@ -37,8 +42,7 @@ func (check *EOLCheck) Validate(profile string, location csv.Location, csvData [
 
 	// Check if the CSV data cell under review has any unexpected EOLs in it
 	if strings.Contains(value, "\n") || strings.Contains(value, "\r") {
-		return fmt.Errorf("character for EOL found in cell at (row: %d, column: %d)[profile: %s]",
-			location.RowIndex, location.ColIndex, profile)
+		return csv.NewError(eolFoundErr, location, profile)
 	}
 
 	return nil

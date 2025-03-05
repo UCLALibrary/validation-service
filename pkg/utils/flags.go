@@ -1,7 +1,9 @@
-// Package testflags provides flags that can be used in testing.
+//go:build unit
+
+// Package utils provides tools to help with testing.
 //
 // This file defines LogLevel and a has a convenience function for constructing levels.
-package testflags
+package utils
 
 import (
 	"flag"

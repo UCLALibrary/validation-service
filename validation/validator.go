@@ -4,7 +4,7 @@
 package validation
 
 import (
-	csv "github.com/UCLALibrary/validation-service/validation/utils"
+	"github.com/UCLALibrary/validation-service/validation/csv"
 )
 
 // Validator interface defines how implementations should be called.

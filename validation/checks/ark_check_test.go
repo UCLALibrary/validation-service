@@ -1,26 +1,27 @@
+//go:build unit
+
+// Package checks consists of individual validation checks.
+//
+// This file checks Archival Resource Keys (ARKs).
 package checks
 
 import (
-	"flag"
-	"fmt"
-	"github.com/UCLALibrary/validation-service/testflags"
+	"github.com/UCLALibrary/validation-service/validation/csv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/multierr"
 )
 
-// TestCheck loads the flags for the tests in the 'checks' package.
-func TestCheck(t *testing.T) {
-	flag.Parse()
-	fmt.Printf("%s's log level: %s\n", t.Name(), *testflags.LogLevel)
-}
+// testLocation provides a consistent location for the purposes of test comparison.
+var testLocation = csv.Location{}
 
 // TestVerifyARK checks if verifyARK throws the correct errors when given incorrect ARKs
 func TestVerifyARK(t *testing.T) {
 	tests := []struct {
 		name        string
 		ark         string
+		location    csv.Location
 		profile     string
 		expectError bool
 		expectedErr error
@@ -28,61 +29,73 @@ func TestVerifyARK(t *testing.T) {
 		{
 			name:        "Valid ARK with default profile",
 			ark:         "ark:/21198/xyz123",
+			location:    testLocation,
 			profile:     "default",
 			expectError: false,
 		},
 		{
 			name:        "Valid ARK with qualifier",
-			ark:         "ark:/12345/xyz123?version=2",
-			profile:     "custom",
+			ark:         "ark:/21198/xyz123?version=2",
+			location:    testLocation,
+			profile:     "default",
 			expectError: false,
 		},
 		{
 			name:        "Valid ARK with non-default profile",
-			ark:         "ark:/12345/abc456",
-			profile:     "custom",
+			ark:         "ark:/21198/abc456",
+			location:    testLocation,
+			profile:     "test",
 			expectError: false,
 		},
 		{
 			name:        "Invalid ARK - missing ark:/ prefix",
 			ark:         "12345/xyz123",
+			location:    testLocation,
 			profile:     "default",
 			expectError: true,
-			expectedErr: noPrefixErr,
+			expectedErr: csv.NewError(noPrefixErr, testLocation, "default"),
 		},
 		{
 			name:        "Invalid ARK structure no object identifier",
-			ark:         "ark:/12345",
-			profile:     "random",
+			ark:         "ark:/21198",
+			location:    testLocation,
+			profile:     "default",
 			expectError: true,
-			expectedErr: noObjIdErr,
+			expectedErr: csv.NewError(noObjIdErr, testLocation, "default"),
 		},
 		{
 			name:        "Invalid NAAN - less than 5 digits",
 			ark:         "ark:/123/",
+			location:    testLocation,
 			profile:     "default",
 			expectError: true,
-			expectedErr: multierr.Combine(naanTooShortErr, naanProfileErr, noObjIdErr),
+			expectedErr: multierr.Combine(
+				csv.NewError(naanTooShortErr, testLocation, "default"),
+				csv.NewError(naanProfileErr, testLocation, "default"),
+				csv.NewError(noObjIdErr, testLocation, "default"),
+			),
 		},
 		{
 			name:        "Invalid NAAN for default profile",
 			ark:         "ark:/12345/xyz123",
+			location:    testLocation,
 			profile:     "default",
 			expectError: true,
-			expectedErr: naanProfileErr,
+			expectedErr: csv.NewError(naanProfileErr, testLocation, "default"),
 		},
 		{
 			name:        "Invalid object identifier",
-			ark:         "ark:/12345/my identifier",
-			profile:     "random",
+			ark:         "ark:/21198/my identifier",
+			location:    testLocation,
+			profile:     "default",
 			expectError: true,
-			expectedErr: invalidObjIdErr,
+			expectedErr: csv.NewError(invalidObjIdErr, testLocation, "default"),
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := verifyARK(tt.ark, tt.profile)
+			err := verifyARK(tt.ark, tt.location, tt.profile)
 
 			if tt.expectError {
 				assert.Error(t, err)

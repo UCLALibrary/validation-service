@@ -1,9 +1,12 @@
 //go:build unit
 
+// Package checks consists of individual validation checks.
+//
+// This file checks for EOL characters in the CSV data.
 package checks
 
 import (
-	csv "github.com/UCLALibrary/validation-service/validation/utils"
+	"github.com/UCLALibrary/validation-service/validation/csv"
 	"testing"
 )
 

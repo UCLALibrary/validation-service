@@ -1,5 +1,8 @@
 //go:build unit
 
+// Package validation provides tools to validate CSV data.
+//
+// This file provides tests of the validation Registry.
 package validation
 
 import (

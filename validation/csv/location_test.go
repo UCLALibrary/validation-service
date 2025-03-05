@@ -1,7 +1,9 @@
 //go:build unit
 
-// Package csvutils has structures and utilities useful for working with CSVs.
-package utils
+// Package csv has structures and utilities useful for working with CSVs.
+//
+// This file tests utilities related to working with CSV data.
+package csv
 
 import (
 	"testing"
@@ -21,19 +23,20 @@ func TestIsValidLocation(t *testing.T) {
 	tests := []struct {
 		name       string
 		location   Location
+		profile    string
 		shouldPass bool
 	}{
-		{name: "Valid location (row 0, col 1)", location: Location{RowIndex: 0, ColIndex: 1}, shouldPass: true},
-		{name: "Valid location (row 1, col 0)", location: Location{RowIndex: 1, ColIndex: 0}, shouldPass: true},
-		{name: "Invalid row index (negative)", location: Location{RowIndex: -1, ColIndex: 0}, shouldPass: false},
-		{name: "Invalid column index (negative)", location: Location{RowIndex: 0, ColIndex: -1}, shouldPass: false},
-		{name: "Row index out of bounds", location: Location{RowIndex: 2, ColIndex: 0}, shouldPass: false},
-		{name: "Column index out of bounds", location: Location{RowIndex: 0, ColIndex: 2}, shouldPass: false},
+		{"Valid location (row 0, col 1)", Location{RowIndex: 0, ColIndex: 1}, "default", true},
+		{"Valid location (row 1, col 0)", Location{RowIndex: 1, ColIndex: 0}, "default", true},
+		{"Invalid row index (negative)", Location{RowIndex: -1, ColIndex: 0}, "default", false},
+		{"Invalid column index (negative)", Location{RowIndex: 0, ColIndex: -1}, "default", false},
+		{"Row index out of bounds", Location{RowIndex: 2, ColIndex: 0}, "default", false},
+		{"Column index out of bounds", Location{RowIndex: 0, ColIndex: 2}, "default", false},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			err := IsValidLocation(test.location, csvData)
+			err := IsValidLocation(test.location, csvData, test.profile)
 			if (err != nil && test.shouldPass) || (err == nil && !test.shouldPass) {
 				// Shouldn't have an err on true shouldPass results and should have an err on false shouldPass results
 				t.Errorf("IsValidLocation(%v, csvData); found error: %v, expected error: %v", test.location,
@@ -43,12 +46,13 @@ func TestIsValidLocation(t *testing.T) {
 	}
 }
 
-// TestGetHeader verifys that GetHeader returns the expected header in the first row
+// TestGetHeader verifies that GetHeader returns the expected header in the first row
 func TestGetHeader(t *testing.T) {
 	tests := []struct {
 		name        string
 		location    Location
 		csvData     [][]string
+		profile     string
 		expected    string
 		expectError bool
 	}{
@@ -59,6 +63,7 @@ func TestGetHeader(t *testing.T) {
 				{"ID", "Name", "Age"},
 				{"1", "Alice", "30"},
 			},
+			profile:     "default",
 			expected:    "Name",
 			expectError: false,
 		},
@@ -69,6 +74,7 @@ func TestGetHeader(t *testing.T) {
 				{"ID", "Name", "Age"},
 				{"1", "Alice", "30"},
 			},
+			profile:     "default",
 			expected:    "ID",
 			expectError: false,
 		},
@@ -79,6 +85,7 @@ func TestGetHeader(t *testing.T) {
 				{"ID", "Name", "Age"},
 				{"1", "Alice", "30"},
 			},
+			profile:     "default",
 			expected:    "",
 			expectError: true,
 		},
@@ -86,6 +93,7 @@ func TestGetHeader(t *testing.T) {
 			name:        "Empty first row",
 			location:    Location{ColIndex: 0},
 			csvData:     [][]string{{}, {"1", "Alice", "30"}},
+			profile:     "default",
 			expected:    "",
 			expectError: true,
 		},
@@ -93,6 +101,7 @@ func TestGetHeader(t *testing.T) {
 			name:        "Empty CSV data",
 			location:    Location{ColIndex: 0},
 			csvData:     [][]string{},
+			profile:     "default",
 			expected:    "",
 			expectError: true,
 		},
@@ -100,7 +109,7 @@ func TestGetHeader(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result, err := GetHeader(tt.location, tt.csvData)
+			result, err := GetHeader(tt.location, tt.csvData, tt.profile)
 
 			if tt.expectError {
 				assert.Error(t, err)
