@@ -1,23 +1,35 @@
 package checks
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 	"regexp"
 
-	csv "github.com/UCLALibrary/validation-service/csvutils"
-	"github.com/UCLALibrary/validation-service/validation/config"
+        "github.com/UCLALibrary/validation-service/validation/config"
+        "github.com/UCLALibrary/validation-service/validation/csv"
 )
 
-type LicenseCheck struct{}
+// Error messages
+var (
+	nilProfileErr = "supplied profile cannot be nil"
+	urlFormatErr = "license URL is not in a proper format (check for HTTPS)"
+	urlConnectErr = "problem connecting to license URL"
+	urlReadErr = "problem reading body of license URL"
+	emptyBodyErr = "licence has no content"
+)
+
+type LicenseCheck struct{
+	profiles *config.Profiles
+}
 
 func (check *LicenseCheck) NewLicenseLCheck(profiles *config.Profiles) (*LicenseCheck, error) {
 	if profiles == nil {
-		return nil, fmt.Errorf("supplied Profiles cannot be nil")
+		return nil, csv.NewError(nilProfileErr, csv.Location{}, "nil")
 	}
 
-	return &LicenseCheck{}, nil
+	return &LicenseCheck{
+		profiles: profiles,
+	}, nil
 }
 
 func (check *LicenseCheck) Validate(profile string, location csv.Location, csvData [][]string) error {
@@ -26,12 +38,12 @@ func (check *LicenseCheck) Validate(profile string, location csv.Location, csvDa
 		return nil
 	}
 
-	if err := csv.IsValidLocation(location, csvData); err != nil {
+	if err := csv.IsValidLocation(location, csvData, profile); err != nil {
 		return err
 	}
 
 	// find the header and determine if it matches an ark header
-	header, err := csv.GetHeader(location, csvData)
+	header, err := csv.GetHeader(location, csvData, profile)
 
 	if err != nil {
 		return err
@@ -43,32 +55,31 @@ func (check *LicenseCheck) Validate(profile string, location csv.Location, csvDa
 
 	value := csvData[location.RowIndex][location.ColIndex]
 
-	if err := verifyLicense(value); err != nil {
-		return fmt.Errorf("License validation failed at (row: %d, column: %d) [profile: %s]: %w",
-			location.RowIndex, location.ColIndex, profile, err)
+	if err := verifyLicense(value, profile, location, csvData); err != nil {
+		return err
 
 	}
 
 	return nil
 }
 
-func verifyLicense(license string) error {
+func verifyLicense(license string, profile string, location csv.Location, csvData [][]string) error {
         r := regexp.MustCompile("^http\\:\\/\\/[0-9a-zA-Z]([-.\\w]*[0-9a-zA-Z])*(:(0-9)*)*(\\/?)([a-zA-Z0-9\\-\\.\\?\\,\\'\\/\\\\\\+&amp;%\\$#_]*)?$")
         if !r.MatchString(license) {
-                return fmt.Errorf("License URL %s is not in a proper format", license)
+                return csv.NewError(urlFormatErr, location, profile)
         }
 
         resp, err := http.Get(license)
         if err != nil {
-                return fmt.Errorf("Error connecting to license URL: %s", err.Error())
+                return csv.NewError(urlConnectErr, location, profile)
         }
         defer resp.Body.Close()
         body, err := io.ReadAll(resp.Body)
         if err != nil {
-                return fmt.Errorf("Error reading body of license URL : %s", err.Error())
+                return csv.NewError(urlReadErr, location, profile)
         }
         if len(body) == 0 {
-                return fmt.Errorf("License URL %s  appears to lack content", license)
+                return csv.NewError(emptyBodyErr, location, profile)
         }
 
         // Supplied license is valid
