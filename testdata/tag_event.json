@@ -1,0 +1,14 @@
+{
+  "ref": "refs/tags/TAG_NAME",
+  "before": "0000000000000000000000000000000000000000",
+  "after": "LAST_SHA",
+  "repository": {
+    "name": "validation-service",
+    "owner": {
+      "name": "uclalibrary"
+    }
+  },
+  "pusher": {
+    "name": "YOUR_NAME"
+  }
+}
