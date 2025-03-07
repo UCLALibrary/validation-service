@@ -75,4 +75,4 @@ run: config api build
 
 # Run a CI action (assuming the CI prerequisites from the README have also been installed)
 ci-run:
-	pkg/scripts/act.sh $(JOB)
+	pkg/scripts/act.sh $(JOB) $(SERVICE_NAME)

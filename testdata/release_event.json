@@ -1,0 +1,26 @@
+{
+  "action": "published",
+  "release": {
+    "tag_name": "TAG_NAME",
+    "target_commitish": "COMMIT_SHA",
+    "name": "Release Title",
+    "body": "Description of the release",
+    "draft": false,
+    "prerelease": false,
+    "created_at": "TIMESTAMP",
+    "published_at": "TIMESTAMP",
+    "author": {
+      "login": "GITHUB_USER"
+    }
+  },
+  "repository": {
+    "name": "SERVICE_NAME",
+    "full_name": "DOCKER_REGISTRY_ACCOUNT/SERVICE_NAME",
+    "owner": {
+      "login": "DOCKER_REGISTRY_ACCOUNT"
+    }
+  },
+  "sender": {
+    "login": "GITHUB_USER"
+  }
+}

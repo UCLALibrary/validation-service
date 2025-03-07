@@ -1,4 +1,4 @@
-name: Build and Publish Docker Image
+name: Build and Publish Release
 
 env:
   GO_VERSION: '1.24.0'
@@ -6,9 +6,8 @@ env:
   DOCKER_REGISTRY_ACCOUNT: ${{ vars.DOCKER_REGISTRY_ACCOUNT }}
 
 on:
-  push:
-    tags:
-      - '*'
+  release:
+    types: [ published ]
   workflow_dispatch:
     
 jobs:
@@ -35,11 +34,12 @@ jobs:
 
     - name: Install yq
       run: |
-        go install github.com/mikefarah/yq/v4@latest
+        go install github.com/mikefarah/yq/v4@8bf425b4d1344db7cd469a8d10a390876e0c77fd # v4.45.1
 
     - name: Install oapi-codegen
       run: |
-        go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
+        go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@9c09ef9e9d4be639bd3feff31ff2c06961421272
+        # v2.4.1
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2 # v3.10.0
@@ -63,7 +63,45 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: ${{ env.DOCKER_REGISTRY_ACCOUNT }}/${{ env.SERVICE_NAME }}:${{ github.ref_name }}
+        tags: ${{ env.DOCKER_REGISTRY_ACCOUNT }}/${{ env.SERVICE_NAME }}:${{ github.event.release.tag_name }}
         build-args: |
           SERVICE_NAME=${{ env.SERVICE_NAME }}
           LOG_LEVEL=info
+
+  # If a test deploy is desired, releases should first be run as pre-releases
+  trigger-test-deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.release.prerelease == true }}
+
+    steps:
+    - name: Update test image version
+      uses: mikefarah/yq@8bf425b4d1344db7cd469a8d10a390876e0c77fd # v4.45.1
+      with:
+        cmd: yq ".image.tag = \"${{ github.event.release.tag_name }}\"" 'pkg/helm/test-validator.yaml' > \
+          /tmp/test-validator.yaml
+
+    - name: Copy Helm values file to test-validator branch
+      uses: planetoftheweb/copy-to-branches@8a8a05b3f22dec3acf38c6af4c7074b39911e586 # v1.3
+      env:
+        key: main  # Source branch
+        files: pkg/helm/test-validator.yaml
+        branches: test-validator
+
+  # If release is run without the pre-release checkbox checked, it's the production release
+  trigger-prod-deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.release.prerelease != true }}
+
+    steps:
+    - name: Update prod image version
+      uses: mikefarah/yq@8bf425b4d1344db7cd469a8d10a390876e0c77fd # v4.45.1
+      with:
+        cmd: yq ".image.tag = \"${{ github.event.release.tag_name }}\"" 'pkg/helm/prod-validator.yaml' > \
+          /tmp/prod-validator.yaml
+
+    - name: Copy Helm values file to prod-validator branch
+      uses: planetoftheweb/copy-to-branches@8a8a05b3f22dec3acf38c6af4c7074b39911e586 # v1.3
+      env:
+        key: main  # Source branch
+        files: pkg/helm/prod-validator.yaml
+        branches: prod-validator

@@ -9,15 +9,49 @@
 #   * yq (https://mikefarah.gitbook.io/yq)
 #
 
+# Confirm the first argument is one of our supported CI actions
+case "$1" in
+  build|prerelease|release|nightly)
+    ACTION="$1"
+    ;;
+  *)
+    echo "Invalid argument: $1. Please supply 'build', 'prerelease', 'release', or 'nightly'"
+    exit 1
+    ;;
+esac
+
+# Confirm that there were two arguments passed in; the second should be from the Makefile itself
+if [ -n "$2" ]; then
+  SERVICE_NAME="$2"
+else
+  echo "Script is confused; the second arg should have been SERVICE_NAME (supplied via Makefile)"
+  exit 1
+fi
+
+# Define the two configuration files we require for the script to work
+FILES=(
+  "$HOME/.act-secrets"
+  "$HOME/.act-variables"
+)
+
+# Confirm the config files exist so that we can read from them
+for FILE in "${FILES[@]}"; do
+  if [ ! -e "$FILE" ]; then
+    echo "Configuration file \"$FILE\" was not found; please create it before running this script"
+    exit 1
+  fi
+done
+
 # Warn about one of our system requirements not being able to be found
 function warn_not_found {
   echo "Warning: $1 was not found, but must be installed to use this script"
   exit 1
 }
 
-# For releases, we need to have a tag in the local repo and to generate a tag event
-function tag_event {
-  EVENT_FILE="/tmp/tag_event.json"
+# For releases, we need to have a tag in the local repo and to generate a (pre)release event
+function release_event {
+  EVENT_FILE="/tmp/release_event.json"
+  PRERELEASE=$([ -n "$1" ] && echo true || echo false)
 
   # Check to confirm yq is installed on our system
   if ! command -v yq > /dev/null 2>&1; then
@@ -31,56 +65,32 @@ function tag_event {
     warn_not_found '`git`'
   fi
 
+  # Check that there are tags in our local git repo
   if ! git describe --tags "$(git rev-list --tags --max-count=1)" > /dev/null 2>&1; then
     echo "No git tags exist in your local repo; either fetch them or create one"
     exit 1
   fi
 
-  # Get the latest commit's SHA to run a release
+  # Get the latest commit's tag and SHA to perform a release
   LATEST_TAG=$(git describe --tags "$(git rev-list --tags --max-count=1)")
   COMMIT_SHA=$(git rev-list -n 1 "$LATEST_TAG")
 
-  # Define the two configuration files we require for the script to work
-  FILES=(
-    "$HOME/.act-secrets"
-    "$HOME/.act-variables"
-  )
-
-  for FILE in "${FILES[@]}"; do
-    if [ ! -e "$FILE" ]; then
-      echo "Configuration file \"$FILE\" was not found; please create it before running this script"
-      exit 1
-    fi
-  done
-
-  # Get the GITHUB_USER value
+  # Get the GITHUB_USER and DOCKER_REGISTRY_ACCOUNT values
   source "$HOME/.act-variables"
 
-  # Create a tag event that can be supplied to the ACT release job
-  yq ".ref = \"refs/tags/$LATEST_TAG\" | .after = \"$COMMIT_SHA\" | .pusher.name = \"$GITHUB_USER\"" \
-    testdata/tag_event.json > "$EVENT_FILE"
+  TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
-  # Return the location of the newly created tag_event.json
+  # Create a (pre)release event that can be supplied to the ACT release job
+  yq ".release.tag_name = \"$LATEST_TAG\" | .release.target_commitish = \"$COMMIT_SHA\" |
+      .sender.login = \"$GITHUB_USER\" | .release.author.login = \"$GITHUB_USER\" | .release.name = \"v$LATEST_TAG\" |
+      .repository.name = \"$SERVICE_NAME\" | .repository.full_name = \"$DOCKER_REGISTRY_ACCOUNT/$SERVICE_NAME\" |
+      .repository.owner.login = \"$DOCKER_REGISTRY_ACCOUNT\" | .release.body = \"Automated release of v$LATEST_TAG\" |
+      .release.created_at = \"$TIMESTAMP\" | .release.published_at = \"$TIMESTAMP\" |
+      .release.prerelease = \"$PRERELEASE\"" testdata/release_event.json > "$EVENT_FILE"
+
+  # Return the location of the newly created release_event.json
   echo "$EVENT_FILE"
 }
-
-# Check that there is a requested CI action to run
-if [ -z "$1" ]; then
-  echo "Supply either 'release', 'build', or 'nightly' to run a CI action"
-  exit 1
-fi
-
-# Confirm the argument is one of our supported CI actions
-if [ "$1" = "release" ]; then
-  ACTION="release"
-elif [ "$1" = "build" ]; then
-  ACTION="build"
-elif [ "$1" = "nightly" ]; then
-  ACTION="nightly"
-else
-  echo "Invalid argument: $1. Please use 'release', 'build', or 'nightly'"
-  exit 1
-fi
 
 # Check to confirm ACT is installed on our system
 if command -v act > /dev/null 2>&1; then
@@ -99,9 +109,11 @@ else
   fi
 fi
 
-# If we're running a release we need to generate a tag event, otherwise we run a basic action
+# If we're running a (pre)release we need to generate a release event, otherwise we run a basic action
 if [ "$ACTION" = "release" ]; then
-  $ACT --secret-file ~/.act-secrets --var-file ~/.act-variables -e "$(tag_event)" -j $ACTION
+  $ACT --secret-file ~/.act-secrets --var-file ~/.act-variables -e "$(release_event)" -j "$ACTION"
+elif [ "$ACTION" = "prerelease" ]; then
+  $ACT --secret-file ~/.act-secrets --var-file ~/.act-variables -e "$(release_event "pre")" -j "release"
 else
-  $ACT --secret-file ~/.act-secrets --var-file ~/.act-variables -j $ACTION
+  $ACT --secret-file ~/.act-secrets --var-file ~/.act-variables -j "$ACTION"
 fi

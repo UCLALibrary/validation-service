@@ -1,4 +1,4 @@
-name: Build and Publish Docker Image for Snapshot
+name: Build and Publish Snapshot
 
 env:
   GO_VERSION: '1.24.0'
@@ -6,8 +6,6 @@ env:
   DOCKER_REGISTRY_ACCOUNT: ${{ vars.DOCKER_REGISTRY_ACCOUNT }}
 
 on:
-  release:
-    types: [ published ]
   schedule:
     - cron:  '20 20 * * *'
   workflow_dispatch:
