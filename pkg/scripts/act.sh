@@ -16,7 +16,7 @@ function warn_not_found {
 }
 
 # For releases, we need to have a tag in the local repo and to generate a tag event
-function get_tag_event_file {
+function tag_event {
   EVENT_FILE="/tmp/tag_event.json"
 
   # Check to confirm yq is installed on our system
@@ -101,8 +101,7 @@ fi
 
 # If we're running a release we need to generate a tag event, otherwise we run a basic action
 if [ "$ACTION" = "release" ]; then
-  EVENT_FILE="$(get_tag_event_file)"
-  $ACT --secret-file ~/.act-secrets --var-file ~/.act-variables -e "$EVENT_FILE" -j $ACTION
+  $ACT --secret-file ~/.act-secrets --var-file ~/.act-variables -e "$(tag_event)" -j $ACTION
 else
   $ACT --secret-file ~/.act-secrets --var-file ~/.act-variables -j $ACTION
 fi
