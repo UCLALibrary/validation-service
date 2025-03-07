@@ -15,7 +15,7 @@ case "$1" in
     ACTION="$1"
     ;;
   *)
-    echo "Invalid argument: $1. Please supply 'build', 'prerelease', 'release', or 'nightly'"
+    echo "Invalid argument: $1. Please supply 'JOB=build', 'JOB=prerelease', 'JOB=release', or 'JOB=nightly'"
     exit 1
     ;;
 esac
@@ -86,7 +86,7 @@ function release_event {
       .repository.name = \"$SERVICE_NAME\" | .repository.full_name = \"$DOCKER_REGISTRY_ACCOUNT/$SERVICE_NAME\" |
       .repository.owner.login = \"$DOCKER_REGISTRY_ACCOUNT\" | .release.body = \"Automated release of v$LATEST_TAG\" |
       .release.created_at = \"$TIMESTAMP\" | .release.published_at = \"$TIMESTAMP\" |
-      .release.prerelease = \"$PRERELEASE\"" testdata/release_event.json > "$EVENT_FILE"
+      .release.prerelease = $PRERELEASE" testdata/release_event.json > "$EVENT_FILE"
 
   # Return the location of the newly created release_event.json
   echo "$EVENT_FILE"
@@ -111,9 +111,9 @@ fi
 
 # If we're running a (pre)release we need to generate a release event, otherwise we run a basic action
 if [ "$ACTION" = "release" ]; then
-  $ACT --secret-file ~/.act-secrets --var-file ~/.act-variables -e "$(release_event)" -j "$ACTION"
+  $ACT --secret-file ~/.act-secrets --var-file ~/.act-variables -e "$(release_event)" release
 elif [ "$ACTION" = "prerelease" ]; then
-  $ACT --secret-file ~/.act-secrets --var-file ~/.act-variables -e "$(release_event "pre")" -j "release"
+  $ACT --secret-file ~/.act-secrets --var-file ~/.act-variables -e "$(release_event \"pre\")" release
 else
   $ACT --secret-file ~/.act-secrets --var-file ~/.act-variables -j "$ACTION"
 fi

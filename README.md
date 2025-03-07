@@ -120,24 +120,31 @@ below:
 - DOCKER_REGISTRY_ACCOUNT='YOUR_VALUE_HERE'
 - GITHUB_USER='YOUR_VALUE_HERE'
 
-For UCLA folks, the `DOCKER_REGISTRY_ACCOUNT` should be "uclalibrary".
+For UCLA folks, the `DOCKER_REGISTRY_ACCOUNT` should be "uclalibrary". Also, remember to set your file permissions so
+that only you can read them.
 
 Once all of this is set up, you'll then be able to run the `ci-run` Makefile target. To run that target, you'll also
-need to supply the name of the workflow you want to run. The choices are: build, nightly, and release. The `nightly`
-and `release` workflows will actually push versions of the code up to DockerHub. Nightly will just push a `nightly`
-snapshot and `release` will push a tagged version. To run `release`, your local git repository needs to have at least
-one tag. It will release the latest.
+need to supply the name of the workflow you want to run. The choices are: build, nightly, prerelease and release. The
+`nightly`, `prerelease`, `release` workflows will actually push versions of the code up to DockerHub. Nightly will
+push a `nightly` snapshot, and `prerelease` and `release` will push a tagged version. To run either of the release(s),
+your local git repository needs to have at least one tag. The workflow will publish the latest tag.
 
-Below are examples of how each workflow can be run:
+Below are examples of how each workflow can be run (note the required `JOB=` prefix):
 
     make ci-run JOB=build
 
     make ci-run JOB=nightly
 
+    make ci-run JOB=prerelease
+
     make ci-run JOB=release
 
 This functionality is probably most just useful for UCLA Library folks, but it's documented here in case others are
 interested in running this on their own, too.
+
+## Deploying to UCLA's Kubernetes Infrastructure
+
+Say more...
 
 ## Contact
 
