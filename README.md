@@ -144,7 +144,18 @@ interested in running this on their own, too.
 
 ## Deploying to UCLA's Kubernetes Infrastructure
 
-Say more...
+Deploying `validation-service` to our [Kubernetes](https://kubernetes.io/) infrastructure is accomplished through the
+use of [ArgoCD](https://argo-cd.readthedocs.io/en/stable/) and a [Helm](https://helm.sh/) chart.
+
+UCLA Library's [repository](https://github.com/UCLALibrary/gitops_kubernetes) of charts contains application specific
+[templates](https://github.com/UCLALibrary/gitops_kubernetes/tree/main/app-of-apps/services-team/templates) that extend
+a base, [generic chart](https://github.com/UCLALibrary/uclalib-helm-generic) (kept in its own repository). The template
+for each application contains a link to an overridable "values" file for that application. In the case of this project,
+the [values files](pkg/helm/) are stored in this repository (in the `pkg/helm` directory).
+
+GitHub Actions and these other components all work together to construct a Docker image deployment workflow that's
+[documented](docs/how-to-deploy.md) in a separate page in this project's 'docs' folder. Take a look at it for step by
+step instructions on how to deploy this service.
 
 ## Contact
 
