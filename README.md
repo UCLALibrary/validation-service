@@ -99,7 +99,7 @@ They are just additional conveniences for developers.
 ## Building and Deploying with ACT
 
 [ACT](https://github.com/nektos/act) is a tool that enables you to run GitHub Action workflows on your local machine.
-It's useful for testing CI/CD workflows, and also gives you an alternate way to build and test the project. Our GitHub
+It's useful for testing CI/CD workflows and also gives you an alternate way to build and test the project. Our GitHub
 Action workflows use our Makefile so, for this project, it's mostly just useful to confirm that our CI/CD workflows are
 running, without having to push commits to GitHub.
 
