@@ -139,7 +139,7 @@ externalsecrets:
   # Reference to ClusterSecretStore name
   ref: services-clustersecretstore
   secrets:
-    #    application:
+    application: {}
     #      data:
     #        - secretKey: SOMETHING_SOMETHING
     #          remoteRef:
