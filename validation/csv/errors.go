@@ -46,7 +46,7 @@ func (err *Error) String() string {
 		regex := regexp.MustCompile(`\s*\(Row: \d+, Col: \d+\) \[profile: .*?\]`)
 		cause = regex.ReplaceAllString(cause, "") // 'All' means all for String()
 
-		return fmt.Sprintf("Error: %s [Cause: %s]", err.Message, cause)
+		return fmt.Sprintf("Error: %s \nCause: %s", err.Message, cause)
 	}
 
 	return fmt.Sprintf("Error: %s", err.Message)
