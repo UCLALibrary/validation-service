@@ -11,7 +11,6 @@ import (
 
 // Error messages
 var (
-	nilProfileErr = "supplied profile cannot be nil"
 	urlFormatErr = "license URL is not in a proper format (check for HTTPS)"
 	urlConnectErr = "problem connecting to license URL"
 	urlReadErr = "problem reading body of license URL"
@@ -55,7 +54,7 @@ func (check *LicenseCheck) Validate(profile string, location csv.Location, csvDa
 
 	value := csvData[location.RowIndex][location.ColIndex]
 
-	if err := verifyLicense(value, profile, location, csvData); err != nil {
+	if err := verifyLicense(value, profile, location); err != nil {
 		return err
 
 	}
@@ -63,7 +62,7 @@ func (check *LicenseCheck) Validate(profile string, location csv.Location, csvDa
 	return nil
 }
 
-func verifyLicense(license string, profile string, location csv.Location, csvData [][]string) error {
+func verifyLicense(license string, profile string, location csv.Location) error {
         r := regexp.MustCompile("^http\\:\\/\\/[0-9a-zA-Z]([-.\\w]*[0-9a-zA-Z])*(:(0-9)*)*(\\/?)([a-zA-Z0-9\\-\\.\\?\\,\\'\\/\\\\\\+&amp;%\\$#_]*)?$")
         if !r.MatchString(license) {
                 return csv.NewError(urlFormatErr, location, profile)
