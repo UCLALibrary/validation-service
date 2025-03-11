@@ -37,7 +37,7 @@ image:
   repository: uclalibrary/validation-service
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: 0.0.1
+  tag: 0.0.2
 podAnnotations: {}
 podSecurityContext: {}
 # fsGroup: 2000
@@ -101,11 +101,11 @@ ingress:
   enabled: true
   className: nginx
   annotations:
-    kubernetes.io/ingress.class: "nginx"
-    kubernetes.io/tls-acme: "true"
-    nginx.ingress.kubernetes.io/enable-cors: "true"
-    cert-manager.io/cluster-issuer: "sectigo-acme-clusterissuer"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: true
+    nginx.ingress.kubernetes.io/enable-cors: true
+    cert-manager.io/cluster-issuer: sectigo-acme-clusterissuer
+    nginx.ingress.kubernetes.io/force-ssl-redirect: true
   hosts:
     - host: test.validator.library.ucla.edu
       paths:
@@ -123,11 +123,11 @@ ingress:
 #
 configmap:
   enabled: true
-  additionaLabels: {}
+  additionalLabels: {}
   annotations: {}
   data:
     PROFILES_FILE: /usr/local/data/profiles.json
-#    VERSION: 0.0.1
+    VERSION: 0.0.2
 #---------------------------------------------
 
 #---------------------------------------------
