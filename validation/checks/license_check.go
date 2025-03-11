@@ -11,6 +11,7 @@ import (
 
 // Error messages
 var (
+	noProfileErr = "supplied profile cannot be nil"
 	urlFormatErr = "license URL is not in a proper format (check for HTTPS)"
 	urlConnectErr = "problem connecting to license URL"
 	urlReadErr = "problem reading body of license URL"
@@ -23,7 +24,7 @@ type LicenseCheck struct{
 
 func (check *LicenseCheck) NewLicenseLCheck(profiles *config.Profiles) (*LicenseCheck, error) {
 	if profiles == nil {
-		return nil, csv.NewError(nilProfileErr, csv.Location{}, "nil")
+		return nil, csv.NewError(noProfileErr, csv.Location{}, "nil")
 	}
 
 	return &LicenseCheck{

@@ -15,49 +15,49 @@ func TestVerifyLicense(t *testing.T) {
 		license     string
 		profile     string
 		location    csv.Location
-		expectError bool
+		result      bool
 	}{
 		{
 			name:        "Valid license with Festerize profile",
 			license:     "http://creativecommons.org/licenses/by-nc/4.0/",
 			profile:     "festerize",
 			location:    testLocation,
-			expectError: false,
+			result:      true,
 		},
 		{
 			name:        "Invalid license (https prefix) with Festerize profile",
 			license:     "https://library.ucla.edu",
 			profile:     "festerize",
 			location:    testLocation,
-			expectError: true,
+			result:      false,
 		},
 		{
 			name:        "Invalid license (bad URL format) with Festerize profile",
 			license:     "http://library@edu",
 			profile:     "festerize",
 			location:    testLocation,
-			expectError: true,
+			result:      false,
 		},
 		{
 			name:        "Invalid license (fake URL) with Festerize profile",
 			license:     "http://ucla.example.edu",
 			profile:     "festerize",
 			location:    testLocation,
-			expectError: true,
+			result:      false,
 		},
 		{
 			name:        "Invalid license (no body) with Festerize profile",
-			license:     "http://about:blank",
+			license:     "http://about.blank",
 			profile:     "festerize",
 			location:    testLocation,
-			expectError: true,
+			result:      false,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := verifyLicense(tt.license, tt.profile, tt.location)
-			if (err != nil && tt.expectError) || (err == nil && !tt.expectError) {
+			if (err != nil && tt.result) || (err == nil && !tt.result) {
 				t.Errorf("Expected '%v' response was not found: %v", tt.name, err)
 			}
 		})
