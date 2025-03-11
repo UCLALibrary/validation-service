@@ -139,12 +139,7 @@ externalsecrets:
   # Reference to ClusterSecretStore name
   ref: services-clustersecretstore
   secrets:
-    application:
-      # Placeholder workaround until template can handle not having secrets
-      data:
-        - secretKey: FESTER_S3_ACCESS_KEY
-          remoteRef:
-            key: /services/prodeks/prod-fester/fester_s3_access_key
+    application: {}
     dockerhub:
       data:
         - secretKey: creds
