@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"regexp"
 
-	"github.com/UCLALibrary/validation-service/validation/config"
 	"github.com/UCLALibrary/validation-service/validation/csv"
+	"github.com/UCLALibrary/validation-service/validation/util"
 )
 
 // Error messages
@@ -18,10 +18,10 @@ var (
 )
 
 type LicenseCheck struct {
-	profiles *config.Profiles
+	profiles *util.Profiles
 }
 
-func (check *LicenseCheck) NewLicenseCheck(profiles *config.Profiles) (*LicenseCheck, error) {
+func (check *LicenseCheck) NewLicenseCheck(profiles *util.Profiles) (*LicenseCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(noProfileErr, csv.Location{}, "nil")
 	}
@@ -72,6 +72,7 @@ func verifyLicense(license string, profile string, location csv.Location) error 
 	if err != nil {
 		return csv.NewError(urlConnectErr, location, profile)
 	}
+	//noinspection GoUnhandledErrorResult
 	defer resp.Body.Close()
 	_, err = io.ReadAll(resp.Body)
 	if err != nil {

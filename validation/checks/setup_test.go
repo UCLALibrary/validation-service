@@ -1,6 +1,6 @@
 //go:build unit
 
-// Package checks consists of individual validation checks.
+// Package common provides resources useful to different parts of the validation service.
 //
 // This file sets up the testing environment for the package.
 package checks
