@@ -139,11 +139,11 @@ externalsecrets:
   # Reference to ClusterSecretStore name
   ref: services-clustersecretstore
   secrets:
-    application: {}
-    #      data:
-    #        - secretKey: SOMETHING_SOMETHING
-    #          remoteRef:
-    #            key: /services/prodeks/test-validator/something_something
+    application:
+      data:
+        - secretKey: FESTER_S3_ACCESS_KEY
+          remoteRef:
+            key: /services/prodeks/test-fester/fester_s3_access_key
     dockerhub:
       data:
         - secretKey: creds
