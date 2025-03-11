@@ -134,11 +134,11 @@ ingress:
 #
 configmap:
   enabled: true
-  additionaLabels: {}
+  additionalLabels: {}
   annotations: {}
   data:
     PROFILES_FILE: "/usr/local/data/profiles.json"
-#    VERSION: "0.0.1"
+    VERSION: "0.0.0"
 #---------------------------------------------
 
 #---------------------------------------------
@@ -150,11 +150,7 @@ externalsecrets:
   # Reference to ClusterSecretStore name
   ref: services-clustersecretstore
   secrets:
-#    application:
-#      data:
-#        - secretKey: SOMETHING_SOMETHING
-#          remoteRef:
-#            key: /services/prodeks/test-validator/something_something
+    application: {}
     dockerhub:
       data:
         - secretKey: creds
