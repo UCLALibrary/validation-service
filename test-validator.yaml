@@ -140,6 +140,7 @@ externalsecrets:
   ref: services-clustersecretstore
   secrets:
     application:
+      # Placeholder workaround until template can handle not having secrets
       data:
         - secretKey: FESTER_S3_ACCESS_KEY
           remoteRef:
