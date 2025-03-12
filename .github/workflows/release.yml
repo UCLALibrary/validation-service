@@ -89,14 +89,14 @@ jobs:
           cmd: |
             yq '.image.tag = "${{ github.event.release.tag_name }}"' 'pkg/helm/test-validator.yaml' |
             yq '.configmap.data.VERSION = "${{ github.event.release.tag_name }}"' |
-            yq e 'with(.configmap.data.VERSION; .style = "double")' > /tmp/test-validator.yaml
+            yq e 'with(.configmap.data.VERSION; .style = "double")' > test-validator.yaml
 
       - name: Commit test version update
         run: |
+          git stash
           git fetch
           git switch test-validator
-          cp /tmp/test-validator.yaml .
-          cat test-validator.yaml
+          git apply
           git config --global user.email "softwaredev-services@library.ucla.edu"
           git config --global user.name "ServicesBot"
           git commit --allow-empty -am "Automated update of Docker image tag"
