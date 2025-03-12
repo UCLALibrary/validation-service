@@ -67,6 +67,7 @@ jobs:
           build-args: |
             SERVICE_NAME=${{ env.SERVICE_NAME }}
             LOG_LEVEL=info
+            VERSION=${{ github.event.release.tag_name }}
 
   # If a test deploy is desired, releases should first be run as pre-releases
   trigger-test-deploy:
@@ -86,16 +87,21 @@ jobs:
         id: helm-values-update
         uses: mikefarah/yq@8bf425b4d1344db7cd469a8d10a390876e0c77fd # v4.45.1
         with:
-          cmd: yq '.image.tag = "${{ github.event.release.tag_name }}"' 'pkg/helm/test-validator.yaml'
+          cmd: |
+            yq '.image.tag = "${{ github.event.release.tag_name }}"' 'pkg/helm/test-validator.yaml' |
+            yq '.configmap.data.VERSION = "${{ github.event.release.tag_name }}"' |
+            yq e 'with(.configmap.data.VERSION; .style = "double")' > test-validator-new.yaml
 
       - name: Commit test version update
         run: |
+          cat test-validator-new.yaml
           git fetch
           git switch test-validator
-          echo "${{ steps.helm-values-update.outputs.result }}" > test-validator.yaml
+          mv test-validator-new.yaml test-validator.yaml
           git config --global user.email "softwaredev-services@library.ucla.edu"
           git config --global user.name "ServicesBot"
-          git commit --allow-empty -am "Automated update of Docker image tag"
+          git add test-validator.yaml
+          git commit --no-verify -m "Automated update of test Docker image tag"
           git push
 
   # If release is run without the pre-release checkbox checked, it's the production release
@@ -116,14 +122,19 @@ jobs:
         id: helm-values-update
         uses: mikefarah/yq@8bf425b4d1344db7cd469a8d10a390876e0c77fd # v4.45.1
         with:
-          cmd: yq '.image.tag = "${{ github.event.release.tag_name }}"' 'pkg/helm/prod-validator.yaml'
+          cmd: |
+            yq '.image.tag = "${{ github.event.release.tag_name }}"' 'pkg/helm/prod-validator.yaml' |
+            yq '.configmap.data.VERSION = "${{ github.event.release.tag_name }}"' |
+            yq e 'with(.configmap.data.VERSION; .style = "double")' > prod-validator-new.yaml
 
       - name: Commit prod version update
         run: |
+          cat prod-validator-new.yaml
           git fetch
           git switch prod-validator
-          echo "${{ steps.helm-values-update.outputs.result }}" > prod-validator.yaml
+          mv prod-validator-new.yaml prod-validator.yaml
           git config --global user.email "softwaredev-services@library.ucla.edu"
           git config --global user.name "ServicesBot"
-          git commit --allow-empty -am "Automated update of Docker image tag"
+          git add prod-validator.yaml
+          git commit --no-verify -m "Automated update of prod Docker image tag"
           git push
