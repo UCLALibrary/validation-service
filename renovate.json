@@ -14,27 +14,21 @@
       "rangeStrategy": "bump"
     },
     {
-      "matchManagers": ["gomod"],
-      "matchDepNames": ["go"],
-      "automerge": false
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true
     },
     {
       "matchManagers": ["gomod"],
-      "groupName": "Go updates",
-      "matchUpdateTypes": ["minor", "patch"],
-      "automerge": true
+      "groupName": "Go updates"
     },
     {
       "matchManagers": ["dockerfile"],
-      "groupName": "Docker updates",
-      "matchUpdateTypes": ["minor", "patch"],
-      "automerge": true
+      "groupName": "Docker updates"
     },
     {
       "matchManagers": ["github-actions"],
-      "groupName": "GitHub Actions updates",
-      "matchUpdateTypes": ["minor", "patch"],
-      "automerge": true
+      "groupName": "GitHub Actions updates"
     }
-  ]
+  ],
+  "platformAutomerge": true
 }
