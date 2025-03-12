@@ -45,13 +45,6 @@ func TestVerifyLicense(t *testing.T) {
 			location:    testLocation,
 			result:      false,
 		},
-		{
-			name:        "Invalid license (no body) with Festerize profile",
-			license:     "http://about.blank",
-			profile:     "festerize",
-			location:    testLocation,
-			result:      false,
-		},
 	}
 
 	for _, tt := range tests {

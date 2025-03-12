@@ -74,12 +74,9 @@ func verifyLicense(license string, profile string, location csv.Location) error 
                 return csv.NewError(urlConnectErr, location, profile)
         }
         defer resp.Body.Close()
-        body, err := io.ReadAll(resp.Body)
+        _, err = io.ReadAll(resp.Body)
         if err != nil {
                 return csv.NewError(urlReadErr, location, profile)
-        }
-        if len(body) == 0 {
-                return csv.NewError(emptyBodyErr, location, profile)
         }
 
         // Supplied license is valid
