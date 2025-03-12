@@ -138,7 +138,6 @@ configmap:
   annotations: {}
   data:
     PROFILES_FILE: "/usr/local/data/profiles.json"
-    VERSION: "0.0.0"
 #---------------------------------------------
 
 #---------------------------------------------
