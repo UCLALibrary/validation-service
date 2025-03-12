@@ -37,7 +37,7 @@ image:
   repository: uclalibrary/validation-service
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.0.2"
+  tag: "0.0.3"
 podAnnotations: {}
 podSecurityContext: {}
 # fsGroup: 2000
@@ -127,7 +127,6 @@ configmap:
   annotations: {}
   data:
     PROFILES_FILE: "/usr/local/data/profiles.json"
-    VERSION: "0.0.2"
 #---------------------------------------------
 
 #---------------------------------------------
