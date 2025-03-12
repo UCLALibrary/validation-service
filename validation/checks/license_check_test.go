@@ -10,6 +10,9 @@ import (
 // TestVerifyLicense checks if verifyLicense throws the correct errors when given incorrect licenses
 func TestVerifyLicense(t *testing.T) {
 
+	var genericLocation = csv.Location{}
+
+
 	tests := []struct {
 		name        string
 		license     string
@@ -21,28 +24,28 @@ func TestVerifyLicense(t *testing.T) {
 			name:        "Valid license with Festerize profile",
 			license:     "http://creativecommons.org/licenses/by-nc/4.0/",
 			profile:     "festerize",
-			location:    testLocation,
+			location:    genericLocation,
 			result:      true,
 		},
 		{
 			name:        "Invalid license (https prefix) with Festerize profile",
 			license:     "https://library.ucla.edu",
 			profile:     "festerize",
-			location:    testLocation,
+			location:    genericLocation,
 			result:      false,
 		},
 		{
 			name:        "Invalid license (bad URL format) with Festerize profile",
 			license:     "http://library@edu",
 			profile:     "festerize",
-			location:    testLocation,
+			location:    genericLocation,
 			result:      false,
 		},
 		{
 			name:        "Invalid license (fake URL) with Festerize profile",
 			license:     "http://ucla.example.edu",
 			profile:     "festerize",
-			location:    testLocation,
+			location:    genericLocation,
 			result:      false,
 		},
 	}
