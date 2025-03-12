@@ -97,7 +97,9 @@ jobs:
         run: |
           git fetch
           git switch test-validator
+          echo "${{ steps.helm-values-update.outputs.result }}"
           echo "${{ steps.helm-values-update.outputs.result }}" > test-validator.yaml
+          cat test-validator.yaml
           git config --global user.email "softwaredev-services@library.ucla.edu"
           git config --global user.name "ServicesBot"
           git commit --allow-empty -am "Automated update of Docker image tag"
