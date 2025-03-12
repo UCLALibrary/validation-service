@@ -91,7 +91,7 @@ jobs:
         with:
           cmd: |
             yq '.image.tag = "${{ env.TAG }}"' 'pkg/helm/test-validator.yaml' |
-            yq e '.configmap.data.VERSION = "${{ env.TAG }}"' | with(.configmap.data.VERSION; .style = "double")
+            yq e '.configmap.data.VERSION = "${{ env.TAG }}" | with(.configmap.data.VERSION; .style = "double")'
 
       - name: Commit test version update
         run: |
@@ -126,7 +126,7 @@ jobs:
         with:
           cmd: |
             yq '.image.tag = "${{ env.TAG }}"' 'pkg/helm/prod-validator.yaml' |
-            yq e '.configmap.data.VERSION = "${{ env.TAG }}"' | with(.configmap.data.VERSION; .style = "double")
+            yq e '.configmap.data.VERSION = "${{ env.TAG }}" | with(.configmap.data.VERSION; .style = "double")'
 
       - name: Commit prod version update
         run: |
