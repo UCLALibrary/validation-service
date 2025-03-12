@@ -93,10 +93,8 @@ jobs:
 
       - name: Commit test version update
         run: |
-          git stash
           git fetch
           git switch test-validator
-          git apply
           git config --global user.email "softwaredev-services@library.ucla.edu"
           git config --global user.name "ServicesBot"
           git commit --allow-empty -am "Automated update of Docker image tag"
@@ -111,9 +109,6 @@ jobs:
       contents: write
 
     steps:
-      - name: Store release version in a shorter ENV variable
-        run: echo "TAG=$(echo '${{ github.event.release.tag_name }}')" >> $GITHUB_ENV
-
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -124,14 +119,14 @@ jobs:
         uses: mikefarah/yq@8bf425b4d1344db7cd469a8d10a390876e0c77fd # v4.45.1
         with:
           cmd: |
-            yq '.image.tag = "${{ env.TAG }}"' 'pkg/helm/prod-validator.yaml' |
-            yq e '.configmap.data.VERSION = "${{ env.TAG }}" | with(.configmap.data.VERSION; .style = "double")'
+            yq '.image.tag = "${{ github.event.release.tag_name }}"' 'pkg/helm/prod-validator.yaml' |
+            yq '.configmap.data.VERSION = "${{ github.event.release.tag_name }}"' |
+            yq e 'with(.configmap.data.VERSION; .style = "double")' > prod-validator.yaml
 
       - name: Commit prod version update
         run: |
           git fetch
           git switch prod-validator
-          echo "${{ steps.helm-values-update.outputs.result }}" > prod-validator.yaml
           git config --global user.email "softwaredev-services@library.ucla.edu"
           git config --global user.name "ServicesBot"
           git commit --allow-empty -am "Automated update of Docker image tag"
