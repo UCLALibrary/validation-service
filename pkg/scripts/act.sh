@@ -86,7 +86,6 @@ function release_event {
       .repository.name = \"$SERVICE_NAME\" | .repository.full_name = \"$DOCKER_REGISTRY_ACCOUNT/$SERVICE_NAME\" |
       .repository.owner.login = \"$DOCKER_REGISTRY_ACCOUNT\" | .release.body = \"Automated release of v$LATEST_TAG\" |
       .release.created_at = \"$TIMESTAMP\" | .release.published_at = \"$TIMESTAMP\" |
-      .configmap.data.VERSION = \"$LATEST_TAG\" |
       .release.prerelease = $PRERELEASE" testdata/release_event.json > "$EVENT_FILE"
 
   # Return the location of the newly created release_event.json

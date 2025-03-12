@@ -89,8 +89,7 @@ jobs:
         with:
           cmd: |
             yq '.image.tag = "${{ github.event.release.tag_name }}"' 'pkg/helm/test-validator.yaml' |
-            yq '.configmap.data.VERSION = "${{ github.event.release.tag_name }}"' |
-            yq e 'with(.configmap.data.VERSION; .style = "double")' > test-validator-new.yaml
+            yq e 'with(.image.tag; .style = "double")' > test-validator-new.yaml
 
       - name: Commit test version update
         run: |
@@ -124,8 +123,7 @@ jobs:
         with:
           cmd: |
             yq '.image.tag = "${{ github.event.release.tag_name }}"' 'pkg/helm/prod-validator.yaml' |
-            yq '.configmap.data.VERSION = "${{ github.event.release.tag_name }}"' |
-            yq e 'with(.configmap.data.VERSION; .style = "double")' > prod-validator-new.yaml
+            yq e 'with(.image.tag; .style = "double")' > prod-validator-new.yaml
 
       - name: Commit prod version update
         run: |
