@@ -93,7 +93,6 @@ jobs:
 
       - name: Commit test version update
         run: |
-          git stash
           git fetch
           git switch test-validator
           git config --global user.email "softwaredev-services@library.ucla.edu"
