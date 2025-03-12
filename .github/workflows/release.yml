@@ -67,6 +67,7 @@ jobs:
           build-args: |
             SERVICE_NAME=${{ env.SERVICE_NAME }}
             LOG_LEVEL=info
+            VERSION=${{ github.event.release.tag_name }}
 
   # If a test deploy is desired, releases should first be run as pre-releases
   trigger-test-deploy:
@@ -89,15 +90,18 @@ jobs:
           cmd: |
             yq '.image.tag = "${{ github.event.release.tag_name }}"' 'pkg/helm/test-validator.yaml' |
             yq '.configmap.data.VERSION = "${{ github.event.release.tag_name }}"' |
-            yq e 'with(.configmap.data.VERSION; .style = "double")' > test-validator.yaml
+            yq e 'with(.configmap.data.VERSION; .style = "double")' > test-validator-new.yaml
 
       - name: Commit test version update
         run: |
+          cat test-validator-new.yaml
           git fetch
           git switch test-validator
+          mv test-validator-new.yaml test-validator.yaml
           git config --global user.email "softwaredev-services@library.ucla.edu"
           git config --global user.name "ServicesBot"
-          git commit --allow-empty -am "Automated update of Docker image tag"
+          git add test-validator.yaml
+          git commit --no-verify -m "Automated update of test Docker image tag"
           git push
 
   # If release is run without the pre-release checkbox checked, it's the production release
@@ -121,13 +125,16 @@ jobs:
           cmd: |
             yq '.image.tag = "${{ github.event.release.tag_name }}"' 'pkg/helm/prod-validator.yaml' |
             yq '.configmap.data.VERSION = "${{ github.event.release.tag_name }}"' |
-            yq e 'with(.configmap.data.VERSION; .style = "double")' > prod-validator.yaml
+            yq e 'with(.configmap.data.VERSION; .style = "double")' > prod-validator-new.yaml
 
       - name: Commit prod version update
         run: |
+          cat prod-validator-new.yaml
           git fetch
           git switch prod-validator
+          mv prod-validator-new.yaml prod-validator.yaml
           git config --global user.email "softwaredev-services@library.ucla.edu"
           git config --global user.name "ServicesBot"
-          git commit --allow-empty -am "Automated update of Docker image tag"
+          git add prod-validator.yaml
+          git commit --no-verify -m "Automated update of prod Docker image tag"
           git push
