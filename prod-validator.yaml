@@ -1,8 +1,8 @@
 #---------------------------------------------
 # Global Configuration
 #
-nameOverride: prod-validator
-fullnameOverride: prod-validator
+nameOverride: "prod-validator"
+fullnameOverride: "prod-validator"
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
@@ -10,7 +10,7 @@ serviceAccount:
   annotations: {}
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name: 
+  name: ""
 #---------------------------------------------
 
 #---------------------------------------------
@@ -37,7 +37,7 @@ image:
   repository: uclalibrary/validation-service
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: 0.0.1
+  tag: "0.0.6"
 podAnnotations: {}
 podSecurityContext: {}
 # fsGroup: 2000
@@ -55,16 +55,16 @@ resources:
     memory: 1Gi
   requests:
     memory: 1Gi
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
 autoscaling:
   enabled: false
   minReplicas: 1
@@ -99,9 +99,9 @@ externalservice:
 #
 ingress:
   enabled: true
-  className: nginx
+  className: "nginx"
   annotations:
-    kubernetes.io/ingress.class: "nginx"
+    kubernetes.io/ingress.class: nginx
     kubernetes.io/tls-acme: "true"
     nginx.ingress.kubernetes.io/enable-cors: "true"
     cert-manager.io/cluster-issuer: "sectigo-acme-clusterissuer"
@@ -123,11 +123,10 @@ ingress:
 #
 configmap:
   enabled: true
-  additionaLabels: {}
+  additionalLabels: {}
   annotations: {}
   data:
-    PROFILES_FILE: /usr/local/data/profiles.json
-#    VERSION: 0.0.1
+    PROFILES_FILE: "/usr/local/data/profiles.json"
 #---------------------------------------------
 
 #---------------------------------------------
