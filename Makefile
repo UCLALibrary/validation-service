@@ -43,7 +43,7 @@ docker-build:
 	docker build . --tag $(SERVICE_NAME) --build-arg SERVICE_NAME=$(SERVICE_NAME) --build-arg VERSION=$(VERSION)
 
 # A convenience target to assist with running the Docker container outside of the build (optional)
-docker-run:
+docker-run: docker-build
 	CONTAINER_ID=$(shell docker image ls -q --filter=reference=$(SERVICE_NAME)); \
 	docker run -p $(PORT):8888 --name $(SERVICE_NAME) -e LOG_LEVEL="$(LOG_LEVEL)" -d $$CONTAINER_ID
 
