@@ -16,6 +16,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 )
@@ -90,15 +91,29 @@ func (service *Service) UploadCSV(context echo.Context) error {
 		report, reportErr := csv.NewReport(err, csvData, logger)
 		if reportErr != nil {
 			logger.Error("Failed to generate report", zap.Error(reportErr), zap.Stack("stacktrace"))
-
 			return context.JSON(http.StatusInternalServerError,
 				ServiceError{Code: http.StatusInternalServerError, Message: reportErr.Error()})
 		}
 
+		// Check to see if an HTML version of the report was requested
+		if strings.Contains(context.Request().Header.Get("Accept"), "text/html") {
+			return displayReport(report, logger, context)
+		}
+
+		// If not an HTML request, specifically, we return our JSON formatter version of the report
 		return context.JSON(http.StatusCreated, report)
 	}
 
-	return context.JSON(http.StatusCreated, &csv.Report{Profile: profile, Time: time.Now(), Warnings: []csv.Warning{}})
+	// There were no validation violations, so we just return an empty report
+	report := &csv.Report{Profile: profile, Time: time.Now(), Warnings: []csv.Warning{}}
+
+	// Check to see if an HTML version of the report was requested
+	if strings.Contains(context.Request().Header.Get("Accept"), "text/html") {
+		return displayReport(report, logger, context)
+	}
+
+	// If not an HTML request, specifically, we return our JSON formatter version of the report
+	return context.JSON(http.StatusCreated, report)
 }
 
 // Main function starts our Echo server
@@ -226,12 +241,35 @@ func loadTemplates(logger *zap.Logger) (*template.Template, error) {
 	return templates, nil
 }
 
+// displayReport sends a CSV validation report to the browser.
+func displayReport(report *csv.Report, logger *zap.Logger, context echo.Context) error {
+	json, jsonErr := csv.SerializeReport(report)
+	if jsonErr != nil {
+		return context.JSON(http.StatusInternalServerError,
+			ServiceError{Code: http.StatusInternalServerError, Message: jsonErr.Error()})
+	}
+
+	data := map[string]interface{}{
+		"JSON": template.HTML(json),
+	}
+
+	if err := context.Render(http.StatusCreated, "report.html", data); err != nil {
+		logger.Error("Failed to render template", zap.Error(err))
+
+		return context.JSON(http.StatusInternalServerError,
+			ServiceError{Code: http.StatusInternalServerError, Message: err.Error()})
+	}
+
+	return nil
+}
+
 // configStaticRoutes configures our static resources with the Echo application.
 func configStaticRoutes(echoApp *echo.Echo) []RouteMapping {
 	staticRoutes := []RouteMapping{
 		{"/openapi.yml", "html/assets/openapi.yml"},
 		{"/validation.css", "html/assets/validation.css"},
 		{"/validation.js", "html/assets/validation.js"},
+		{"/report.js", "html/assets/report.js"},
 	}
 
 	for _, route := range staticRoutes {
@@ -245,13 +283,14 @@ func configStaticRoutes(echoApp *echo.Echo) []RouteMapping {
 
 // configTemplateRoutes configures our template resources with the Echo application.
 func configTemplateRoutes(echoApp *echo.Echo, renderer *TemplateRenderer) []RouteMapping {
+	// Set the Echo application's default template renderer
+	echoApp.Renderer = renderer
+
+	// Default page routes
 	templateRoutes := []RouteMapping{
 		{"/", ""},
 		{"index.html", ""},
 	}
-
-	// Set the Echo application's default template renderer
-	echoApp.Renderer = renderer
 
 	// Have the templates renderer handle incoming index requests
 	echoApp.GET(templateRoutes[0].RoutePath, func(context echo.Context) error {

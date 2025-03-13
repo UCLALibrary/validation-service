@@ -72,3 +72,7 @@ config: profiles.json
 # Run the validation service locally, independent of the Docker container
 run: config api build
 	PROFILES_FILE="profiles.json" LOG_LEVEL=$(LOG_LEVEL) VERSION=$(VERSION) ./$(SERVICE_NAME)
+
+# Run a CI action (assuming the CI prerequisites from the README have also been installed)
+ci-run:
+	pkg/scripts/act.sh $(JOB) $(SERVICE_NAME)

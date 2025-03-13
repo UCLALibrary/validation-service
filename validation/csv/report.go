@@ -8,6 +8,7 @@ import (
 	"errors"
 	"go.uber.org/multierr"
 	"go.uber.org/zap"
+	"strings"
 	"time"
 )
 
@@ -54,11 +55,11 @@ func NewReport(multiErr error, csvData [][]string, logger *zap.Logger) (*Report,
 			}
 
 			report.Warnings = append(report.Warnings, Warning{
-				err.Error(),
+				strings.ReplaceAll(err.String(), "\n", "<br/>"),
 				header,
 				err.Location.ColIndex, // The front-end should make this 1-based
 				err.Location.RowIndex, // The front-end should make this 1-based
-				csvData[location.RowIndex][location.ColIndex],
+				strings.ReplaceAll(csvData[location.RowIndex][location.ColIndex], "\n", "\\n"),
 			})
 		} else {
 			logger.Error("Unexpected error", zap.Error(err), zap.Stack("stacktrace"))
