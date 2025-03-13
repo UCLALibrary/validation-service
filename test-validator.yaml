@@ -37,7 +37,7 @@ image:
   repository: uclalibrary/validation-service
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.0.4"
+  tag: "0.0.5"
 podAnnotations: {}
 podSecurityContext: {}
 # fsGroup: 2000
