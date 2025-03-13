@@ -37,7 +37,7 @@ readinessProbe:
 
 replicaCount: 1
 imagePullSecrets:
-  - name: validator-dockerhub-secret
+  - name: prod-validator-dockerhub-secret
 image:
   repository: uclalibrary/validation-service
   pullPolicy: IfNotPresent
