@@ -32,8 +32,9 @@ type ServiceError struct {
 
 // RouteMapping is a pairing of router path and file system path that can be used to configure request handlers.
 type RouteMapping struct {
-	RoutePath string
-	FilePath  string
+	RoutePath   string
+	FilePath    string
+	AltFilePath string
 }
 
 // TemplateRenderer holds parsed HTML templates for the validation service's Web pages
@@ -266,16 +267,39 @@ func displayReport(report *csv.Report, logger *zap.Logger, context echo.Context)
 // configStaticRoutes configures our static resources with the Echo application.
 func configStaticRoutes(echoApp *echo.Echo) []RouteMapping {
 	staticRoutes := []RouteMapping{
-		{"/openapi.yml", "html/assets/openapi.yml"},
-		{"/validation.css", "html/assets/validation.css"},
-		{"/validation.js", "html/assets/validation.js"},
-		{"/report.js", "html/assets/report.js"},
+		{
+			"/openapi.yml",
+			"/usr/local/data/html/assets/openapi.yml",
+			"html/assets/openapi.yml",
+		},
+		{
+			"/validation.css",
+			"/usr/local/data/html/assets/validation.css",
+			"html/assets/validation.css",
+		},
+		{
+			"/validation.js",
+			"/usr/local/data/html/assets/validation.js",
+			"html/assets/validation.js",
+		},
+		{
+			"/report.js",
+			"/usr/local/data/html/assets/report.js",
+			"html/assets/report.js",
+		},
 	}
 
+	// Try the Docker container paths first, then fall back to dev file system if needed
 	for _, route := range staticRoutes {
-		echoApp.GET(route.RoutePath, func(aContext echo.Context) error {
-			return aContext.File(route.FilePath)
-		})
+		if fileExists(route.FilePath) {
+			echoApp.GET(route.RoutePath, func(aContext echo.Context) error {
+				return aContext.File(route.FilePath)
+			})
+		} else {
+			echoApp.GET(route.RoutePath, func(aContext echo.Context) error {
+				return aContext.File(route.AltFilePath)
+			})
+		}
 	}
 
 	return staticRoutes
@@ -288,8 +312,8 @@ func configTemplateRoutes(echoApp *echo.Echo, renderer *TemplateRenderer) []Rout
 
 	// Default page routes
 	templateRoutes := []RouteMapping{
-		{"/", ""},
-		{"index.html", ""},
+		{"/", "", ""},
+		{"index.html", "", ""},
 	}
 
 	// Have the templates renderer handle incoming index requests
@@ -343,4 +367,10 @@ func trailingSlashMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 
 		return next(context)
 	}
+}
+
+// fileExists checks whether a file exists on the file system.
+func fileExists(aPath string) bool {
+	_, err := os.Stat(aPath)
+	return !os.IsNotExist(err)
 }
