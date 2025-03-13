@@ -15,7 +15,6 @@ var (
 	urlFormatErr = "license URL is not in a proper format (check for HTTPS)"
 	urlConnectErr = "problem connecting to license URL"
 	urlReadErr = "problem reading body of license URL"
-	emptyBodyErr = "licence has no content"
 )
 
 type LicenseCheck struct{
