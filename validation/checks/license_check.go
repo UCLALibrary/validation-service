@@ -63,7 +63,7 @@ func (check *LicenseCheck) Validate(profile string, location csv.Location, csvDa
 }
 
 func verifyLicense(license string, profile string, location csv.Location) error {
-        r := regexp.MustCompile("^http\\:\\/\\/[0-9a-zA-Z]([-.\\w]*[0-9a-zA-Z])*(:(0-9)*)*(\\/?)([a-zA-Z0-9\\-\\.\\?\\,\\'\\/\\\\\\+&amp;%\\$#_]*)?$")
+        r := regexp.MustCompile(`^^http\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_]*)?$`)
         if !r.MatchString(license) {
                 return csv.NewError(urlFormatErr, location, profile)
         }
