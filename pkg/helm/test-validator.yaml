@@ -138,6 +138,7 @@ configmap:
   annotations: {}
   data:
     PROFILES_FILE: "/usr/local/data/profiles.json"
+    LOG_LEVEL: "debug"
 #---------------------------------------------
 
 #---------------------------------------------
