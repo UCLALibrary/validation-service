@@ -32,12 +32,12 @@ readinessProbe:
     port: http
 replicaCount: 1
 imagePullSecrets:
-  - name: validator-dockerhub-secret
+  - name: prod-validator-dockerhub-secret
 image:
   repository: uclalibrary/validation-service
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.0.8"
+  tag: "0.0.9"
 podAnnotations: {}
 podSecurityContext: {}
 # fsGroup: 2000
