@@ -78,6 +78,11 @@ jobs:
       contents: write
 
     steps:
+      # We don't allow empties in GitHub Actions because it might conceal problems
+      - name: Set EMPTY_ALLOWED ENV if running in ACT
+        if: env.ACT == 'true'
+        run: echo "EMPTY_ALLOWED=--allow-empty" >> $GITHUB_ENV
+
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -100,7 +105,7 @@ jobs:
           git config --global user.email "softwaredev-services@library.ucla.edu"
           git config --global user.name "ServicesBot"
           git add test-validator.yaml
-          git commit --no-verify -m "Automated update of test Docker image tag"
+          git commit --no-verify $EMPTY_ALLOWED -m "Automated update of test Docker image tag"
           git push
 
   # If release is run without the pre-release checkbox checked, it's the production release
@@ -112,6 +117,11 @@ jobs:
       contents: write
 
     steps:
+      # We don't allow empties in GitHub Actions because it might conceal problems
+      - name: Set EMPTY_ALLOWED ENV if running in ACT
+        if: env.ACT == 'true'
+        run: echo "EMPTY_ALLOWED=--allow-empty" >> $GITHUB_ENV
+
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -134,5 +144,5 @@ jobs:
           git config --global user.email "softwaredev-services@library.ucla.edu"
           git config --global user.name "ServicesBot"
           git add prod-validator.yaml
-          git commit --no-verify -m "Automated update of prod Docker image tag"
+          git commit --no-verify $EMPTY_ALLOWED -m "Automated update of prod Docker image tag"
           git push

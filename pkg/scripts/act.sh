@@ -51,7 +51,23 @@ function warn_not_found {
 # For releases, we need to have a tag in the local repo and to generate a (pre)release event
 function release_event {
   EVENT_FILE="/tmp/release_event.json"
-  PRERELEASE=$([ -n "$1" ] && echo true || echo false)
+
+  if [[ -z "$1" ]]; then
+    echo "The 'release_event' function did not receive its required argument: 'released' or 'published'"
+    exit 1
+  fi
+
+  # Set up whether we're doing a test/prerelease (published) or a prod release (released)
+  if [ "$1" == "released" ]; then
+    PRERELEASE=false
+  elif [ "$1" == "published" ]; then
+    PRERELEASE=true
+  else
+    echo "Supplied 'release_event' argument is not the required: 'released' or 'published'"
+  fi
+
+  # What type of release event are we performing? It's in this variable.
+  EVENT_TYPE="$1"
 
   # Check to confirm yq is installed on our system
   if ! command -v yq > /dev/null 2>&1; then
@@ -85,7 +101,7 @@ function release_event {
       .sender.login = \"$GITHUB_USER\" | .release.author.login = \"$GITHUB_USER\" | .release.name = \"v$LATEST_TAG\" |
       .repository.name = \"$SERVICE_NAME\" | .repository.full_name = \"$DOCKER_REGISTRY_ACCOUNT/$SERVICE_NAME\" |
       .repository.owner.login = \"$DOCKER_REGISTRY_ACCOUNT\" | .release.body = \"Automated release of v$LATEST_TAG\" |
-      .release.created_at = \"$TIMESTAMP\" | .release.published_at = \"$TIMESTAMP\" |
+      .release.created_at = \"$TIMESTAMP\" | .release.published_at = \"$TIMESTAMP\" | .action = \"$EVENT_TYPE\" |
       .release.prerelease = $PRERELEASE" testdata/release_event.json > "$EVENT_FILE"
 
   # Return the location of the newly created release_event.json
@@ -111,9 +127,9 @@ fi
 
 # If we're running a (pre)release we need to generate a release event, otherwise we run a basic action
 if [ "$ACTION" = "release" ]; then
-  $ACT --secret-file ~/.act-secrets --var-file ~/.act-variables -e "$(release_event)" release
+  $ACT --secret-file ~/.act-secrets --var-file ~/.act-variables -e "$(release_event released)" release
 elif [ "$ACTION" = "prerelease" ]; then
-  $ACT --secret-file ~/.act-secrets --var-file ~/.act-variables -e "$(release_event \"pre\")" release
+  $ACT --secret-file ~/.act-secrets --var-file ~/.act-variables -e "$(release_event published)" release
 else
   $ACT --secret-file ~/.act-secrets --var-file ~/.act-variables -j "$ACTION"
 fi

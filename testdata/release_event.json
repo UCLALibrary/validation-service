@@ -1,5 +1,5 @@
 {
-  "action": "published",
+  "action": "released OR published",
   "release": {
     "tag_name": "TAG_NAME",
     "target_commitish": "COMMIT_SHA",
