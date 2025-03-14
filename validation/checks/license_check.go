@@ -41,7 +41,7 @@ func (check *LicenseCheck) Validate(profile string, location csv.Location, csvDa
 		return err
 	}
 
-	// find the header and determine if it matches an ark header
+	// find the header and determine if it matches an license header
 	header, err := csv.GetHeader(location, csvData, profile)
 
 	if err != nil {

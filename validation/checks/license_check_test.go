@@ -5,11 +5,11 @@ import (
 	"testing"
 )
 
-// testLocation provides a consistent location for the purposes of test comparison.
 
 // TestVerifyLicense checks if verifyLicense throws the correct errors when given incorrect licenses
 func TestVerifyLicense(t *testing.T) {
 
+        // genericLocation provides a consistent location for the purposes of test comparison.
 	var genericLocation = csv.Location{}
 
 
