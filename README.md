@@ -87,7 +87,7 @@ To run a Docker container that's already been built:
 
 To see the logs, in real time, from that Docker container:
 
-    make docker-logs
+    make docker-log
 
 To stop the Docker container when you are done with it:
 
@@ -156,6 +156,14 @@ the [values files](pkg/helm/) are stored in this repository (in the `pkg/helm` d
 GitHub Actions and these other components all work together to construct a Docker image deployment workflow that's
 [documented](docs/how-to-deploy.md) in a separate page in this project's 'docs' folder. Take a look at it for step by
 step instructions on how to deploy this service.
+
+## Tips and Tricks
+
+You can see all the available build targets from the Makefile by running:
+
+    make help
+
+This will include some conveniences not included in the project's README file.
 
 ## Contact
 

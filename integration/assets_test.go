@@ -3,6 +3,7 @@
 package integration
 
 import (
+	docker "context"
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -84,6 +85,14 @@ func TestOpenApiResources(t *testing.T) {
 		{"OpenApiSpec", "/openapi.yml"},
 	}
 
+	// Confirm our OpenAPI spec has been copied into our container
+	filePath := "/usr/local/data/html/assets/openapi.yml"
+	exitCode, _, _ := container.Exec(docker.Background(), []string{"test", "-f", filePath})
+	if exitCode != 0 {
+		t.Fatalf("File '%s' doesn't exist in the container\n", filePath)
+	}
+
+	// Check that the OpenAPI spec can be downloaded from the server
 	for _, testCase := range tests {
 		t.Run(testCase.name, func(t *testing.T) {
 			response, err := client.Get(fmt.Sprintf(testServerURL, testCase.resource))
