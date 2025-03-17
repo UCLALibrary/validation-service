@@ -63,13 +63,14 @@ RUN mkdir -p "$DATA_DIR"
 # Copy the templates directory into our container
 COPY "html/" "$DATA_DIR/html/"
 
-# Copy the file without --chown or --chmod (BuildKit not required)
+# Copy files without --chown or --chmod (BuildKit not required)
 COPY --from=build "/${SERVICE_NAME}" "/sbin/${SERVICE_NAME}"
 COPY "profiles.json" "$PROFILES_FILE"
+COPY "openapi.yml" "$DATA_DIR/html/assets/"
 
 # Now, modify ownership and permissions in a separate RUN step
 RUN chown "${SERVICE_NAME}":"${SERVICE_NAME}" "/sbin/${SERVICE_NAME}" && chmod 0700 "/sbin/${SERVICE_NAME}"
-RUN chown "${SERVICE_NAME}":"${SERVICE_NAME}" "$PROFILES_FILE" && chmod 0700 "$PROFILES_FILE"
+RUN chown -R "${SERVICE_NAME}:${SERVICE_NAME}" "$DATA_DIR" && chmod -R 0700 "$DATA_DIR"
 
 # Expose the port on which the application will run
 EXPOSE 8888
