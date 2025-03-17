@@ -66,7 +66,7 @@ function createReport(data) {
   const table = document.createElement('table');
   const thead = document.createElement('thead');
   const tbody = document.createElement('tbody');
-  const headers = ['Header (Col)', 'Row', 'Value', 'Message'];
+  const headers = ['Header', 'Row', 'Value', 'Message'];
   const headerRow = document.createElement('tr');
 
   // Make the validation report look pretty
@@ -86,7 +86,7 @@ function createReport(data) {
     // Populate table rows with our validation results
     const row = document.createElement('tr');
     row.innerHTML = `
-          <td>${warning.header} (${warning.column + 1})<!-- Col index is 1-based --></td>
+          <td>${warning.header}<!-- Col index is 1-based --></td>
           <td>${warning.row + 1}<!-- Row index is 1-based --></td>
           <td>${warning.value}</td>
           <td class="warning">${warning.message}</td>
