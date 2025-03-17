@@ -27,10 +27,10 @@ api/api.go: openapi.yml
 
 api: api/api.go # Generates API code from the OpenAPI specification
 
-build: api # Compile the project's Go code into an executable
+build: api # Compiles the project's Go code into an executable
 	go build -o $(SERVICE_NAME)
 
-test: # Runs the unit tests; integration tests are excluded
+test: # Runs the unit tests (integration tests are excluded)
 	go test -tags=unit ./... -v -args -log-level=$(LOG_LEVEL)
 
 docker-build: # Builds a Docker container for manual testing
