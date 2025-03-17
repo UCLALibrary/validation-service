@@ -86,7 +86,7 @@ function createReport(data) {
     // Populate table rows with our validation results
     const row = document.createElement('tr');
     row.innerHTML = `
-          <td>${warning.header}<!-- Col index is 1-based --></td>
+          <td>${warning.header}</td>
           <td>${warning.row + 1}<!-- Row index is 1-based --></td>
           <td>${warning.value}</td>
           <td class="warning">${warning.message}</td>
