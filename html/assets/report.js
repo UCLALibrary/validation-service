@@ -60,7 +60,7 @@ async function setUpReportDownload(time) {
 
 // Function to format the timestamp
 function formatDateTime(timestamp) {
-  return new Date(timestamp).toISOString().slice(0, 19).replace('T', ' ');
+  return new Date(timestamp).toISOString().slice(0, 19).replace('T', ' @ ');
 }
 
 // Function to create an HTML report from JSON data.
@@ -108,7 +108,7 @@ function createReport(data) {
   h3.innerText = "Validation Report";
 
   // noinspection JSUnresolvedVariable
-  details.innerText = "Profile: " + data.profile + " [" + formatDateTime(data.time) + "]";
+  details.innerText = "Profile: " + data.profile + " [ " + formatDateTime(data.time) + " ]";
 
   div.appendChild(h3);
   div.appendChild(table);
