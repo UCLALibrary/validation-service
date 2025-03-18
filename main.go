@@ -16,6 +16,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 )
@@ -31,8 +32,9 @@ type ServiceError struct {
 
 // RouteMapping is a pairing of router path and file system path that can be used to configure request handlers.
 type RouteMapping struct {
-	RoutePath string
-	FilePath  string
+	RoutePath   string
+	FilePath    string
+	AltFilePath string
 }
 
 // TemplateRenderer holds parsed HTML templates for the validation service's Web pages
@@ -90,15 +92,29 @@ func (service *Service) UploadCSV(context echo.Context) error {
 		report, reportErr := csv.NewReport(err, csvData, logger)
 		if reportErr != nil {
 			logger.Error("Failed to generate report", zap.Error(reportErr), zap.Stack("stacktrace"))
-
 			return context.JSON(http.StatusInternalServerError,
 				ServiceError{Code: http.StatusInternalServerError, Message: reportErr.Error()})
 		}
 
+		// Check to see if an HTML version of the report was requested
+		if strings.Contains(context.Request().Header.Get("Accept"), "text/html") {
+			return displayReport(report, logger, context)
+		}
+
+		// If not an HTML request, specifically, we return our JSON formatter version of the report
 		return context.JSON(http.StatusCreated, report)
 	}
 
-	return context.JSON(http.StatusCreated, &csv.Report{Profile: profile, Time: time.Now(), Warnings: []csv.Warning{}})
+	// There were no validation violations, so we just return an empty report
+	report := &csv.Report{Profile: profile, Time: time.Now(), Warnings: []csv.Warning{}}
+
+	// Check to see if an HTML version of the report was requested
+	if strings.Contains(context.Request().Header.Get("Accept"), "text/html") {
+		return displayReport(report, logger, context)
+	}
+
+	// If not an HTML request, specifically, we return our JSON formatter version of the report
+	return context.JSON(http.StatusCreated, report)
 }
 
 // Main function starts our Echo server
@@ -226,18 +242,64 @@ func loadTemplates(logger *zap.Logger) (*template.Template, error) {
 	return templates, nil
 }
 
+// displayReport sends a CSV validation report to the browser.
+func displayReport(report *csv.Report, logger *zap.Logger, context echo.Context) error {
+	json, jsonErr := csv.SerializeReport(report)
+	if jsonErr != nil {
+		return context.JSON(http.StatusInternalServerError,
+			ServiceError{Code: http.StatusInternalServerError, Message: jsonErr.Error()})
+	}
+
+	data := map[string]interface{}{
+		"JSON": template.HTML(json),
+	}
+
+	if err := context.Render(http.StatusCreated, "report.html", data); err != nil {
+		logger.Error("Failed to render template", zap.Error(err))
+
+		return context.JSON(http.StatusInternalServerError,
+			ServiceError{Code: http.StatusInternalServerError, Message: err.Error()})
+	}
+
+	return nil
+}
+
 // configStaticRoutes configures our static resources with the Echo application.
 func configStaticRoutes(echoApp *echo.Echo) []RouteMapping {
 	staticRoutes := []RouteMapping{
-		{"/openapi.yml", "html/assets/openapi.yml"},
-		{"/validation.css", "html/assets/validation.css"},
-		{"/validation.js", "html/assets/validation.js"},
+		{
+			"/openapi.yml",
+			"/usr/local/data/html/assets/openapi.yml",
+			"html/assets/openapi.yml",
+		},
+		{
+			"/validation.css",
+			"/usr/local/data/html/assets/validation.css",
+			"html/assets/validation.css",
+		},
+		{
+			"/validation.js",
+			"/usr/local/data/html/assets/validation.js",
+			"html/assets/validation.js",
+		},
+		{
+			"/report.js",
+			"/usr/local/data/html/assets/report.js",
+			"html/assets/report.js",
+		},
 	}
 
+	// Try the Docker container paths first, then fall back to dev file system if needed
 	for _, route := range staticRoutes {
-		echoApp.GET(route.RoutePath, func(aContext echo.Context) error {
-			return aContext.File(route.FilePath)
-		})
+		if fileExists(route.FilePath) {
+			echoApp.GET(route.RoutePath, func(aContext echo.Context) error {
+				return aContext.File(route.FilePath)
+			})
+		} else {
+			echoApp.GET(route.RoutePath, func(aContext echo.Context) error {
+				return aContext.File(route.AltFilePath)
+			})
+		}
 	}
 
 	return staticRoutes
@@ -245,13 +307,14 @@ func configStaticRoutes(echoApp *echo.Echo) []RouteMapping {
 
 // configTemplateRoutes configures our template resources with the Echo application.
 func configTemplateRoutes(echoApp *echo.Echo, renderer *TemplateRenderer) []RouteMapping {
-	templateRoutes := []RouteMapping{
-		{"/", ""},
-		{"index.html", ""},
-	}
-
 	// Set the Echo application's default template renderer
 	echoApp.Renderer = renderer
+
+	// Default page routes
+	templateRoutes := []RouteMapping{
+		{"/", "", ""},
+		{"index.html", "", ""},
+	}
 
 	// Have the templates renderer handle incoming index requests
 	echoApp.GET(templateRoutes[0].RoutePath, func(context echo.Context) error {
@@ -304,4 +367,10 @@ func trailingSlashMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 
 		return next(context)
 	}
+}
+
+// fileExists checks whether a file exists on the file system.
+func fileExists(aPath string) bool {
+	_, err := os.Stat(aPath)
+	return !os.IsNotExist(err)
 }

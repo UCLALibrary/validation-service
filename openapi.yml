@@ -71,19 +71,48 @@ components:
       properties:
         service:
           type: string
-          example: ok
+          example: "ok"
         fester:
           type: string
-          example: ok
+          example: "ok"
         filesystem:
           type: string
-          example: ok
+          example: "ok"
           x-go-name: FileSystem
       required:
         - service
         - fester
         - filesystem
-
+    Report:
+      description: A JSON document encapsulating the results of a validation check.
+      type: object
+      properties:
+        profile:
+          type: string
+          example: default
+        time:
+          type: string
+          example: "2025-03-10T11:06:30.075129329-04:00"
+        warnings:
+          type: array
+          items:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Error: character for EOL found in cell"
+              header:
+                type: string
+                example: "Title"
+              column:
+                type: integer
+                example: 5
+              row:
+                type: integer
+                example: 5
+              value:
+                type: string
+                example: "Cristina González\n"
   responses:
     StatusOK:
       description: A response that returns a JSON object with status information
@@ -92,11 +121,11 @@ components:
           schema:
             $ref: '#/components/schemas/Status'
     StatusCreated:
-      description: A response indicating the requested resource has been created
+      description: A response indicating the requested report has been created
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Status'
+            $ref: '#/components/schemas/Report'
     StatusNoContent:
       description: A response that successfully acknowledges a request has been completed
       content: {}
@@ -106,11 +135,11 @@ components:
         text/plain:
           schema:
             type: string
-            example: The requested resource 'MyResource' could not be found
+            example: "The requested resource 'MyResource' could not be found"
     InternalServerError:
       description: There was an internal server error
       content:
         text/plain:
           schema:
             type: string
-            example: The status request failed because the slithy toves did gyre
+            example: "The status request failed because the slithy toves did gyre"

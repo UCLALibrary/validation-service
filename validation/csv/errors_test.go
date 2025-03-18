@@ -137,7 +137,7 @@ func TestError_StringFormatting(t *testing.T) {
 			location:    Location{RowIndex: 4, ColIndex: 8},
 			profile:     "default",
 			parentErr:   errors.New("unexpected EOF"),
-			expectedStr: "Error: Incorrect format [Cause: unexpected EOF]",
+			expectedStr: "Error: Incorrect format \nCause: unexpected EOF",
 		},
 	}
 

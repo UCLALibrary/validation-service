@@ -40,14 +40,14 @@ func TestNewReport(t *testing.T) {
 				Profile: "default",
 				Warnings: []Warning{
 					{
-						Message:  "Error: Invalid value (Row: 2, Col: 1) [profile: default]",
+						Message:  "Error: Invalid value",
 						Header:   "Header2",
 						ColIndex: 1,
 						RowIndex: 2,
 						Value:    "Row2Col2",
 					},
 					{
-						Message:  "Error: Missing field (Row: 2, Col: 2) [profile: default]",
+						Message:  "Error: Missing field",
 						Header:   "Header3",
 						ColIndex: 2,
 						RowIndex: 2,

@@ -84,7 +84,8 @@ func TestMain(m *testing.M) {
 	}
 
 	// Start the container
-	container, containerErr := testcontainers.GenericContainer(context, testcontainers.GenericContainerRequest{
+	var containerErr error
+	container, containerErr = testcontainers.GenericContainer(context, testcontainers.GenericContainerRequest{
 		ContainerRequest: request,
 		Started:          true,
 	})
