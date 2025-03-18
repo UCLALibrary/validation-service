@@ -9,17 +9,19 @@ import (
 	docker "context"
 	"flag"
 	"fmt"
-	"github.com/testcontainers/testcontainers-go"
-	"github.com/testcontainers/testcontainers-go/wait"
-	"go.uber.org/zap"
 	"log"
 	"os"
 	"testing"
+
+	"github.com/testcontainers/testcontainers-go"
+	"github.com/testcontainers/testcontainers-go/wait"
+	"go.uber.org/zap"
 )
 
 // Define our test container's build arguments
 var serviceName string
 var logLevel string
+var hostDir string
 
 // The URL to which to submit test HTTP requests
 var testServerURL string
@@ -41,9 +43,22 @@ func TestMain(m *testing.M) {
 	logger, _ = getLogger()
 	//noinspection GoUnhandledErrorResult
 	defer logger.Sync()
-
 	// Get the Docker context
 	context := docker.Background()
+
+	// Copy testdata folder into testcontainer
+	hostDir = os.Getenv("HOST_DIR")
+	if hostDir == "" {
+		logger.Fatal("HOST_DIR is not set")
+	}
+
+	logger.Info("Checking if hostDir exists", zap.String("hostDir", hostDir))
+
+	if _, err := os.Stat(hostDir); os.IsNotExist(err) {
+		logger.Fatal("Host directory does not exist", zap.String("hostDir", hostDir))
+	}
+
+	logger.Info("HOST_DIR %s", zap.String("hostDir", hostDir))
 
 	// Define the container request
 	request := testcontainers.ContainerRequest{
@@ -53,6 +68,7 @@ func TestMain(m *testing.M) {
 			BuildArgs: map[string]*string{
 				"SERVICE_NAME": &serviceName,
 				"LOG_LEVEL":    &logLevel,
+				"HOST_DIR":     &hostDir,
 			},
 		},
 		ExposedPorts: []string{"8888/tcp"},
@@ -75,8 +91,22 @@ func TestMain(m *testing.M) {
 	if containerErr != nil {
 		logger.Fatal("Failed to start Docker container", zap.Error(containerErr))
 	}
+
 	//noinspection GoUnhandledErrorResult
 	defer container.Terminate(context)
+
+	copyHost := hostDir
+	_, _, err := container.Exec(docker.Background(), []string{"mkdir", "-p", copyHost})
+
+	if err != nil {
+		logger.Fatal("Failed to create HOST_DIR folder", zap.Error(err))
+	}
+
+	err = container.CopyDirToContainer(context, hostDir, copyHost, 0o700)
+
+	if err != nil {
+		logger.Fatal("Failed to copy to the container", zap.String("hostDir", hostDir), zap.Error(err))
+	}
 
 	// Get the mapped host and port
 	host, hostErr := container.Host(context)
@@ -103,3 +133,25 @@ func TestMain(m *testing.M) {
 
 	os.Exit(code)
 }
+
+// func TestEnvironmentVariable(t *testing.T) {
+// 	// Execute a command inside the container to check the env variable
+// 	envVar := "HOST_DIR"
+// 	expectedValue := hostDir
+
+// 	context := docker.Background()
+// 	_, reader, err := container.Exec(context, []string{"sh", "-c", fmt.Sprintf("echo $%s", envVar)})
+// 	if err != nil {
+// 		t.Fatalf("Failed to execute command inside container: %v", err)
+// 	}
+
+// 	output, err := io.ReadAll(reader)
+
+// 	if err != nil {
+// 		t.Fatal(err)
+// 	}
+// 	// Read output and trim whitespace
+// 	dir := strings.TrimSpace(string(output))
+
+// 	assert.Equal(t, expectedValue, dir, "Environment variable value is incorrect")
+// }
