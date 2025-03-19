@@ -9,10 +9,13 @@ import (
 	docker "context"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
+	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 	"go.uber.org/zap"
@@ -46,7 +49,7 @@ func TestMain(m *testing.M) {
 	// Get the Docker context
 	context := docker.Background()
 
-	// Copy testdata folder into testcontainer
+	// Get HOST_DIR ENV var
 	hostDir = os.Getenv("HOST_DIR")
 	if hostDir == "" {
 		logger.Fatal("HOST_DIR is not set")
@@ -70,6 +73,10 @@ func TestMain(m *testing.M) {
 				"LOG_LEVEL":    &logLevel,
 				"HOST_DIR":     &hostDir,
 			},
+		},
+		Env: map[string]string{
+			"HOST_DIR":  hostDir, // Explicitly set as an environment variable
+			"LOG_LEVEL": logLevel,
 		},
 		ExposedPorts: []string{"8888/tcp"},
 		WaitingFor:   wait.ForHTTP("/status").WithPort("8888/tcp"),
@@ -95,19 +102,6 @@ func TestMain(m *testing.M) {
 
 	//noinspection GoUnhandledErrorResult
 	defer container.Terminate(context)
-
-	copyHost := hostDir
-	_, _, err := container.Exec(docker.Background(), []string{"mkdir", "-p", copyHost})
-
-	if err != nil {
-		logger.Fatal("Failed to create HOST_DIR folder", zap.Error(err))
-	}
-
-	err = container.CopyDirToContainer(context, hostDir, copyHost, 0o700)
-
-	if err != nil {
-		logger.Fatal("Failed to copy to the container", zap.String("hostDir", hostDir), zap.Error(err))
-	}
 
 	// Get the mapped host and port
 	host, hostErr := container.Host(context)
@@ -135,24 +129,29 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-// func TestEnvironmentVariable(t *testing.T) {
-// 	// Execute a command inside the container to check the env variable
-// 	envVar := "HOST_DIR"
-// 	expectedValue := hostDir
+func TestEnvironmentVariable(t *testing.T) {
+	// Execute a command inside the container to check the env variable
+	envVar := "HOST_DIR"
+	expectedValue := hostDir
 
-// 	context := docker.Background()
-// 	_, reader, err := container.Exec(context, []string{"sh", "-c", fmt.Sprintf("echo $%s", envVar)})
-// 	if err != nil {
-// 		t.Fatalf("Failed to execute command inside container: %v", err)
-// 	}
+	context := docker.Background()
+	_, reader, err := container.Exec(context, []string{"printenv", envVar})
 
-// 	output, err := io.ReadAll(reader)
+	if err != nil {
+		t.Fatalf("Failed to execute command inside container: %v", err)
+	}
 
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
-// 	// Read output and trim whitespace
-// 	dir := strings.TrimSpace(string(output))
+	output, err := io.ReadAll(reader)
+	if err != nil {
+		t.Fatal(err)
+	}
 
-// 	assert.Equal(t, expectedValue, dir, "Environment variable value is incorrect")
-// }
+	// assert.Equal(t, bytes, output, "Byte streams are not equal")
+
+	// Strip non-printable characters (ASCII < 32)
+	// cleanOutput := strings.TrimLeftFunc(string(output), func(r rune) bool {
+	// 	return r < 32 || r > 126 // Remove non-printable characters
+	// })
+
+	assert.Equal(t, expectedValue, strings.TrimSpace(string(output)), "Environment variable value is incorrect")
+}

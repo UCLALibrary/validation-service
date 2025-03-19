@@ -5,6 +5,7 @@
 ARG SERVICE_NAME
 ARG VERSION
 ARG LOG_LEVEL
+ARG HOST_DIR
 
 ##
 ## STEP 1 - BUILD
@@ -14,6 +15,10 @@ FROM golang:1.24.1-alpine3.20 AS build
 # Inherit SERVICE_NAME arg and set as ENV
 ARG SERVICE_NAME
 ENV SERVICE_NAME=${SERVICE_NAME}
+
+# Inherit HOST_DIR arg and set as ENV
+ARG HOST_DIR
+ENV HOST_DIR=${HOST_DIR}
 
 # Set image metadata
 LABEL org.opencontainers.image.source="https://github.com/uclalibrary/${SERVICE_NAME}"
