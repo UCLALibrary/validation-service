@@ -16,7 +16,7 @@
        "rangeStrategy": "bump"
      },
      {
-       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+       "matchUpdateTypes": ["minor", "patch", "pin", "digest"]
      },
      {
        "matchManagers": ["gomod"],
@@ -31,5 +31,5 @@
        "matchManagers": ["github-actions"],
        "groupName": "GitHub Actions updates"
      }
-   ],
+   ]
 }
