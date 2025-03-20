@@ -16,7 +16,6 @@ import (
 func TestFilePathCheck_Validate(t *testing.T) {
 	check := &FilePathCheck{}
 
-	// Data variations to check the EOLCheck.Validate method against
 	tests := []struct {
 		name        string
 		location    csv.Location

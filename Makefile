@@ -3,8 +3,7 @@ SERVICE_NAME := validation-service
 LOG_LEVEL := info
 PORT := 8888
 VERSION := dev-SNAPSHOT
-HOST_DIR ?= testdata
-CONTAINER_DIR := /usr/local/data
+HOST_DIR ?= $(shell pwd)/testdata
 
 # Force the API target to run even if the openapi.yml has not been touched/changed
 ifneq ($(filter FORCE,$(MAKECMDGOALS)),)
@@ -42,7 +41,7 @@ docker-run: docker-build # Runs a Docker instance, independent of the tests
 	CONTAINER_ID=$(shell docker image ls -q --filter=reference=$(SERVICE_NAME)); \
 	docker run -p $(PORT):8888 --name $(SERVICE_NAME) \
 		-e LOG_LEVEL="$(LOG_LEVEL)" \
-		-v $(HOST_DIR):$(CONTAINER_DIR) \
+		-v $(HOST_DIR):$(HOST_DIR) \
 		-d $$CONTAINER_ID
 
 docker-log: # Tails the logs of a container started with 'docker-run'

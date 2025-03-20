@@ -25,7 +25,7 @@ type FilePathCheck struct {
 	profiles *config.Profiles
 }
 
-// NewFilePathCheck checks that there are no EOLs in a CSV data cell.
+// NewFilePathCheck checks that the file exits at the given filepath in a CSV data cell.
 func (check *FilePathCheck) NewFilePathCheck(profiles *config.Profiles) (*FilePathCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(nilProfileErr, csv.Location{}, "nil")
@@ -66,7 +66,6 @@ func (check *FilePathCheck) Validate(profile string, location csv.Location, csvD
 	fullPath := filepath.Join(hostDir, value)
 
 	// if the file doesn't exist return an error
-
 	if _, err = os.Stat(fullPath); os.IsNotExist(err) {
 		return csv.NewError(fmt.Sprintf(fileNotExist, fullPath), location, profile)
 	} else {

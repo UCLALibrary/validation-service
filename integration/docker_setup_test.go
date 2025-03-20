@@ -6,15 +6,16 @@
 package integration
 
 import (
+	"bytes"
 	docker "context"
 	"flag"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"strings"
 	"testing"
 
+	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/stretchr/testify/assert"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
@@ -129,6 +130,7 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
+// TestEnvironmentVariable checks if the HOST_DIR ENV is set and if it matches the expected value
 func TestEnvironmentVariable(t *testing.T) {
 	// Execute a command inside the container to check the env variable
 	envVar := "HOST_DIR"
@@ -141,17 +143,12 @@ func TestEnvironmentVariable(t *testing.T) {
 		t.Fatalf("Failed to execute command inside container: %v", err)
 	}
 
-	output, err := io.ReadAll(reader)
+	// Separate stdout and stderr from the raw reader
+	var stdout, stderr bytes.Buffer
+	_, err = stdcopy.StdCopy(&stdout, &stderr, reader)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Failed to read container output: %v", err)
 	}
 
-	// assert.Equal(t, bytes, output, "Byte streams are not equal")
-
-	// Strip non-printable characters (ASCII < 32)
-	// cleanOutput := strings.TrimLeftFunc(string(output), func(r rune) bool {
-	// 	return r < 32 || r > 126 // Remove non-printable characters
-	// })
-
-	assert.Equal(t, expectedValue, strings.TrimSpace(string(output)), "Environment variable value is incorrect")
+	assert.Equal(t, expectedValue, strings.TrimSpace(stdout.String()), "Environment variable value is incorrect")
 }

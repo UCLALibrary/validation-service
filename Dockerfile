@@ -49,6 +49,10 @@ ENV SERVICE_NAME=${SERVICE_NAME}
 ARG LOG_LEVEL
 ENV LOG_LEVEL=${LOG_LEVEL}
 
+# Inherit HOST_DIR arg and set as ENV
+ARG HOST_DIR
+ENV HOST_DIR=${HOST_DIR}
+
 # Set a version number for the application
 ARG VERSION
 ENV VERSION=${VERSION}
