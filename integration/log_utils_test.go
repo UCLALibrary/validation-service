@@ -7,13 +7,14 @@ package integration
 
 import (
 	"fmt"
-	"github.com/testcontainers/testcontainers-go"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 	"log"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/testcontainers/testcontainers-go"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 // A logger to log our Docker container's logs

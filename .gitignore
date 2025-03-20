@@ -32,6 +32,9 @@ html/assets/openapi.yml
 # A customizable config file that the service will use
 profiles.json
 
+# .vscode files
+launch.json 
+
 # Ignore GitHub Actions work products
 /test-validator.yaml
 /prod-validator.yaml
