@@ -8,6 +8,7 @@
    "golang": {
      "enabled": true
    },
+   "schedule": ["* * * * 1,4"],
    "packageRules": [
      {
        "matchDatasources": ["golang-version"],
@@ -15,8 +16,7 @@
        "rangeStrategy": "bump"
      },
      {
-       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
-       "automerge": true
+       "matchUpdateTypes": ["minor", "patch", "pin", "digest"]
      },
      {
        "matchManagers": ["gomod"],
@@ -31,6 +31,5 @@
        "matchManagers": ["github-actions"],
        "groupName": "GitHub Actions updates"
      }
-   ],
-   "platformAutomerge": true
+   ]
 }
