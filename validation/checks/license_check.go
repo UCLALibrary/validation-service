@@ -21,7 +21,7 @@ type LicenseCheck struct {
 	profiles *util.Profiles
 }
 
-func (check *LicenseCheck) NewLicenseCheck(profiles *util.Profiles) (*LicenseCheck, error) {
+func NewLicenseCheck(profiles *util.Profiles) (*LicenseCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(noProfileErr, csv.Location{}, "nil")
 	}
@@ -54,15 +54,14 @@ func (check *LicenseCheck) Validate(profile string, location csv.Location, csvDa
 
 	value := csvData[location.RowIndex][location.ColIndex]
 
-	if err := verifyLicense(value, profile, location); err != nil {
+	if err := check.verifyLicense(value, profile, location); err != nil {
 		return err
-
 	}
 
 	return nil
 }
 
-func verifyLicense(license string, profile string, location csv.Location) error {
+func (check *LicenseCheck) verifyLicense(license string, profile string, location csv.Location) error {
 	r := regexp.MustCompile(`^^http\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_]*)?$`)
 	if !r.MatchString(license) {
 		return csv.NewError(urlFormatErr, location, profile)

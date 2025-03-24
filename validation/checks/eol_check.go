@@ -23,7 +23,7 @@ type EOLCheck struct {
 }
 
 // NewEOLCheck checks that there are no EOLs in a CSV data cell.
-func (check *EOLCheck) NewEOLCheck(profiles *util.Profiles) (*EOLCheck, error) {
+func NewEOLCheck(profiles *util.Profiles) (*EOLCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(nilProfileErr, csv.Location{}, "nil")
 	}

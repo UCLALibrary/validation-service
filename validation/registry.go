@@ -33,7 +33,7 @@ var constructors = map[string]constructor{
 		if len(args) > 0 {
 			// Check if the first argument is of the type *Profiles
 			if profiles, ok := args[0].(*util.Profiles); ok {
-				return (&checks.EOLCheck{}).NewEOLCheck(profiles)
+				return checks.NewEOLCheck(profiles)
 			}
 
 			// EOLCheck expects *Profiles to be passed to it
@@ -42,13 +42,13 @@ var constructors = map[string]constructor{
 
 		// Default instance if no arguments are passed
 		defaultProfiles := util.NewProfiles() // Assume a default constructor exists
-		return (&checks.EOLCheck{}).NewEOLCheck(defaultProfiles)
+		return checks.NewEOLCheck(defaultProfiles)
 	},
 	"ARKCheck": func(args ...interface{}) (Validator, error) {
 		if len(args) > 0 {
 			// Check if the first argument is of the type *Profiles
 			if profiles, ok := args[0].(*util.Profiles); ok {
-				return (&checks.ARKCheck{}).NewARKCheck(profiles)
+				return checks.NewARKCheck(profiles)
 			}
 
 			// ARKCheck expects *Profiles to be passed to it
@@ -57,13 +57,13 @@ var constructors = map[string]constructor{
 
 		// Default instance if no arguments are passed
 		defaultProfiles := util.NewProfiles() // Assume a default constructor exists
-		return (&checks.EOLCheck{}).NewEOLCheck(defaultProfiles)
+		return checks.NewEOLCheck(defaultProfiles)
 	},
 	"LicenseCheck": func(args ...interface{}) (Validator, error) {
 		if len(args) > 0 {
 			// Check if the first argument is of the type *Profiles
 			if profiles, ok := args[0].(*util.Profiles); ok {
-				return (&checks.LicenseCheck{}).NewLicenseCheck(profiles)
+				return checks.NewLicenseCheck(profiles)
 			}
 
 			// LicenseCheck expects *Profiles to be passed to it
@@ -72,7 +72,7 @@ var constructors = map[string]constructor{
 
 		// Default instance if no arguments are passed
 		defaultProfiles := util.NewProfiles() // Assume a default constructor exists
-		return (&checks.LicenseCheck{}).NewLicenseCheck(defaultProfiles)
+		return checks.NewLicenseCheck(defaultProfiles)
 	},
 	"ReqFieldCheck": func(args ...interface{}) (Validator, error) {
 		if len(args) > 0 {
@@ -89,7 +89,7 @@ var constructors = map[string]constructor{
 				return nil, fmt.Errorf("invalid argument: expected *zap.Logger, found: %T", args[1])
 			}
 
-			return (&checks.ReqFieldCheck{}).NewReqFieldCheck(profiles, logger)
+			return checks.NewReqFieldCheck(profiles, logger)
 		}
 
 		return nil, fmt.Errorf("invalid argument: expected *util.Profiles and *zap.Logger; neither were found")

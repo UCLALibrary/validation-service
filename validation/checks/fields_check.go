@@ -74,7 +74,7 @@ type ReqFieldCheck struct {
 }
 
 // NewReqFieldCheck creates a new validation check that confirms the required fields for a profile are present.
-func (check *ReqFieldCheck) NewReqFieldCheck(profiles *util.Profiles, logger *zap.Logger) (*ReqFieldCheck, error) {
+func NewReqFieldCheck(profiles *util.Profiles, logger *zap.Logger) (*ReqFieldCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(missingProfileErr, csv.Location{}, "nil")
 	}

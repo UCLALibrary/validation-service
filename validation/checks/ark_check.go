@@ -51,7 +51,7 @@ var naanProfiles = map[string]map[string]struct{}{
 type ARKCheck struct{}
 
 // NewARKCheck checks that an ARK is valid.
-func (check *ARKCheck) NewARKCheck(profiles *util.Profiles) (*ARKCheck, error) {
+func NewARKCheck(profiles *util.Profiles) (*ARKCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(profileErr, csv.Location{}, "nil")
 	}
@@ -79,7 +79,7 @@ func (check *ARKCheck) Validate(profile string, location csv.Location, csvData [
 	value := csvData[location.RowIndex][location.ColIndex]
 
 	// Check if the CSV data cell has a valid ARK
-	if err := verifyARK(value, location, profile); err != nil {
+	if err := check.verifyARK(value, location, profile); err != nil {
 		return csv.NewError(arkValFailed, location, profile, err)
 	}
 
@@ -87,7 +87,7 @@ func (check *ARKCheck) Validate(profile string, location csv.Location, csvData [
 }
 
 // verifyARK validates if the given string is a valid ARK.
-func verifyARK(ark string, location csv.Location, profile string) error {
+func (check *ARKCheck) verifyARK(ark string, location csv.Location, profile string) error {
 	var errs error
 
 	// Ensure the ARK starts with "ark:/"

@@ -15,7 +15,7 @@ import (
 
 // TestReqFieldCheck_Validate tests the Validate method on EOLCheck.
 func TestReqFieldCheck_Validate(t *testing.T) {
-	check, err := (&ReqFieldCheck{}).NewReqFieldCheck(util.NewProfiles(), zaptest.NewLogger(t))
+	check, err := NewReqFieldCheck(util.NewProfiles(), zaptest.NewLogger(t))
 	assert.NoError(t, err)
 
 	// Data variations to check the EOLCheck.Validate method against
