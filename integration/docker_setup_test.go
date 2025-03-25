@@ -37,6 +37,7 @@ var container testcontainers.Container
 func init() {
 	flag.StringVar(&serviceName, "service-name", "service", "Name of service being tested")
 	flag.StringVar(&logLevel, "log-level", "info", "Log level (debug, info, warn, error)")
+	flag.StringVar(&hostDir, "host-dir", "", "HOST_DIR env variable that is copied into test-container")
 }
 
 // TestMain spins up a Docker container with our validation service to run tests against.
@@ -49,12 +50,6 @@ func TestMain(m *testing.M) {
 	defer logger.Sync()
 	// Get the Docker context
 	context := docker.Background()
-
-	// Get HOST_DIR ENV var
-	hostDir = os.Getenv("HOST_DIR")
-	if hostDir == "" {
-		logger.Fatal("HOST_DIR is not set")
-	}
 
 	logger.Info("Checking if hostDir exists", zap.String("hostDir", hostDir))
 
@@ -74,10 +69,6 @@ func TestMain(m *testing.M) {
 				"LOG_LEVEL":    &logLevel,
 				"HOST_DIR":     &hostDir,
 			},
-		},
-		Env: map[string]string{
-			"HOST_DIR":  hostDir, // Explicitly set as an environment variable
-			"LOG_LEVEL": logLevel,
 		},
 		ExposedPorts: []string{"8888/tcp"},
 		WaitingFor:   wait.ForHTTP("/status").WithPort("8888/tcp"),

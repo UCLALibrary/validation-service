@@ -33,7 +33,7 @@ html/assets/openapi.yml
 profiles.json
 
 # .vscode files
-launch.json 
+.vscode/
 
 # Ignore GitHub Actions work products
 /test-validator.yaml

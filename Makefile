@@ -3,7 +3,7 @@ SERVICE_NAME := validation-service
 LOG_LEVEL := info
 PORT := 8888
 VERSION := dev-SNAPSHOT
-HOST_DIR ?= $(shell pwd)/testdata
+HOST_DIR := $(shell pwd)/testdata
 
 # Force the API target to run even if the openapi.yml has not been touched/changed
 ifneq ($(filter FORCE,$(MAKECMDGOALS)),)
@@ -35,7 +35,7 @@ test: # Runs the unit tests (integration tests are excluded)
 	go test -tags=unit ./... -v -args -log-level=$(LOG_LEVEL)
 
 docker-build: # Builds a Docker container for manual testing
-	docker build . --tag $(SERVICE_NAME) --build-arg SERVICE_NAME=$(SERVICE_NAME) --build-arg VERSION=$(VERSION)
+	docker build . --tag $(SERVICE_NAME) --build-arg SERVICE_NAME=$(SERVICE_NAME) --build-arg VERSION=$(VERSION) --build-arg HOST_DIR=$(HOST_DIR)
 
 docker-run: docker-build # Runs a Docker instance, independent of the tests
 	CONTAINER_ID=$(shell docker image ls -q --filter=reference=$(SERVICE_NAME)); \
@@ -52,7 +52,7 @@ docker-stop: # Stops a Docker container started with 'docker-run'
 
 # 'docker-test' does not require 'docker-build', fwiw, 'docker-build' is just for debugging
 docker-test: # Runs integration tests inside the Docker container
-	go test -tags=integration ./integration -v -args -service-name=$(SERVICE_NAME) -log-level=$(LOG_LEVEL)
+	go test -tags=integration ./integration -v -args -service-name=$(SERVICE_NAME) -log-level=$(LOG_LEVEL) -host-dir=$(HOST_DIR)
 
 clean: # Cleans up all artifacts created by the build
 	rm -rf $(SERVICE_NAME) api/api.go

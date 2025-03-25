@@ -57,5 +57,3 @@ jobs:
     # Build and test the application (also lints)
     - name: Build project
       run: make all
-      env:
-        HOST_DIR: ${{ github.workspace }}/testdata
