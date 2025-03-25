@@ -58,7 +58,7 @@ func (check *FilePathCheck) Validate(profile string, location csv.Location, csvD
 		return err
 	}
 
-	// Skip if we don't have an ARK cell, or we're on the first (i.e., header) row
+	// Skip if we don't have a FILE_NAME header, or we're on the first (i.e., header) row
 	if header != FILE_NAME || location.RowIndex == 0 {
 		return nil
 	}

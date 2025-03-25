@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TestFilePathCheck_Validate tests the Validate method on filePatch.
+// TestFilePathCheck_Validate tests the Validate method on filePath.
 func TestFilePathCheck_Validate(t *testing.T) {
 	check := &FilePathCheck{}
 
