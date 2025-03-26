@@ -6,6 +6,7 @@
 package checks
 
 import (
+	"github.com/UCLALibrary/validation-service/validation/util"
 	"testing"
 
 	"github.com/UCLALibrary/validation-service/validation/csv"
@@ -14,7 +15,8 @@ import (
 
 // TestFilePathCheck_Validate tests the Validate method on filePath.
 func TestFilePathCheck_Validate(t *testing.T) {
-	check := &FilePathCheck{}
+	check, err := NewFilePathCheck(util.NewProfiles())
+	assert.NoError(t, err)
 
 	tests := []struct {
 		name        string

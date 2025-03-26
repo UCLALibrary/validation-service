@@ -32,10 +32,11 @@ build: api # Compiles the project's Go code into an executable
 	go build -o $(SERVICE_NAME)
 
 test: # Runs the unit tests (integration tests are excluded)
-	go test -tags=unit ./... -v -args -log-level=$(LOG_LEVEL)
+	go test -tags=unit ./... -v -args -log-level=$(LOG_LEVEL) -host-dir=$(HOST_DIR)
 
 docker-build: # Builds a Docker container for manual testing
-	docker build . --tag $(SERVICE_NAME) --build-arg SERVICE_NAME=$(SERVICE_NAME) --build-arg VERSION=$(VERSION) --build-arg HOST_DIR=$(HOST_DIR)
+	docker build . --tag $(SERVICE_NAME) --build-arg SERVICE_NAME=$(SERVICE_NAME) \
+		--build-arg VERSION=$(VERSION) --build-arg HOST_DIR=$(HOST_DIR)
 
 docker-run: docker-build # Runs a Docker instance, independent of the tests
 	CONTAINER_ID=$(shell docker image ls -q --filter=reference=$(SERVICE_NAME)); \
@@ -52,7 +53,8 @@ docker-stop: # Stops a Docker container started with 'docker-run'
 
 # 'docker-test' does not require 'docker-build', fwiw, 'docker-build' is just for debugging
 docker-test: # Runs integration tests inside the Docker container
-	go test -tags=integration ./integration -v -args -service-name=$(SERVICE_NAME) -log-level=$(LOG_LEVEL) -host-dir=$(HOST_DIR)
+	go test -tags=integration ./integration -v -args -service-name=$(SERVICE_NAME) -log-level=$(LOG_LEVEL) \
+		-host-dir=$(HOST_DIR)
 
 clean: # Cleans up all artifacts created by the build
 	rm -rf $(SERVICE_NAME) api/api.go
@@ -64,7 +66,7 @@ profiles.json: profiles.example.json
 config: profiles.json # Creates a profiles.json file from the example file
 
 run: config api build # Runs service locally, independent of Docker
-	PROFILES_FILE="profiles.json" LOG_LEVEL=$(LOG_LEVEL) VERSION=$(VERSION) ./$(SERVICE_NAME)
+	PROFILES_FILE="profiles.json" LOG_LEVEL=$(LOG_LEVEL) VERSION=$(VERSION) HOST_DIR=$(HOST_DIR) ./$(SERVICE_NAME)
 
 ci-run: config api # Runs CI locally using ACT (which must be installed)
 	pkg/scripts/act.sh $(JOB) $(SERVICE_NAME)

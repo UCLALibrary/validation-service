@@ -4,7 +4,6 @@ name: Build Docker Image
 env:
   GO_VERSION: '1.24.0'
   GO_LINTER_VERSION: 'v1.64.6'
-  HOST_DIR: ${{ github.workspace }}/testdata
 
 # Controls when the action will run
 on:

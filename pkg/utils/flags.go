@@ -14,6 +14,9 @@ import (
 // LogLevel is defined as a global test flag
 var LogLevel = flag.String("log-level", "info", "Log level (debug, info, warn, error)")
 
+// HostDir is defined as a global test flag
+var HostDir = flag.String("host-dir", "testdata", "The default host directory")
+
 // GetLogLevel gets the current log level as a zapcore.Level.
 func GetLogLevel() zapcore.Level {
 	switch *LogLevel {
