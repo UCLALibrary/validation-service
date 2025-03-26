@@ -8,11 +8,12 @@ package integration
 import (
 	"bytes"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // TestStatusGet tests the status endpoint to confirm that the server is responding as expected to status queries.
