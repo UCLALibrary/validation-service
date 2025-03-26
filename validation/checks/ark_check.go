@@ -76,7 +76,10 @@ func (check *ARKCheck) Validate(profile string, location csv.Location, csvData [
 		return nil
 	}
 
-	value := csvData[location.RowIndex][location.ColIndex]
+	value := strings.TrimSpace(csvData[location.RowIndex][location.ColIndex])
+	if value == "" {
+		return nil // We let the ReqFieldCheck check for presence and just validate ARKs here
+	}
 
 	// Check if the CSV data cell has a valid ARK
 	if err := check.verifyARK(value, location, profile); err != nil {
