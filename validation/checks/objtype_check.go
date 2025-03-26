@@ -3,24 +3,25 @@ package checks
 import (
 	"regexp"
 
-        "github.com/UCLALibrary/validation-service/validation/config"
         "github.com/UCLALibrary/validation-service/validation/csv"
+        "github.com/UCLALibrary/validation-service/validation/util"
 )
 
 // Error messages
 var (
+        profileErr           = "supplied profile cannot be nil"
 	typeWhitespaceError  = "field contains invalid characters (e.g., spaces, line breaks)"
-	typeValueError = "object type field doesn't contain valid value"
+	typeValueError       = "object type field doesn't contain valid value"
 )
 
-type ObjTypeCheck struct{
-	profiles *config.Profiles
-}
+type ObjTypeCheck struct{}
 
-func (check *ObjTypeCheck) NewObjTypeCheck(profiles *config.Profiles) *ObjTypeCheck {
-	return &ObjTypeCheck{
-		profiles: profiles,
+func NewObjTypeCheck(profiles *util.Profiles) (*ObjTypeCheck, error) {
+	if profiles == nil {
+		return nil, csv.NewError(profileErr, csv.Location{}, "nil")
 	}
+
+	return &ObjTypeCheck{}, nil
 }
 
 func (check *ObjTypeCheck) Validate(profile string, location csv.Location, csvData [][]string) error {
@@ -28,14 +29,15 @@ func (check *ObjTypeCheck) Validate(profile string, location csv.Location, csvDa
 		return err
 	}
 
-	// find the header and determine if it matches an ark header
+	// find the header and determine if it matches Object Type 
 	header, err := csv.GetHeader(location, csvData, profile)
 
 	if err != nil {
 		return err
 	}
 
-	if header != "Object Type" {
+	// Skip if we don't have an object tpe cell, or we're on the first (i.e., header) row
+	if header != "Object Type" || location.RowIndex == 0 {
 		return nil
 	}
 
