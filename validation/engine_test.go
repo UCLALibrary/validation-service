@@ -7,8 +7,8 @@ package validation
 
 import (
 	"github.com/UCLALibrary/validation-service/pkg/utils"
-	"github.com/UCLALibrary/validation-service/validation/config"
 	"github.com/UCLALibrary/validation-service/validation/csv"
+	"github.com/UCLALibrary/validation-service/validation/util"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
@@ -19,11 +19,11 @@ import (
 // TestEngine_NewEngine tests the construction of a validation engine.
 func TestEngine_NewEngine(t *testing.T) {
 	// Set system env to tell the engine where to find its persisted Profiles file
-	if err := os.Setenv(config.ProfilesFile, "../testdata/test_profiles.json"); err != nil {
+	if err := os.Setenv(util.ProfilesFile, "../testdata/test_profiles.json"); err != nil {
 		t.Errorf("Error setting env PROFILES_FILE: %v", err)
 	}
 	defer func() {
-		err := os.Unsetenv(config.ProfilesFile)
+		err := os.Unsetenv(util.ProfilesFile)
 		require.NoError(t, err)
 	}()
 
@@ -39,11 +39,11 @@ func TestEngine_NewEngine(t *testing.T) {
 // TestEngine_GetLogger tests that a new engine has created a logger and can return it.
 func TestEngine_GetLogger(t *testing.T) {
 	// Set system env to tell the engine where to find its persisted Profiles file
-	if err := os.Setenv(config.ProfilesFile, "../testdata/test_profiles.json"); err != nil {
+	if err := os.Setenv(util.ProfilesFile, "../testdata/test_profiles.json"); err != nil {
 		t.Fatalf("error setting env PROFILES_FILE: %v", err)
 	}
 	defer func() {
-		err := os.Unsetenv(config.ProfilesFile)
+		err := os.Unsetenv(util.ProfilesFile)
 		require.NoError(t, err)
 	}()
 
@@ -62,11 +62,11 @@ func TestEngine_Validate(t *testing.T) {
 	logger := zaptest.NewLogger(t, zaptest.Level(utils.GetLogLevel()))
 
 	// Configure the location of the test profiles file
-	if err := os.Setenv(config.ProfilesFile, "../testdata/test_profiles.json"); err != nil {
+	if err := os.Setenv(util.ProfilesFile, "../testdata/test_profiles.json"); err != nil {
 		t.Fatalf("error setting env PROFILES_FILE: %v", err)
 	}
 	defer func() {
-		err := os.Unsetenv(config.ProfilesFile)
+		err := os.Unsetenv(util.ProfilesFile)
 		require.NoError(t, err)
 	}()
 

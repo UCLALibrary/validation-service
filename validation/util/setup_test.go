@@ -1,9 +1,9 @@
 //go:build unit
 
-// Package config provides resources useful in the configuration of the validation service.
+// Package util provides useful resources and utilities.
 //
 // This file sets up the testing environment for the package.
-package config
+package util
 
 import (
 	"flag"

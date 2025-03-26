@@ -1,9 +1,9 @@
 //go:build unit
 
-// Package config provides resources useful in the configuration of the validation service.
+// Package util provides useful resources and utilities.
 //
 // This file contains a test to confirm the Zap middleware is working with the Echo server.
-package config
+package util
 
 import (
 	"github.com/UCLALibrary/validation-service/pkg/utils"

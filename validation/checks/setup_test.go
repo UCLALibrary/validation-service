@@ -1,6 +1,6 @@
 //go:build unit
 
-// Package checks consists of individual validation checks.
+// Package common provides resources useful to different parts of the validation service.
 //
 // This file sets up the testing environment for the package.
 package checks
@@ -17,5 +17,9 @@ import (
 func TestMain(main *testing.M) {
 	flag.Parse()
 	fmt.Printf("*** Package %s's log level: %s ***\n", utils.GetPackageName(), *utils.LogLevel)
+	fmt.Printf("*** Package %s's HOST_DIR: %s ***\n", utils.GetPackageName(), *utils.HostDir)
+
+	// We handle the error of it being missing in the check that uses it
+	_ = os.Setenv("HOST_DIR", *utils.HostDir)
 	os.Exit(main.Run())
 }

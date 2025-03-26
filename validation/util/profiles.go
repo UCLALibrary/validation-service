@@ -1,4 +1,4 @@
-// Package config provides resources useful in the configuration of the validation process.
+// Package util provides useful resources and utilities.
 //
 // This file contains utilities for creating and working with validation profiles.
 //
@@ -20,7 +20,7 @@
 //	} else {
 //		fmt.Println(string(jsonData))
 //	}
-package config
+package util
 
 import (
 	"encoding/json"

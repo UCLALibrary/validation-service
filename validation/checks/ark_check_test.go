@@ -7,6 +7,7 @@ package checks
 
 import (
 	"github.com/UCLALibrary/validation-service/validation/csv"
+	"github.com/UCLALibrary/validation-service/validation/util"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -18,6 +19,9 @@ var testLocation = csv.Location{}
 
 // TestVerifyARK checks if verifyARK throws the correct errors when given incorrect ARKs
 func TestVerifyARK(t *testing.T) {
+	check, err := NewARKCheck(util.NewProfiles())
+	assert.NoError(t, err)
+
 	tests := []struct {
 		name        string
 		ark         string
@@ -95,7 +99,7 @@ func TestVerifyARK(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := verifyARK(tt.ark, tt.location, tt.profile)
+			err := check.verifyARK(tt.ark, tt.location, tt.profile)
 
 			if tt.expectError {
 				assert.Error(t, err)

@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/UCLALibrary/validation-service/validation/config"
 	"github.com/UCLALibrary/validation-service/validation/csv"
+	"github.com/UCLALibrary/validation-service/validation/util"
 )
 
 // FILE_NAME is the File Name of the current item.
@@ -18,15 +18,15 @@ var (
 	fileNotExist = "the file path given does not exist: %s"
 )
 
-// FilePathCheck type is a validator that checks if a File exists at the specificed location
+// FilePathCheck type is a validator that checks if a File exists at the specified location.
 //
 // It implements the Validator interface and returns an error on failure to validate.
 type FilePathCheck struct {
-	profiles *config.Profiles
+	profiles *util.Profiles
 }
 
 // NewFilePathCheck checks that the file exits at the given filepath in a CSV data cell.
-func (check *FilePathCheck) NewFilePathCheck(profiles *config.Profiles) (*FilePathCheck, error) {
+func NewFilePathCheck(profiles *util.Profiles) (*FilePathCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(nilProfileErr, csv.Location{}, "nil")
 	}
@@ -36,7 +36,7 @@ func (check *FilePathCheck) NewFilePathCheck(profiles *config.Profiles) (*FilePa
 	}, nil
 }
 
-// Validate verifies the file given at that location exists
+// Validate verifies the file given at that location exists.
 //
 // This check doesn't care what profile is being used.
 func (check *FilePathCheck) Validate(profile string, location csv.Location, csvData [][]string) error {

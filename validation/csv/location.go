@@ -50,3 +50,29 @@ func GetHeader(location Location, csvData [][]string, profile string) (string, e
 
 	return headers[index], nil
 }
+
+// GetHeaderIndex returns the index position for the column that contains the supplied header name.
+func GetHeaderIndex(header string, location Location, csvData [][]string, profile string) (int, error) {
+	if err := IsValidLocation(location, csvData, profile); err != nil {
+		return -1, err
+	}
+
+	// Iterate through the header row (first row) to find the column that matches the supplied header
+	for index, colHeader := range csvData[0] {
+		if header == colHeader {
+			return index, nil
+		}
+	}
+
+	return -1, NewError(fmt.Sprintf("supplied header '%s' was not located in first row", header), location, profile)
+}
+
+// GetRowValue gets the value of the supplied header for the row of the cell being checked
+func GetRowValue(header string, location Location, csvData [][]string, profile string) (string, error) {
+	colIndex, err := GetHeaderIndex(header, location, csvData, profile)
+	if err != nil {
+		return "", NewError(fmt.Sprintf("conditional field '%s' was not found", header), location, profile, err)
+	}
+
+	return csvData[location.RowIndex][colIndex], nil
+}
