@@ -7,7 +7,7 @@ package validation
 
 import (
 	"errors"
-	"github.com/UCLALibrary/validation-service/validation/config"
+	"github.com/UCLALibrary/validation-service/validation/util"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap/zaptest"
 	"testing"
@@ -16,7 +16,7 @@ import (
 // TestNewRegistry creates a new registry for validators.
 func TestNewRegistry(t *testing.T) {
 	logger := zaptest.NewLogger(t)
-	profiles := config.NewProfiles()
+	profiles := util.NewProfiles()
 
 	// Should successfully create a registry
 	reg, err := NewRegistry(profiles, logger)
@@ -37,7 +37,7 @@ func TestNewRegistry(t *testing.T) {
 // TestGetValidators tests getting the validators from the registry.
 func TestGetValidators(t *testing.T) {
 	logger := zaptest.NewLogger(t)
-	profiles := config.NewProfiles()
+	profiles := util.NewProfiles()
 	reg, err := NewRegistry(profiles, logger)
 	if err != nil {
 		t.Errorf("NewRegistry() error = %v", err)

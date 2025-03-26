@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"github.com/UCLALibrary/validation-service/api"
 	"github.com/UCLALibrary/validation-service/validation"
-	"github.com/UCLALibrary/validation-service/validation/config"
 	"github.com/UCLALibrary/validation-service/validation/csv"
+	"github.com/UCLALibrary/validation-service/validation/util"
 	"github.com/labstack/echo/v4"
 	middleware "github.com/oapi-codegen/echo-middleware"
 	"go.uber.org/zap"
@@ -130,7 +130,7 @@ func main() {
 
 	// Create a new validation application and configure its logger
 	echoApp := echo.New()
-	echoApp.Use(config.ZapLoggerMiddleware(logger))
+	echoApp.Use(util.ZapLoggerMiddleware(logger))
 
 	// Hide application startup messages that don't play nicely with logger
 	echoApp.HideBanner = true

@@ -1,8 +1,11 @@
+// Package checks provides individual validators used by the validation service.
+//
+// This file checks that data cells do not have end of line (EOL) characters.
 package checks
 
 import (
-	"github.com/UCLALibrary/validation-service/validation/config"
 	"github.com/UCLALibrary/validation-service/validation/csv"
+	"github.com/UCLALibrary/validation-service/validation/util"
 	"strings"
 )
 
@@ -16,11 +19,11 @@ var (
 //
 // It implements the Validator interface and returns an error on failure to validate.
 type EOLCheck struct {
-	profiles *config.Profiles
+	profiles *util.Profiles
 }
 
 // NewEOLCheck checks that there are no EOLs in a CSV data cell.
-func (check *EOLCheck) NewEOLCheck(profiles *config.Profiles) (*EOLCheck, error) {
+func NewEOLCheck(profiles *util.Profiles) (*EOLCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(nilProfileErr, csv.Location{}, "nil")
 	}

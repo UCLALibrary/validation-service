@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"regexp"
 
-	"github.com/UCLALibrary/validation-service/validation/config"
 	"github.com/UCLALibrary/validation-service/validation/csv"
+	"github.com/UCLALibrary/validation-service/validation/util"
 )
 
 // Error messages
@@ -18,10 +18,10 @@ var (
 )
 
 type LicenseCheck struct {
-	profiles *config.Profiles
+	profiles *util.Profiles
 }
 
-func (check *LicenseCheck) NewLicenseCheck(profiles *config.Profiles) (*LicenseCheck, error) {
+func NewLicenseCheck(profiles *util.Profiles) (*LicenseCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(noProfileErr, csv.Location{}, "nil")
 	}
@@ -54,15 +54,14 @@ func (check *LicenseCheck) Validate(profile string, location csv.Location, csvDa
 
 	value := csvData[location.RowIndex][location.ColIndex]
 
-	if err := verifyLicense(value, profile, location); err != nil {
+	if err := check.verifyLicense(value, profile, location); err != nil {
 		return err
-
 	}
 
 	return nil
 }
 
-func verifyLicense(license string, profile string, location csv.Location) error {
+func (check *LicenseCheck) verifyLicense(license string, profile string, location csv.Location) error {
 	r := regexp.MustCompile(`^^http\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_]*)?$`)
 	if !r.MatchString(license) {
 		return csv.NewError(urlFormatErr, location, profile)
@@ -72,6 +71,7 @@ func verifyLicense(license string, profile string, location csv.Location) error 
 	if err != nil {
 		return csv.NewError(urlConnectErr, location, profile)
 	}
+	//noinspection GoUnhandledErrorResult
 	defer resp.Body.Close()
 	_, err = io.ReadAll(resp.Body)
 	if err != nil {

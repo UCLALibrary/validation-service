@@ -1,7 +1,7 @@
-// Package config provides resources useful in the configuration of the validation service.
+// Package util provides useful resources and utilities.
 //
 // This file contains a wrapper to configure Echo to use a Zap logger instead of the default.
-package config
+package util
 
 import (
 	"github.com/labstack/echo/v4"
