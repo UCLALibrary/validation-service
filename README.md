@@ -85,6 +85,10 @@ To run a Docker container that's already been built:
 
     make docker-run
 
+To run a Docker container with a mounted directory if not using the default `HOST_DIR`:
+
+    make docker-run HOST_DIR=/your/host/directory
+
 To see the logs, in real time, from that Docker container:
 
     make docker-log
