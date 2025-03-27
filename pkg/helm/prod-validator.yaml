@@ -66,7 +66,7 @@ replicaCount: 1
 imagePullSecrets:
   - name: prod-validator-dockerhub-secret
 image:
-  repository: uclalibrary/validation-service
+  repository: uclalibrary/validation-service-kakadu
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "0.0.0"

@@ -97,8 +97,47 @@ To stop the Docker container when you are done with it:
 
     make docker-stop
 
-Note: None of the Docker specific Makefile targets (except `docker-test`) are required to build or test the project.
+To build and push a container to DockerHub, use:
+
+    make docker-push
+
+Note: None of the Dockers specific Makefile targets (except `docker-test`) are required to build or test the project.
 They are just additional conveniences for developers.
+
+## Including Kakadu in Your Build
+
+Kakadu is a JPEG-2000 library that supports working with JP2 and JPX images. It is proprietary software, so cannot be
+redistributed by us, but if you have a license there is a way to incorporate it into this build. To start, you'd need
+to store the Kakadu source code in a 'kakadu' GitHub repository in your organization. Once you've done that, you need
+to ensure that any users running this build have permission to access that private repo. These users will also need to
+use the SSH method of connecting to GitHub (instead of the HTTPS method).
+
+If you want to confirm that the above is set up correctly, there is a Makefile target that will allow you to clone your
+organization's 'kakadu' repository to your local machine:
+
+    ORG_NAME=uclalibrary KAKADU_VERSION=v8_4_1-12345L make clone-kakadu
+
+You would, of course, replace `uclalibrary` with your organization's name and use your organization's `KAKADU_VERSION`,
+which includes a number unique to your license. If you're going to push Docker images to DockerHub, it is assumed that
+your organization has the same name there. The form of the name must also be lowercase. GitHub is not picky about that,
+but DockerHub is.
+
+Running `clone-kakadu` will create a 'kakadu' directory in your project. Don't worry about it getting checked into Git.
+We have added that directory to the project's `.gitignore` file. If you'd like to use Kakadu in the build, you'll need
+an additional Makefile target: `docker-build` (or `docker-push` for building and pushing up to DockerHub). If you do not
+work at UCLA, you'll still need to supply `ORG_NAME` and `KAKADU_VERSION` as ENV properties. If you do work at UCLA,
+`KAKADU_VERSION` is the only property you'll need -- check the UCLALibrary 'kakadu' repo for the actual version number).
+A UCLA person should be able to build the container using:
+
+    KAKADU_VERSION=v8_4_1-12345L make docker-build
+
+New releases should be done through the GitHub Actions interface, but it is also possible to push a version to DockerHub
+from a local developer's machine, too:
+
+    KAKADU_VERSION=v8_4_1-12345L make docker-push
+
+Note: this will build the Docker container before pushing it to DockerHub, and it will require the developer running the
+Makefile target to be logged into DockerHub on their local machine.
 
 ## Building and Deploying with ACT
 
