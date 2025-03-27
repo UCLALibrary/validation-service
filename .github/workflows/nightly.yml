@@ -73,3 +73,5 @@ jobs:
           SERVICE_NAME=${{ env.SERVICE_NAME }}
           LOG_LEVEL=info
           PERSONAL_ACCESS_TOKEN=${{ env.PERSONAL_ACCESS_TOKEN }}
+          ARCH=x86-64
+
