@@ -55,6 +55,13 @@ jobs:
     - name: Build project
       run: make all
 
+    - name: Set PERSONAL_ACCESS_TOKEN env variable
+      run: |
+        if [[ "${{ matrix.pat }}" == "true" ]]; then
+          echo "PERSONAL_ACCESS_TOKEN=${{ secrets.PERSONAL_ACCESS_TOKEN }}" >> $GITHUB_ENV
+        fi
+      shell: bash
+
     - name: Build and push Docker image
       uses: docker/build-push-action@471d1dc4e07e5cdedd4c2171150001c434f0b7a4 # v6.15.0
       with:
@@ -65,12 +72,4 @@ jobs:
         build-args: |
           SERVICE_NAME=${{ env.SERVICE_NAME }}
           LOG_LEVEL=info
-          PERSONAL_ACCESS_TOKEN=${{ matrix.pat == 'true' && secrets.PERSONAL_ACCESS_TOKEN || '' }}
-
-    - name: Debug secrets
-      run: |
-        if [[ "${{ secrets.PERSONAL_ACCESS_TOKEN }}" == "" ]]; then
-          echo "PERSONAL_ACCESS_TOKEN is missing!"
-        else
-          echo "PERSONAL_ACCESS_TOKEN is available!"
-        fi
+          PERSONAL_ACCESS_TOKEN=${{ env.PERSONAL_ACCESS_TOKEN }}
