@@ -1,14 +1,18 @@
 # Build and runtime variables that can be overridden
-SERVICE_NAME := validation-service
+SERVICE_NAME ?= validation-service
 LOG_LEVEL := info
 PORT := 8888
-VERSION := dev-SNAPSHOT
+VERSION ?= dev-SNAPSHOT
 HOST_DIR := $(shell pwd)/testdata
 PERSONAL_ACCESS_TOKEN ?= ""
 ARCH ?= x86-64
-
-check-pat:
-	@echo "PERSONAL_ACCESS_TOKEN is: $(PERSONAL_ACCESS_TOKEN)"
+KAKADU_PATH := v8_4_1-01903L/*
+CREATE_KAKADU ?= ""
+# Docker related variables
+TAG ?= validation-service
+DOCKER_REGISTRY ?= docker.io
+DOCKER_REPO ?= validation-service
+DOCKER_IMAGE ?= $(DOCKER_REGISTRY)/$(DOCKER_REPO):$(TAG)
 
 # Force the API target to run even if the openapi.yml has not been touched/changed
 ifneq ($(filter FORCE,$(MAKECMDGOALS)),)
@@ -39,10 +43,18 @@ build: api # Compiles the project's Go code into an executable
 test: # Runs the unit tests (integration tests are excluded)
 	go test -tags=unit ./... -v -args -log-level=$(LOG_LEVEL) -host-dir=$(HOST_DIR)
 
-docker-build: # Builds a Docker container for manual testing
-	docker build . --tag $(SERVICE_NAME) --build-arg SERVICE_NAME=$(SERVICE_NAME) \
+docker-build:  # Builds a Docker container for manual testing
+	@if [ ! -z "$(CREATE_KAKADU)" ]; then \
+		echo "Running clone-kakadu..."; \
+		$(MAKE) clone-kakadu || true; \
+	else \
+		echo "CREATE_KAKADU is not set, skipping clone-kakadu"; \
+		mkdir -p kakadu; \
+	fi
+	@echo "Running Docker build..."
+	docker build . --tag $(DOCKER_IMAGE) --build-arg SERVICE_NAME=$(SERVICE_NAME) \
 		--build-arg VERSION=$(VERSION) --build-arg HOST_DIR=$(HOST_DIR) \
-		--build-arg PERSONAL_ACCESS_TOKEN=$(PERSONAL_ACCESS_TOKEN) --build-arg ARCH=$(ARCH)
+		--build-arg CREATE_KAKADU=$(CREATE_KAKADU) --build-arg ARCH=$(ARCH)
 
 docker-run: docker-build # Runs a Docker instance, independent of the tests
 	CONTAINER_ID=$(shell docker image ls -q --filter=reference=$(SERVICE_NAME)); \
@@ -59,8 +71,12 @@ docker-stop: # Stops a Docker container started with 'docker-run'
 
 # 'docker-test' does not require 'docker-build', fwiw, 'docker-build' is just for debugging
 docker-test: # Runs integration tests inside the Docker container
+	@mkdir -p kakadu
 	go test -tags=integration ./integration -v -args -service-name=$(SERVICE_NAME) -log-level=$(LOG_LEVEL) \
 		-host-dir=$(HOST_DIR)
+
+docker-push:  docker-build # builds and pushes a Docker image
+	docker push $(DOCKER_IMAGE)
 
 clean: # Cleans up all artifacts created by the build
 	rm -rf $(SERVICE_NAME) api/api.go
@@ -76,6 +92,16 @@ run: config api build # Runs service locally, independent of Docker
 
 ci-run: config api # Runs CI locally using ACT (which must be installed)
 	pkg/scripts/act.sh $(JOB) $(SERVICE_NAME)
+
+clone-kakadu:
+	echo "Cloning Kakadu repository..."; \
+	rm -rf kakadu && \
+	mkdir kakadu && cd kakadu && \
+	git init && \
+	git remote add origin https://$(PERSONAL_ACCESS_TOKEN)@github.com/UCLALibrary/kakadu.git && \
+	git config core.sparseCheckout true && \
+	echo "$(KAKADU_PATH)" > .git/info/sparse-checkout && \
+	git pull origin main; \
 
 help: # Outputs information about the build's available targets
 	@awk -F ':.*?# ' '/^[a-z0-9_-]+:.*?# / && $$1 !~ /[A-Z.]/ { \

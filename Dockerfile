@@ -6,15 +6,13 @@ ARG SERVICE_NAME
 ARG VERSION
 ARG LOG_LEVEL
 ARG HOST_DIR
-ARG PERSONAL_ACCESS_TOKEN
 ARG ARCH
+ARG CREATE_KAKADU
 
 ##
 ## STEP 1 - BUILD
 ##
 FROM golang:1.24.1-alpine3.20 AS build
-
-ARG PERSONAL_ACCESS_TOKEN
 
 # Inherit SERVICE_NAME arg and set as ENV
 ARG SERVICE_NAME
@@ -30,19 +28,6 @@ LABEL org.opencontainers.image.description="UCLA Library's ${SERVICE_NAME} conta
 
 # Install necessary packages (git, gcc, make, etc.)
 RUN apk add --no-cache git gcc g++ make linux-headers musl-dev openjdk17
-
-# Clone Kakadu repository in the builder stage
-WORKDIR /app/kakadu
-RUN if [ ! -z "$PERSONAL_ACCESS_TOKEN" ]; then \
-      git init /app/kakadu && \
-      git remote add origin https://${PERSONAL_ACCESS_TOKEN}@github.com/UCLALibrary/kakadu.git && \
-      git config core.sparseCheckout true && \
-      echo "v8_4_1-01903L/*" > .git/info/sparse-checkout && \
-      git pull origin main; \
-    else \
-      echo "Skipping Kakadu clone: PERSONAL_ACCESS_TOKEN is not set"; \
-      mkdir -p /app/kakadu; \
-    fi
 
 # Set the working directory inside the container
 WORKDIR /service
@@ -82,7 +67,7 @@ ENV PROFILES_FILE="$DATA_DIR/profiles.json"
 
 # Set variables for Kakadu
 ARG ARCH
-ARG PERSONAL_ACCESS_TOKEN
+ARG CREATE_KAKADU
 
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk
 ENV PATH=$JAVA_HOME/bin:$PATH
@@ -108,10 +93,10 @@ COPY "openapi.yml" "$DATA_DIR/html/assets/"
 
 
 # Copy Kakadu from the builder stage to the final image
-COPY --from=build /app/kakadu /app/kakadu
+COPY kakadu /app/kakadu
 
 # Run `make` as part of the container build process to compile Kakadu
-RUN if [ ! -z "$PERSONAL_ACCESS_TOKEN" ]; then \
+RUN if [ ! -z "$CREATE_KAKADU" ]; then \
         cd /app/kakadu/v8_4_1-01903L/make && make -f Makefile-Linux-${ARCH}-gcc; \
     else \
         rm -rf /app/kakadu; \
