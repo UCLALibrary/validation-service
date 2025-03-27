@@ -6,11 +6,15 @@ ARG SERVICE_NAME
 ARG VERSION
 ARG LOG_LEVEL
 ARG HOST_DIR
+ARG PERSONAL_ACCESS_TOKEN
+ARG ARCH
 
 ##
 ## STEP 1 - BUILD
 ##
 FROM golang:1.24.1-alpine3.20 AS build
+
+ARG PERSONAL_ACCESS_TOKEN
 
 # Inherit SERVICE_NAME arg and set as ENV
 ARG SERVICE_NAME
@@ -23,6 +27,22 @@ ENV HOST_DIR=${HOST_DIR}
 # Set image metadata
 LABEL org.opencontainers.image.source="https://github.com/uclalibrary/${SERVICE_NAME}"
 LABEL org.opencontainers.image.description="UCLA Library's ${SERVICE_NAME} container"
+
+# Install necessary packages (git, gcc, make, etc.)
+RUN apk add --no-cache git gcc g++ make linux-headers musl-dev openjdk17
+
+# Clone Kakadu repository in the builder stage
+WORKDIR /app/kakadu
+RUN if [ ! -z "$PERSONAL_ACCESS_TOKEN" ]; then \
+      git init /app/kakadu && \
+      git remote add origin https://${PERSONAL_ACCESS_TOKEN}@github.com/UCLALibrary/kakadu.git && \
+      git config core.sparseCheckout true && \
+      echo "v8_4_1-01903L/*" > .git/info/sparse-checkout && \
+      git pull origin main; \
+    else \
+      echo "Skipping Kakadu clone: PERSONAL_ACCESS_TOKEN is not set"; \
+      mkdir -p /app/kakadu; \
+    fi
 
 # Set the working directory inside the container
 WORKDIR /service
@@ -60,8 +80,17 @@ ENV VERSION=${VERSION}
 # Set the location of the profiles config
 ENV PROFILES_FILE="$DATA_DIR/profiles.json"
 
+# Set variables for Kakadu
+ARG ARCH
+ARG PERSONAL_ACCESS_TOKEN
+
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+ENV PATH=$JAVA_HOME/bin:$PATH
+ENV PATH=$PATH:/app/kakadu/v8_4_1-01903L/bin/Linux-${ARCH}-gcc
+ENV LD_LIBRARY_PATH=/app/kakadu/v8_4_1-01903L/lib/Linux-${ARCH}-gcc/:$LD_LIBRARY_PATH
+
 # Install curl to be used in container healthcheck
-RUN apk add --no-cache curl
+RUN apk add --no-cache curl bash git gcc g++ make openjdk17 linux-headers musl-dev
 
 # Create a non-root user
 RUN addgroup -S "${SERVICE_NAME}" && adduser -S "${SERVICE_NAME}" -G "${SERVICE_NAME}"
@@ -76,6 +105,17 @@ COPY "html/" "$DATA_DIR/html/"
 COPY --from=build "/${SERVICE_NAME}" "/sbin/${SERVICE_NAME}"
 COPY "profiles.json" "$PROFILES_FILE"
 COPY "openapi.yml" "$DATA_DIR/html/assets/"
+
+
+# Copy Kakadu from the builder stage to the final image
+COPY --from=build /app/kakadu /app/kakadu
+
+# Run `make` as part of the container build process to compile Kakadu
+RUN if [ ! -z "$PERSONAL_ACCESS_TOKEN" ]; then \
+        cd /app/kakadu/v8_4_1-01903L/make && make -f Makefile-Linux-${ARCH}-gcc; \
+    else \
+        rm -rf /app/kakadu; \
+    fi
 
 # Now, modify ownership and permissions in a separate RUN step
 RUN chown "${SERVICE_NAME}":"${SERVICE_NAME}" "/sbin/${SERVICE_NAME}" && chmod 0700 "/sbin/${SERVICE_NAME}"

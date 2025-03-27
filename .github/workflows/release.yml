@@ -13,6 +13,9 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        pat: [ true, false ]
 
     steps:
       - name: Extract service name from repo name
@@ -68,6 +71,7 @@ jobs:
             SERVICE_NAME=${{ env.SERVICE_NAME }}
             LOG_LEVEL=info
             VERSION=${{ github.event.release.tag_name }}
+            PERSONAL_ACCESS_TOKEN=${{ matrix.pat == 'true' && secrets.PERSONAL_ACCESS_TOKEN || '' }}
 
   # If a test deploy is desired, releases should first be run as pre-releases
   trigger-test-deploy:

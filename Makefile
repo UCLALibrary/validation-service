@@ -4,6 +4,11 @@ LOG_LEVEL := info
 PORT := 8888
 VERSION := dev-SNAPSHOT
 HOST_DIR := $(shell pwd)/testdata
+PERSONAL_ACCESS_TOKEN ?= ""
+ARCH ?= x86-64
+
+check-pat:
+	@echo "PERSONAL_ACCESS_TOKEN is: $(PERSONAL_ACCESS_TOKEN)"
 
 # Force the API target to run even if the openapi.yml has not been touched/changed
 ifneq ($(filter FORCE,$(MAKECMDGOALS)),)
@@ -36,7 +41,8 @@ test: # Runs the unit tests (integration tests are excluded)
 
 docker-build: # Builds a Docker container for manual testing
 	docker build . --tag $(SERVICE_NAME) --build-arg SERVICE_NAME=$(SERVICE_NAME) \
-		--build-arg VERSION=$(VERSION) --build-arg HOST_DIR=$(HOST_DIR)
+		--build-arg VERSION=$(VERSION) --build-arg HOST_DIR=$(HOST_DIR) \
+		--build-arg PERSONAL_ACCESS_TOKEN=$(PERSONAL_ACCESS_TOKEN) --build-arg ARCH=$(ARCH)
 
 docker-run: docker-build # Runs a Docker instance, independent of the tests
 	CONTAINER_ID=$(shell docker image ls -q --filter=reference=$(SERVICE_NAME)); \

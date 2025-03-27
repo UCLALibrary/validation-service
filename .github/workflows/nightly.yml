@@ -13,6 +13,9 @@ on:
 jobs:
   nightly:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        pat: [ true, false ]
 
     steps:
     - name: Extract service name from repo name
@@ -62,3 +65,5 @@ jobs:
         build-args: |
           SERVICE_NAME=${{ env.SERVICE_NAME }}
           LOG_LEVEL=info
+          PERSONAL_ACCESS_TOKEN=${{ matrix.pat == 'true' && secrets.PERSONAL_ACCESS_TOKEN || '' }}
+
