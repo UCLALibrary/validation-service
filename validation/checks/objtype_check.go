@@ -9,7 +9,6 @@ import (
 
 // Error messages
 var (
-        profileErr           = "supplied profile cannot be nil"
 	typeWhitespaceError  = "field contains invalid characters (e.g., spaces, line breaks)"
 	typeValueError       = "object type field doesn't contain valid value"
 )
