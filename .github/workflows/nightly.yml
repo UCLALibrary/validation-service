@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        pat: [ "-ucla", "" ]
+        kakadu: [ "-ucla", "" ]
 
     steps:
     - name: Extract service name from repo name
@@ -57,7 +57,7 @@ jobs:
 
     - name: Set CREATE_KAKADU env variable
       run: |
-        if [[ "${{ matrix.pat }}" == "-ucla" ]]; then
+        if [[ "${{ matrix.kakadu }}" == "-ucla" ]]; then
           echo "CREATE_KAKADU=true" >> $GITHUB_ENV
         fi
       shell: bash
@@ -72,7 +72,7 @@ jobs:
           ARCH=x86-64 \
           CREATE_KAKADU=${{ env.CREATE_KAKADU }}  \
           TAG=nightly \
-          DOCKER_REPO=${{ env.SERVICE_NAME }}${{ matrix.pat}} \
+          DOCKER_REPO=${{ env.SERVICE_NAME }}${{ matrix.kakadu}} \
           DOCKER_REGISTRY=${{ env.DOCKER_REGISTRY_ACCOUNT }}
 
 
