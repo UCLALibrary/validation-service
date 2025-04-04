@@ -8,6 +8,7 @@ ARG LOG_LEVEL
 ARG HOST_DIR
 ARG ARCH
 ARG CREATE_KAKADU
+ARG KAKADU_PATH
 
 ##
 ## STEP 1 - BUILD
@@ -25,9 +26,6 @@ ENV HOST_DIR=${HOST_DIR}
 # Set image metadata
 LABEL org.opencontainers.image.source="https://github.com/uclalibrary/${SERVICE_NAME}"
 LABEL org.opencontainers.image.description="UCLA Library's ${SERVICE_NAME} container"
-
-# Install necessary packages (git, gcc, make, etc.)
-RUN apk add --no-cache git gcc g++ make linux-headers musl-dev openjdk17
 
 # Set the working directory inside the container
 WORKDIR /service
@@ -68,11 +66,12 @@ ENV PROFILES_FILE="$DATA_DIR/profiles.json"
 # Set variables for Kakadu
 ARG ARCH
 ARG CREATE_KAKADU
+ARG KAKADU_PATH
 
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk
 ENV PATH=$JAVA_HOME/bin:$PATH
-ENV PATH=$PATH:/app/kakadu/v8_4_1-01903L/bin/Linux-${ARCH}-gcc
-ENV LD_LIBRARY_PATH=/app/kakadu/v8_4_1-01903L/lib/Linux-${ARCH}-gcc/:$LD_LIBRARY_PATH
+ENV PATH=$PATH:/app/kakadu/${KAKADU_PATH}/bin/Linux-${ARCH}-gcc
+ENV LD_LIBRARY_PATH=/app/kakadu/${KAKADU_PATH}/lib/Linux-${ARCH}-gcc/:$LD_LIBRARY_PATH
 
 # Install curl to be used in container healthcheck
 RUN apk add --no-cache curl bash git gcc g++ make openjdk17 linux-headers musl-dev
@@ -97,7 +96,7 @@ COPY kakadu /app/kakadu
 
 # Run `make` as part of the container build process to compile Kakadu
 RUN if [ ! -z "$CREATE_KAKADU" ]; then \
-        cd /app/kakadu/v8_4_1-01903L/make && make -f Makefile-Linux-${ARCH}-gcc; \
+        cd /app/kakadu/${KAKADU_PATH}/make && make -f Makefile-Linux-${ARCH}-gcc; \
     else \
         rm -rf /app/kakadu; \
     fi

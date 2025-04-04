@@ -6,7 +6,7 @@ VERSION ?= dev-SNAPSHOT
 HOST_DIR := $(shell pwd)/testdata
 PERSONAL_ACCESS_TOKEN ?= ""
 ARCH ?= x86-64
-KAKADU_PATH := v8_4_1-01903L/*
+KAKADU_PATH := v8_4_1-01903L
 CREATE_KAKADU ?= ""
 # Docker related variables
 TAG ?= validation-service
@@ -54,7 +54,8 @@ docker-build:  # Builds a Docker container for manual testing
 	@echo "Running Docker build..."
 	docker build . --tag $(DOCKER_IMAGE) --build-arg SERVICE_NAME=$(SERVICE_NAME) \
 		--build-arg VERSION=$(VERSION) --build-arg HOST_DIR=$(HOST_DIR) \
-		--build-arg CREATE_KAKADU=$(CREATE_KAKADU) --build-arg ARCH=$(ARCH)
+		--build-arg CREATE_KAKADU=$(CREATE_KAKADU) --build-arg ARCH=$(ARCH) \
+		--build-arg KAKADU_PATH=$(KAKADU_PATH)
 
 docker-run: docker-build # Runs a Docker instance, independent of the tests
 	CONTAINER_ID=$(shell docker image ls -q --filter=reference=$(SERVICE_NAME)); \
@@ -100,7 +101,7 @@ clone-kakadu:
 	git init && \
 	git remote add origin https://$(PERSONAL_ACCESS_TOKEN)@github.com/UCLALibrary/kakadu.git && \
 	git config core.sparseCheckout true && \
-	echo "$(KAKADU_PATH)" > .git/info/sparse-checkout && \
+	echo "$(KAKADU_PATH)/*" > .git/info/sparse-checkout && \
 	git pull origin main; \
 
 help: # Outputs information about the build's available targets

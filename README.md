@@ -81,6 +81,15 @@ To build a Docker container to your local Docker repo:
 
     make docker-build
 
+To run Kakadu in your local Docker build set the ENV var `CREATE_KAKADU` in the Makefile to `true` and also set the `PERSONAL_ACCESS_TOKEN` to your token which allows access to the `Kakadu` Github repository managed by UCLALibrary. When these environment variables are set, the Kakadu version set by the ENV var `KAKADU_PATH` is pulled down locally, and then the docker image is built with that Kakadu version. The `ARCH` version that is pulled down is by default `x86-64`. This variable can also be changed. 
+
+    make docker-build
+
+The default is for Kakadu not to be included. If you would like to just pull down the Kakadu files for a particular reason you can also run:
+
+    make clone-kakadu
+
+Note: When you run `make docker-build` or `make clone-kakadu` the local Kakadu files will be overwritten.
 To run a Docker container that's already been built:
 
     make docker-run
@@ -96,6 +105,10 @@ To see the logs, in real time, from that Docker container:
 To stop the Docker container when you are done with it:
 
     make docker-stop
+
+To push the Docker container to a repoitory you can set the `TAG`, `DOCKER_REGISTRY`, and `DOCKER_REPO` ENV variables. You should be logged into your Docker account locally if you want to push the Docker conatiner:
+
+    make docker-push
 
 Note: None of the Docker specific Makefile targets (except `docker-test`) are required to build or test the project.
 They are just additional conveniences for developers.
