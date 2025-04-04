@@ -38,3 +38,6 @@ profiles.json
 # Ignore GitHub Actions work products
 /test-validator.yaml
 /prod-validator.yaml
+
+# Kakadu private repository
+kakadu

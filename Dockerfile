@@ -6,6 +6,9 @@ ARG SERVICE_NAME
 ARG VERSION
 ARG LOG_LEVEL
 ARG HOST_DIR
+ARG ARCH
+ARG CREATE_KAKADU
+ARG KAKADU_PATH
 
 ##
 ## STEP 1 - BUILD
@@ -60,8 +63,18 @@ ENV VERSION=${VERSION}
 # Set the location of the profiles config
 ENV PROFILES_FILE="$DATA_DIR/profiles.json"
 
+# Set variables for Kakadu
+ARG ARCH
+ARG CREATE_KAKADU
+ARG KAKADU_PATH
+
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk
+ENV PATH=$JAVA_HOME/bin:$PATH
+ENV PATH=$PATH:/app/kakadu/${KAKADU_PATH}/bin/Linux-${ARCH}-gcc
+ENV LD_LIBRARY_PATH=/app/kakadu/${KAKADU_PATH}/lib/Linux-${ARCH}-gcc/:$LD_LIBRARY_PATH
+
 # Install curl to be used in container healthcheck
-RUN apk add --no-cache curl
+RUN apk add --no-cache curl bash git gcc g++ make openjdk17 linux-headers musl-dev
 
 # Create a non-root user
 RUN addgroup -S "${SERVICE_NAME}" && adduser -S "${SERVICE_NAME}" -G "${SERVICE_NAME}"
@@ -76,6 +89,17 @@ COPY "html/" "$DATA_DIR/html/"
 COPY --from=build "/${SERVICE_NAME}" "/sbin/${SERVICE_NAME}"
 COPY "profiles.json" "$PROFILES_FILE"
 COPY "openapi.yml" "$DATA_DIR/html/assets/"
+
+
+# Copy Kakadu from the builder stage to the final image
+COPY kakadu /app/kakadu
+
+# Run `make` as part of the container build process to compile Kakadu
+RUN if [ ! -z "$CREATE_KAKADU" ]; then \
+        cd /app/kakadu/${KAKADU_PATH}/make && make -f Makefile-Linux-${ARCH}-gcc; \
+    else \
+        rm -rf /app/kakadu; \
+    fi
 
 # Now, modify ownership and permissions in a separate RUN step
 RUN chown "${SERVICE_NAME}":"${SERVICE_NAME}" "/sbin/${SERVICE_NAME}" && chmod 0700 "/sbin/${SERVICE_NAME}"
