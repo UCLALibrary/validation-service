@@ -4,6 +4,8 @@ import (
 	"io"
 	"net/http"
 	"regexp"
+        "slices"
+
 
 	"github.com/UCLALibrary/validation-service/validation/csv"
 	"github.com/UCLALibrary/validation-service/validation/util"
@@ -15,7 +17,11 @@ var (
 	urlFormatErr  = "license URL is not in a proper format (check for HTTPS)"
 	urlConnectErr = "problem connecting to license URL"
 	urlReadErr    = "problem reading body of license URL"
+	urlDupeBadErr = "duplicate URL rejected elsewhere in CSV"
 )
+
+var valids []string
+var invalids []string
 
 type LicenseCheck struct {
 	profiles *util.Profiles
@@ -25,6 +31,9 @@ func NewLicenseCheck(profiles *util.Profiles) (*LicenseCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(noProfileErr, csv.Location{}, "nil")
 	}
+
+        valids = make([]string, 1)
+        invalids = make([]string, 1)
 
 	return &LicenseCheck{
 		profiles: profiles,
@@ -54,10 +63,18 @@ func (check *LicenseCheck) Validate(profile string, location csv.Location, csvDa
 
 	value := csvData[location.RowIndex][location.ColIndex]
 
+        if slices.Contains(valids, value) {
+                return nil
+        } else if slices.Contains(invalids, value) {
+                return csv.NewError(urlDupeBadErr, location, profile)
+        }
+
 	if err := check.verifyLicense(value, profile, location); err != nil {
+                invalids = append(invalids, value)
 		return err
 	}
 
+        valids = append(valids, value)
 	return nil
 }
 
