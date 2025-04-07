@@ -10,7 +10,8 @@ import (
 	docker "context"
 	"flag"
 	"fmt"
-	"log"
+	"github.com/UCLALibrary/validation-service/pkg/utils"
+	"github.com/testcontainers/testcontainers-go/log"
 	"os"
 	"strings"
 	"testing"
@@ -22,42 +23,32 @@ import (
 	"go.uber.org/zap"
 )
 
-// Define our test container's build arguments
-var serviceName string
-var logLevel string
-var hostDir string
-
 // The URL to which to submit test HTTP requests
 var testServerURL string
 
 // A reference to our Docker container
 var container testcontainers.Container
 
-// Initialize our service name flag.
-func init() {
-	flag.StringVar(&serviceName, "service-name", "service", "Name of service being tested")
-	flag.StringVar(&logLevel, "log-level", "info", "Log level (debug, info, warn, error)")
-	flag.StringVar(&hostDir, "host-dir", "", "HOST_DIR env variable that is copied into test-container")
-}
-
 // TestMain spins up a Docker container with our validation service to run tests against.
 func TestMain(m *testing.M) {
 	flag.Parse()
+	fmt.Printf("*** Package %s's log level: %s ***\n", utils.GetPackageName(), utils.LogLevel)
 
-	// Creates a logger for our tests
-	logger, _ = getLogger()
-	//noinspection GoUnhandledErrorResult
-	defer logger.Sync()
+	// Creates a custom *zap.logger for our tests to use and then wrap it in a testcontainers logger
+	logger, _ = getLogger(utils.LogLevel)
+	tcLogger := NewTcLogger(logger)
+
+	// Set the default Go system logger to use our *zap.Logger
+	log.SetDefault(tcLogger)
+
 	// Get the Docker context
 	context := docker.Background()
 
-	logger.Info("Checking if hostDir exists", zap.String("hostDir", hostDir))
-
-	if _, err := os.Stat(hostDir); os.IsNotExist(err) {
-		logger.Fatal("Host directory does not exist", zap.String("hostDir", hostDir))
+	if _, err := os.Stat(utils.HostDir); os.IsNotExist(err) {
+		logger.Fatal("HOST_DIR ENV property does not exist", zap.String("hostDir", utils.HostDir))
+	} else {
+		logger.Debug("HOST_DIR ENV property exists", zap.String("hostDir", utils.HostDir))
 	}
-
-	logger.Info("HOST_DIR %s", zap.String("hostDir", hostDir))
 
 	// Define the container request
 	request := testcontainers.ContainerRequest{
@@ -65,21 +56,17 @@ func TestMain(m *testing.M) {
 			Context:    "..",
 			Dockerfile: "Dockerfile",
 			BuildArgs: map[string]*string{
-				"SERVICE_NAME": &serviceName,
-				"LOG_LEVEL":    &logLevel,
-				"HOST_DIR":     &hostDir,
+				"SERVICE_NAME": &utils.ServiceName,
+				"LOG_LEVEL":    &utils.LogLevel,
+				"HOST_DIR":     &utils.HostDir,
 			},
 		},
 		ExposedPorts: []string{"8888/tcp"},
 		WaitingFor:   wait.ForHTTP("/status").WithPort("8888/tcp"),
 		LogConsumerCfg: &testcontainers.LogConsumerConfig{
+			// Logs from the container itself (i.e., not from TestContainers) come through this configuration
 			Consumers: []testcontainers.LogConsumer{&DockerLogConsumer{}},
 		},
-	}
-
-	// Disable unnecessary output logging from the test containers
-	testcontainers.Logger = &FilteredLogger{
-		original: log.New(log.Writer(), "", log.LstdFlags),
 	}
 
 	// Start the container
@@ -87,13 +74,11 @@ func TestMain(m *testing.M) {
 	container, containerErr = testcontainers.GenericContainer(context, testcontainers.GenericContainerRequest{
 		ContainerRequest: request,
 		Started:          true,
+		Logger:           tcLogger, // Logger for testcontainers events (e.g., container startup, shutdown, etc.)
 	})
 	if containerErr != nil {
 		logger.Fatal("Failed to start Docker container", zap.Error(containerErr))
 	}
-
-	//noinspection GoUnhandledErrorResult
-	defer container.Terminate(context)
 
 	// Get the mapped host and port
 	host, hostErr := container.Host(context)
@@ -118,17 +103,18 @@ func TestMain(m *testing.M) {
 		logger.Fatal("Failed to terminate Docker container", zap.Error(exitErr))
 	}
 
+	// Sync without deferring right before the exit to make sure logs are written
+	_ = logger.Sync()
+
+	// Wrap up after all the container tests are done
 	os.Exit(code)
 }
 
-// TestEnvironmentVariable checks if the HOST_DIR ENV is set and if it matches the expected value
+// TestEnvironmentVariable checks if the HOST_DIR ENV property is set and if it matches the expected value.
 func TestEnvironmentVariable(t *testing.T) {
 	// Execute a command inside the container to check the env variable
-	envVar := "HOST_DIR"
-	expectedValue := hostDir
-
 	context := docker.Background()
-	_, reader, err := container.Exec(context, []string{"printenv", envVar})
+	_, reader, err := container.Exec(context, []string{"printenv", "HOST_DIR"})
 
 	if err != nil {
 		t.Fatalf("Failed to execute command inside container: %v", err)
@@ -141,5 +127,9 @@ func TestEnvironmentVariable(t *testing.T) {
 		t.Fatalf("Failed to read container output: %v", err)
 	}
 
-	assert.Equal(t, expectedValue, strings.TrimSpace(stdout.String()), "Environment variable value is incorrect")
+	value := strings.TrimSpace(stdout.String())
+	assert.Equalf(
+		t, utils.HostDir, value, "The expected HOST_DIR ENV property wasn't found. Expected: %q, Found: %q",
+		utils.HostDir, value,
+	)
 }

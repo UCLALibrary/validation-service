@@ -29,13 +29,15 @@ func TestUploadCSV(t *testing.T) {
 			name:           "Valid CSV upload",
 			csvFilePath:    "../testdata/cct-works-simple.csv",
 			expectedStatus: http.StatusCreated,
-			expectedRegex:  `\{"profile":"test","time":".*?","warnings":\[\]\}`,
+			// expectedRegex handles JSON with or without line feeds and indentation
+			expectedRegex: `\{\s*"profile"\s*:\s*"test"\s*,\s*"time"\s*:\s*".*?"\s*,\s*"warnings"\s*:\s*\[\s*\]\s*\}`,
 		},
 		{
 			name:           "Upload failure CSV",
 			csvFilePath:    "../testdata/upload-failures.csv",
 			expectedStatus: http.StatusCreated,
-			expectedRegex:  `\{"profile":"test","time":".*?","warnings":\[\{.*?\}\]\}`,
+			// expectedRegex handles JSON with or without line feeds and indentation
+			expectedRegex: `\{\s*"profile"\s*:\s*"test"\s*,\s*"time"\s*:\s*".*?"\s*,\s*"warnings"\s*:\s*\[\s*\{\s*[\s\S]*?\s*\}\s*\]\s*\}`,
 		},
 	}
 
@@ -99,7 +101,16 @@ func TestUploadCSV(t *testing.T) {
 
 			// Check the response against the expected regex pattern
 			matched, _ := regexp.MatchString(tt.expectedRegex, string(body))
-			assert.True(t, matched, "Response did not match expected regex for test case: %s", tt.name)
+			if !matched {
+				t.Errorf(
+					"\n--- Regex match failed for test case: %s ---\nExpected pattern:\n%s\nActual body:\n%q\n",
+					tt.name,
+					tt.expectedRegex,
+					body,
+				)
+			}
+
+			//assert.True(t, matched, "Response did not match expected regex for test case: %s", tt.name)
 
 			// Check the expected status code
 			assert.Equal(t, tt.expectedStatus, response.StatusCode, "Unexpected status code for test case: %s", tt.name)
