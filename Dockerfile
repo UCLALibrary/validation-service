@@ -10,7 +10,7 @@ ARG HOST_DIR
 ##
 ## STEP 1 - BUILD
 ##
-FROM golang:1.24.1-alpine3.20 AS build
+FROM golang:1.24.2-alpine3.20 AS build
 
 # Inherit SERVICE_NAME arg and set as ENV
 ARG SERVICE_NAME
