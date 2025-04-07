@@ -38,7 +38,7 @@ func TestMain(m *testing.M) {
 	logger, _ = getLogger(utils.LogLevel)
 	tcLogger := NewTcLogger(logger)
 
-	// Set the default Go system logger to use our *zap.Logger
+	// Set the default TestContainers logger to use our *zap.Logger
 	log.SetDefault(tcLogger)
 
 	// Get the Docker context

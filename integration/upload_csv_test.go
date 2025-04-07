@@ -110,8 +110,6 @@ func TestUploadCSV(t *testing.T) {
 				)
 			}
 
-			//assert.True(t, matched, "Response did not match expected regex for test case: %s", tt.name)
-
 			// Check the expected status code
 			assert.Equal(t, tt.expectedStatus, response.StatusCode, "Unexpected status code for test case: %s", tt.name)
 		})
