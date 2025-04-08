@@ -31,6 +31,12 @@ func TestFilePathCheck_Validate(t *testing.T) {
 			expectedErr: false,
 		},
 		{
+			name:        "file path prefix stripped successfully",
+			location:    csv.Location{RowIndex: 1, ColIndex: 1},
+			data:        [][]string{{"Random", "File Name"}, {"random", "Masters/images/test.jpx"}},
+			expectedErr: false,
+		},
+		{
 			name:        "file name header does not exist",
 			location:    csv.Location{RowIndex: 1, ColIndex: 0},
 			data:        [][]string{{"Random", "Header"}, {"Hello", "World"}},
