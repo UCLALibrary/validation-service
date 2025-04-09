@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/UCLALibrary/validation-service/validation/csv"
 	"github.com/UCLALibrary/validation-service/validation/util"
@@ -44,7 +45,7 @@ func (check *FilePathCheck) Validate(profile string, location csv.Location, csvD
 		return err
 	}
 
-	value := csvData[location.RowIndex][location.ColIndex]
+	value := check.stripPrefix(csvData[location.RowIndex][location.ColIndex])
 
 	// obtain dir name from HOST_DIR
 	hostDir := os.Getenv("HOST_DIR")
@@ -71,4 +72,17 @@ func (check *FilePathCheck) Validate(profile string, location csv.Location, csvD
 	} else {
 		return nil
 	}
+}
+
+// stripPrefix strips the prefix found in the CSV file paths so that various sub-dirs will match when compared.
+func (check *FilePathCheck) stripPrefix(filePath string) string {
+	prefix := "Masters/" // The masters directory mount point, which is found in HOST_DIR and the CSV file paths
+
+	// Strip the prefix if found in the CSV resource file's file path
+	if strings.HasPrefix(filePath, prefix) {
+		return filePath[len(prefix):]
+	}
+
+	// Else, return as is
+	return filePath
 }
