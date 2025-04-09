@@ -6,10 +6,11 @@
 package checks
 
 import (
+	"testing"
+
 	"github.com/UCLALibrary/validation-service/validation/csv"
 	"github.com/UCLALibrary/validation-service/validation/util"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 // TestEOLCheck_Validate tests the Validate method on EOLCheck.

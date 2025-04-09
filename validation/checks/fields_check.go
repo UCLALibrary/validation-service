@@ -5,22 +5,14 @@ package checks
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
+
+	"github.com/UCLALibrary/validation-service/errors"
 	"github.com/UCLALibrary/validation-service/validation/csv"
 	"github.com/UCLALibrary/validation-service/validation/util"
 	"go.uber.org/multierr"
 	"go.uber.org/zap"
-	"strconv"
-	"strings"
-)
-
-// Error messages
-var (
-	missingProfileErr    = "supplied profile cannot be nil"
-	badHeaderErr         = "could not retrieve CSV header: %s"
-	fieldNotFoundErr     = "required field `%s` was not found"
-	fieldDataNotFoundErr = "data for required field `%s` was not found"
-	unknownProfileErr    = "unknown profile `%s`"
-	profileConfigErr     = "supplied profile has objTypes and notObjTypes set: %s"
 )
 
 var profileFields = map[string]map[string]struct {
@@ -76,7 +68,7 @@ type ReqFieldCheck struct {
 // NewReqFieldCheck creates a new validation check that confirms the required fields for a profile are present.
 func NewReqFieldCheck(profiles *util.Profiles, logger *zap.Logger) (*ReqFieldCheck, error) {
 	if profiles == nil {
-		return nil, csv.NewError(missingProfileErr, csv.Location{}, "nil")
+		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}
 
 	return &ReqFieldCheck{
@@ -102,7 +94,7 @@ func (check *ReqFieldCheck) Validate(profile string, location csv.Location, csvD
 	// Get the header for the data cell we're checking
 	header, err := csv.GetHeader(location, csvData, profile)
 	if err != nil {
-		errMsg := fmt.Sprintf(badHeaderErr, fmt.Sprintf("[index: %s]", strconv.Itoa(location.ColIndex)))
+		errMsg := fmt.Sprintf(errors.BadHeaderErr, fmt.Sprintf("[index: %s]", strconv.Itoa(location.ColIndex)))
 		return csv.NewError(errMsg, location, profile, err) // We return this right away, because something is broken
 	}
 
@@ -136,13 +128,13 @@ func (check *ReqFieldCheck) Validate(profile string, location csv.Location, csvD
 					zap.Strings("`Object Type` exclusions", field.notObjTypes), zap.Error(err))
 				multiErr = multierr.Combine(multiErr, err)
 			} else if len(field.objTypes) > 0 && len(field.notObjTypes) > 0 {
-				err = csv.NewError(fmt.Sprintf(profileConfigErr, profile), location, profile)
+				err = csv.NewError(fmt.Sprintf(errors.ProfileConfigErr, profile), location, profile)
 				check.logger.Error(fmt.Sprintf("Bad profile configuration: %s", profile), zap.Error(err))
 				multiErr = multierr.Combine(multiErr, err)
 			}
 		}
 	} else {
-		return csv.NewError(fmt.Sprintf(unknownProfileErr, context.Profile), context.Location, context.Profile)
+		return csv.NewError(fmt.Sprintf(errors.UnknownProfileErr, context.Profile), context.Location, context.Profile)
 	}
 
 	// If we found any errors, report them
@@ -179,7 +171,7 @@ func (check *ReqFieldCheck) checkHeaders(profile string, location csv.Location, 
 
 						// If we looked through all the CSV data's headers, and it's not there, that's a problem
 						if !found {
-							newErr := csv.NewError(fmt.Sprintf(fieldNotFoundErr, fieldName), location, profile)
+							newErr := csv.NewError(fmt.Sprintf(errors.FieldNotFoundErr, fieldName), location, profile)
 							multiErr = multierr.Combine(multiErr, newErr)
 						}
 
@@ -188,7 +180,7 @@ func (check *ReqFieldCheck) checkHeaders(profile string, location csv.Location, 
 					}
 				}
 			} else {
-				return csv.NewError(fmt.Sprintf(unknownProfileErr, profile), location, profile)
+				return csv.NewError(fmt.Sprintf(errors.UnknownProfileErr, profile), location, profile)
 			}
 		} // Else: once we've checked the headers once, we don't need to keep checking them; we just drop through
 	}
@@ -214,7 +206,7 @@ func (check *ReqFieldCheck) confirmWithOT(context util.Context, header string, r
 	// Look up the value of our row's (i.e., item's) "Object Type" column/field
 	rowValue, err := csv.GetRowValue("Object Type", context.Location, context.CsvData, context.Profile)
 	if err != nil {
-		return csv.NewError(fmt.Sprintf(badHeaderErr, header), context.Location, context.Profile, err)
+		return csv.NewError(fmt.Sprintf(errors.BadHeaderErr, header), context.Location, context.Profile, err)
 	}
 
 	// If our 'Object Type' value isn't one of the ones we care about, we don't need to check the data cell
@@ -230,7 +222,7 @@ func (check *ReqFieldCheck) confirmWithOT(context util.Context, header string, r
 func (check *ReqFieldCheck) confirmExistence(context util.Context, header string) error {
 	value := strings.TrimSpace(context.CsvData[context.Location.RowIndex][context.Location.ColIndex])
 	if value == "" {
-		return csv.NewError(fmt.Sprintf(fieldDataNotFoundErr, header), context.Location, context.Profile)
+		return csv.NewError(fmt.Sprintf(errors.FieldDataNotFoundErr, header), context.Location, context.Profile)
 	}
 
 	return nil

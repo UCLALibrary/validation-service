@@ -3,21 +3,16 @@ package checks
 import (
 	"regexp"
 
-        "github.com/UCLALibrary/validation-service/validation/csv"
-        "github.com/UCLALibrary/validation-service/validation/util"
-)
-
-// Error messages
-var (
-	typeWhitespaceError  = "field contains invalid characters (e.g., spaces, line breaks)"
-	typeValueError       = "object type field doesn't contain valid value"
+	"github.com/UCLALibrary/validation-service/errors"
+	"github.com/UCLALibrary/validation-service/validation/csv"
+	"github.com/UCLALibrary/validation-service/validation/util"
 )
 
 type ObjTypeCheck struct{}
 
 func NewObjTypeCheck(profiles *util.Profiles) (*ObjTypeCheck, error) {
 	if profiles == nil {
-		return nil, csv.NewError(profileErr, csv.Location{}, "nil")
+		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}
 
 	return &ObjTypeCheck{}, nil
@@ -28,7 +23,7 @@ func (check *ObjTypeCheck) Validate(profile string, location csv.Location, csvDa
 		return err
 	}
 
-	// find the header and determine if it matches Object Type 
+	// find the header and determine if it matches Object Type
 	header, err := csv.GetHeader(location, csvData, profile)
 
 	if err != nil {
@@ -42,15 +37,14 @@ func (check *ObjTypeCheck) Validate(profile string, location csv.Location, csvDa
 
 	value := csvData[location.RowIndex][location.ColIndex]
 
-        whitespace := regexp.MustCompile(`\s`)
-        if whitespace.MatchString(value) {
-		return csv.NewError(typeWhitespaceError, location, profile)
-        }
-        valid := regexp.MustCompile(`Collection|Work|Page`)
-        if !valid.MatchString(value) {
-		return csv.NewError(typeValueError, location, profile)
-        }
+	whitespace := regexp.MustCompile(`\s`)
+	if whitespace.MatchString(value) {
+		return csv.NewError(errors.TypeWhitespaceError, location, profile)
+	}
+	valid := regexp.MustCompile(`Collection|Work|Page`)
+	if !valid.MatchString(value) {
+		return csv.NewError(errors.TypeValueError, location, profile)
+	}
 
 	return nil
 }
-
