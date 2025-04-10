@@ -4,19 +4,15 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
+	"github.com/UCLALibrary/validation-service/errors"
 	"github.com/UCLALibrary/validation-service/validation/csv"
 	"github.com/UCLALibrary/validation-service/validation/util"
 )
 
 // FILE_NAME is the File Name of the current item.
 const FILE_NAME = "File Name"
-
-// Error messages
-var (
-	noHostDir    = "a HOST_DIR must be set"
-	fileNotExist = "the file path given does not exist: %s"
-)
 
 // FilePathCheck type is a validator that checks if a File exists at the specified location.
 //
@@ -28,7 +24,7 @@ type FilePathCheck struct {
 // NewFilePathCheck checks that the file exits at the given filepath in a CSV data cell.
 func NewFilePathCheck(profiles *util.Profiles) (*FilePathCheck, error) {
 	if profiles == nil {
-		return nil, csv.NewError(nilProfileErr, csv.Location{}, "nil")
+		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}
 
 	return &FilePathCheck{
@@ -44,12 +40,12 @@ func (check *FilePathCheck) Validate(profile string, location csv.Location, csvD
 		return err
 	}
 
-	value := csvData[location.RowIndex][location.ColIndex]
+	value := check.stripPrefix(csvData[location.RowIndex][location.ColIndex])
 
 	// obtain dir name from HOST_DIR
 	hostDir := os.Getenv("HOST_DIR")
 	if hostDir == "" {
-		return csv.NewError(noHostDir, location, profile)
+		return csv.NewError(errors.NoHostDir, location, profile)
 	}
 
 	// Find the header and determine if it matches a File Name header
@@ -67,8 +63,21 @@ func (check *FilePathCheck) Validate(profile string, location csv.Location, csvD
 
 	// if the file doesn't exist return an error
 	if _, err = os.Stat(fullPath); os.IsNotExist(err) {
-		return csv.NewError(fmt.Sprintf(fileNotExist, fullPath), location, profile)
+		return csv.NewError(fmt.Sprintf(errors.FileNotExist, fullPath), location, profile)
 	} else {
 		return nil
 	}
+}
+
+// stripPrefix strips the prefix found in the CSV file paths so that various sub-dirs will match when compared.
+func (check *FilePathCheck) stripPrefix(filePath string) string {
+	prefix := "Masters/" // The masters directory mount point, which is found in HOST_DIR and the CSV file paths
+
+	// Strip the prefix if found in the CSV resource file's file path
+	if strings.HasPrefix(filePath, prefix) {
+		return filePath[len(prefix):]
+	}
+
+	// Else, return as is
+	return filePath
 }

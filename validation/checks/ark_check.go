@@ -4,10 +4,12 @@
 package checks
 
 import (
-	"github.com/UCLALibrary/validation-service/validation/csv"
-	"github.com/UCLALibrary/validation-service/validation/util"
 	"regexp"
 	"strings"
+
+	"github.com/UCLALibrary/validation-service/errors"
+	"github.com/UCLALibrary/validation-service/validation/csv"
+	"github.com/UCLALibrary/validation-service/validation/util"
 
 	"go.uber.org/multierr"
 )
@@ -17,17 +19,6 @@ const ITEM_ARK = "Item ARK"
 
 // PARENT_ARK is the ARK of the parent item.
 const PARENT_ARK = "Parent ARK"
-
-// Error messages
-var (
-	profileErr      = "supplied profile cannot be nil"
-	noPrefixErr     = "ARK must start with 'ark:/'"
-	naanTooShortErr = "NAAN must be at least 5 digits long"
-	naanProfileErr  = "The supplied NAAN is not allowed for the supplied profile"
-	noObjIdErr      = "The ARK must contain an object identifier"
-	invalidObjIdErr = "The object identifier and qualifier is not valid"
-	arkValFailed    = "ARK validation failed"
-)
 
 // The naanProfiles mapping gives us a way to lookup valid NAANs for a profile.
 var naanProfiles = map[string]map[string]struct{}{
@@ -53,7 +44,7 @@ type ARKCheck struct{}
 // NewARKCheck checks that an ARK is valid.
 func NewARKCheck(profiles *util.Profiles) (*ARKCheck, error) {
 	if profiles == nil {
-		return nil, csv.NewError(profileErr, csv.Location{}, "nil")
+		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}
 
 	return &ARKCheck{}, nil
@@ -83,7 +74,7 @@ func (check *ARKCheck) Validate(profile string, location csv.Location, csvData [
 
 	// Check if the CSV data cell has a valid ARK
 	if err := check.verifyARK(value, location, profile); err != nil {
-		return csv.NewError(arkValFailed, location, profile, err)
+		return csv.NewError(errors.ArkValFailed, location, profile, err)
 	}
 
 	return nil
@@ -95,7 +86,7 @@ func (check *ARKCheck) verifyARK(ark string, location csv.Location, profile stri
 
 	// Ensure the ARK starts with "ark:/"
 	if !strings.HasPrefix(ark, "ark:/") {
-		errs = multierr.Combine(errs, csv.NewError(noPrefixErr, location, profile))
+		errs = multierr.Combine(errs, csv.NewError(errors.NoPrefixErr, location, profile))
 		return errs // Early return since the rest of validation depends on this
 	}
 
@@ -106,7 +97,7 @@ func (check *ARKCheck) verifyARK(ark string, location csv.Location, profile stri
 	naanRegex := regexp.MustCompile(`^(\d+)`)
 	naanMatch := naanRegex.FindStringSubmatch(arkBody)
 	if naanMatch == nil || len(naanMatch[1]) < 5 {
-		errs = multierr.Combine(errs, csv.NewError(naanTooShortErr, location, profile))
+		errs = multierr.Combine(errs, csv.NewError(errors.NaanTooShortErr, location, profile))
 	}
 
 	// Extract NAAN and ObjectIdentifier for further validation
@@ -116,18 +107,18 @@ func (check *ARKCheck) verifyARK(ark string, location csv.Location, profile stri
 
 	// Validate that the NAAN is allowed for the supplied profile
 	if _, exists := naanProfiles[profile][naan]; !exists {
-		errs = multierr.Combine(errs, csv.NewError(naanProfileErr, location, profile))
+		errs = multierr.Combine(errs, csv.NewError(errors.NaanProfileErr, location, profile))
 	}
 
 	if objectID == "" {
-		errs = multierr.Combine(errs, csv.NewError(noObjIdErr, location, profile))
+		errs = multierr.Combine(errs, csv.NewError(errors.NoObjIdErr, location, profile))
 		return errs
 	}
 
 	// Validate the remaining ARK structure (ObjectIdentifier + Qualifier)
 	arkRegex := regexp.MustCompile(`^([\w\-./]+)(\?.*)?$`)
 	if !arkRegex.MatchString(objectID) {
-		errs = multierr.Combine(errs, csv.NewError(invalidObjIdErr, location, profile))
+		errs = multierr.Combine(errs, csv.NewError(errors.InvalidObjIdErr, location, profile))
 	}
 
 	return errs

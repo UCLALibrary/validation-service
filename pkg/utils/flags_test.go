@@ -27,8 +27,8 @@ func TestDefaultLogLevel(t *testing.T) {
 	flag.Parse() // Parse flags again with clean state
 
 	// Check that the default log level is the one that we get after a new parse
-	if *LogLevel != "info" {
-		t.Errorf("Expected default log level to be 'info', got '%s'", *LogLevel)
+	if LogLevel != "info" {
+		t.Errorf("Expected default log level to be 'info', got '%s'", LogLevel)
 	}
 
 	// Restore original flag arguments (to not affect other tests)
@@ -53,6 +53,5 @@ func resetFlags() {
 
 	// Replace the default FlagSet with the new one
 	flag.CommandLine = newFlagSet
-
-	LogLevel = flag.String("log-level", "info", "Log level (debug, info, warn, error)")
+	flag.StringVar(&LogLevel, "log-level", "info", "Log level (debug, info, warn, error)")
 }

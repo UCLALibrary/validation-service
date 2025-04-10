@@ -1,4 +1,4 @@
-//go:build unit
+//go:build unit || integration
 
 // Package utils provides tools to help with testing.
 //
@@ -11,15 +11,20 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-// LogLevel is defined as a global test flag
-var LogLevel = flag.String("log-level", "info", "Log level (debug, info, warn, error)")
+var ServiceName string // The name of the Web service we're building, running, and testing
+var LogLevel string    // The desired log level at which the Web service should be run
+var HostDir string     // The location of the mounted host directory (contains resource files)
 
-// HostDir is defined as a global test flag
-var HostDir = flag.String("host-dir", "testdata", "The default host directory")
+// init initializes the flags that have been defined
+func init() {
+	flag.StringVar(&ServiceName, "service-name", "service", "Name of service being tested")
+	flag.StringVar(&LogLevel, "log-level", "info", "Log level (debug, info, warn, error)")
+	flag.StringVar(&HostDir, "host-dir", "", "HOST_DIR env variable that is copied into test-container")
+}
 
 // GetLogLevel gets the current log level as a zapcore.Level.
 func GetLogLevel() zapcore.Level {
-	switch *LogLevel {
+	switch LogLevel {
 	case "debug":
 		return zap.DebugLevel
 	case "info":
