@@ -24,7 +24,7 @@ import (
 // Usually this would go in a setup_test.go file, but there is only one test file in this package.
 func TestMain(main *testing.M) {
 	flag.Parse()
-	fmt.Printf("*** Package %s's log level: %s ***\n", utils.GetPackageName(), *utils.LogLevel)
+	fmt.Printf("*** Package %s's log level: %s ***\n", utils.GetPackageName(), utils.LogLevel)
 	os.Exit(main.Run())
 }
 

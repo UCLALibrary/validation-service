@@ -1,4 +1,4 @@
-//go:build unit
+//go:build unit || integration
 
 // Package utils has structures and utilities useful for running tests.
 //
