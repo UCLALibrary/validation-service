@@ -6,9 +6,11 @@
 package checks
 
 import (
+	"testing"
+
+	"github.com/UCLALibrary/validation-service/errors"
 	"github.com/UCLALibrary/validation-service/validation/csv"
 	"github.com/UCLALibrary/validation-service/validation/util"
-	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/multierr"
@@ -57,7 +59,7 @@ func TestVerifyARK(t *testing.T) {
 			location:    testLocation,
 			profile:     "default",
 			expectError: true,
-			expectedErr: csv.NewError(noPrefixErr, testLocation, "default"),
+			expectedErr: csv.NewError(errors.NoPrefixErr, testLocation, "default"),
 		},
 		{
 			name:        "Invalid ARK structure no object identifier",
@@ -65,7 +67,7 @@ func TestVerifyARK(t *testing.T) {
 			location:    testLocation,
 			profile:     "default",
 			expectError: true,
-			expectedErr: csv.NewError(noObjIdErr, testLocation, "default"),
+			expectedErr: csv.NewError(errors.NoObjIdErr, testLocation, "default"),
 		},
 		{
 			name:        "Invalid NAAN - less than 5 digits",
@@ -74,9 +76,9 @@ func TestVerifyARK(t *testing.T) {
 			profile:     "default",
 			expectError: true,
 			expectedErr: multierr.Combine(
-				csv.NewError(naanTooShortErr, testLocation, "default"),
-				csv.NewError(naanProfileErr, testLocation, "default"),
-				csv.NewError(noObjIdErr, testLocation, "default"),
+				csv.NewError(errors.NaanTooShortErr, testLocation, "default"),
+				csv.NewError(errors.NaanProfileErr, testLocation, "default"),
+				csv.NewError(errors.NoObjIdErr, testLocation, "default"),
 			),
 		},
 		{
@@ -85,7 +87,7 @@ func TestVerifyARK(t *testing.T) {
 			location:    testLocation,
 			profile:     "default",
 			expectError: true,
-			expectedErr: csv.NewError(naanProfileErr, testLocation, "default"),
+			expectedErr: csv.NewError(errors.NaanProfileErr, testLocation, "default"),
 		},
 		{
 			name:        "Invalid object identifier",
@@ -93,7 +95,7 @@ func TestVerifyARK(t *testing.T) {
 			location:    testLocation,
 			profile:     "default",
 			expectError: true,
-			expectedErr: csv.NewError(invalidObjIdErr, testLocation, "default"),
+			expectedErr: csv.NewError(errors.InvalidObjIdErr, testLocation, "default"),
 		},
 	}
 
