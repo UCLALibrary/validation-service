@@ -40,6 +40,20 @@ func TestVerifyARK(t *testing.T) {
 			expectError: false,
 		},
 		{
+			name:        "Valid ARK with CDL NAAN",
+			ark:         "ark:/13030/xyz123",
+			location:    testLocation,
+			profile:     "default",
+			expectError: false,
+		},
+		{
+			name:        "Valid ARK with CDL NAAN",
+			ark:         "ark:/13030/xyz123",
+			location:    testLocation,
+			profile:     "fester",
+			expectError: false,
+		},
+		{
 			name:        "Valid ARK with qualifier",
 			ark:         "ark:/21198/xyz123?version=2",
 			location:    testLocation,
