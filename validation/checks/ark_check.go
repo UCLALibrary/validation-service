@@ -24,15 +24,19 @@ const PARENT_ARK = "Parent ARK"
 var naanProfiles = map[string]map[string]struct{}{
 	"default": {
 		"21198": {},
+		"13030": {},
 	},
 	"test": {
 		"21198": {},
+		"13030": {},
 	},
 	"bucketeer": {
 		"21198": {},
+		"13030": {},
 	},
 	"fester": {
 		"21198": {},
+		"13030": {},
 	},
 }
 
