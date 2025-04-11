@@ -10,7 +10,7 @@ import (
 
 type VisibilityCheck struct{}
 
-func NewvisibilityCheck(profiles *util.Profiles) (*VisibilityCheck, error) {
+func NewVisibilityCheck(profiles *util.Profiles) (*VisibilityCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}
