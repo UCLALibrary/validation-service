@@ -8,7 +8,9 @@ import (
 	"github.com/UCLALibrary/validation-service/validation/util"
 )
 
-type ObjTypeCheck struct{}
+type ObjTypeCheck struct {
+	profiles *util.Profiles
+}
 
 func NewObjTypeCheck(profiles *util.Profiles) (*ObjTypeCheck, error) {
 	if profiles == nil {

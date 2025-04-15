@@ -23,4 +23,6 @@ var (
 	TypeWhitespaceError   = "field contains invalid characters (e.g., spaces, line breaks)"
 	TypeValueError        = "object type field doesn't contain valid value"
 	VisibilityValueError  = "ovisibility field doesn't contain valid value"
+	NotAnIntErr          = "the Item Sequence is not an integer"
+	NotAPosIntErr        = "the Item Sequence value is not a positive integer"
 )
