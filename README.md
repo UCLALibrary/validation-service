@@ -115,12 +115,10 @@ use the SSH method of connecting to GitHub (instead of the HTTPS method).
 If you want to confirm that the above is set up correctly, there is a Makefile target that will allow you to clone your
 organization's 'kakadu' repository to your local machine:
 
-    ORG_NAME=uclalibrary KAKADU_VERSION=v8_4_1-12345L make clone-kakadu
+    ORG_NAME=UCLALibrary KAKADU_VERSION=v8_4_1-12345L make clone-kakadu
 
-You would, of course, replace `uclalibrary` with your organization's name and use your organization's `KAKADU_VERSION`,
-which includes a number unique to your license. If you're going to push Docker images to DockerHub, it is assumed that
-your organization has the same name there. The form of the name must also be lowercase. GitHub is not picky about that,
-but DockerHub is.
+You would, of course, replace `UCLALibrary` with your organization's name and use your organization's `KAKADU_VERSION`,
+which includes a number unique to your license.
 
 Running `clone-kakadu` will create a 'kakadu' directory in your project. Don't worry about it getting checked into Git.
 We have added that directory to the project's `.gitignore` file. If you'd like to use Kakadu in the build, you'll need
@@ -137,7 +135,10 @@ from a local developer's machine, too:
     KAKADU_VERSION=v8_4_1-12345L make docker-push
 
 Note: this will build the Docker container before pushing it to DockerHub, and it will require the developer running the
-Makefile target to be logged into DockerHub on their local machine.
+Makefile target to be logged into DockerHub on their local machine. In addition, if you use HTTPS instead of SSH to
+connect to GitHub, you'll also need to create a `PERSONAL_ACCESS_TOKEN` and set that property name and its value in your
+local system's environment. If you have a `PERSONAL_ACCESS_TOKEN` set in your environment, the build scripts will try to
+use that and an HTTPS connection to GitHub instead of the default SSH connection.
 
 ## Building and Deploying with ACT
 
