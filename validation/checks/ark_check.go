@@ -53,7 +53,9 @@ func NewARKCheck(profiles *util.Profiles) (*ARKCheck, error) {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}
 
-	return &ARKCheck{}, nil
+	return &ARKCheck{
+		profiles: profiles,
+	}, nil
 }
 
 // Validate checks that a data cell has a valid ARK in it.

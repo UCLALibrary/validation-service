@@ -17,7 +17,9 @@ func NewObjTypeCheck(profiles *util.Profiles) (*ObjTypeCheck, error) {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}
 
-	return &ObjTypeCheck{}, nil
+	return &ObjTypeCheck{
+		profiles: profiles,
+	}, nil
 }
 
 func (check *ObjTypeCheck) Validate(profile string, location csv.Location, csvData [][]string) error {
