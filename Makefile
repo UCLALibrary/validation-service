@@ -92,7 +92,12 @@ clone-kakadu: # Optionally, downloads Kakadu from its private git repo
 	@if [ ! -d kakadu/.git ] && [ -n "$(strip $(KAKADU_VERSION))" ]; then \
 		echo "Pulling the latest version of Kakadu into the container"; \
 		rm -rf kakadu; \
-		git clone --depth 1 --filter=blob:none --sparse git@github.com:$(ORG_NAME)/kakadu.git kakadu; \
+		if [ -n "$$PERSONAL_ACCESS_TOKEN" ]; then \
+			git clone --depth 1 --filter=blob:none --sparse \
+				https://x-access-token:$$PERSONAL_ACCESS_TOKEN@github.com/$(ORG_NAME)/kakadu.git kakadu; \
+		else \
+			git clone --depth 1 --filter=blob:none --sparse git@github.com:$(ORG_NAME)/kakadu.git kakadu; \
+  		fi; \
 		cd kakadu && \
 		git sparse-checkout set $(KAKADU_VERSION) || { \
 			echo "Error: Failed to clone sparse Kakadu" >&2; \
