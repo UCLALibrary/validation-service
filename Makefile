@@ -120,7 +120,7 @@ clone-kakadu: # Optionally, downloads Kakadu from its private git repo
 			exit 1; \
 		}; \
 	else \
-		@mkdir -p kakadu; \
+		mkdir -p kakadu; \
 		echo "[INFO] Kakadu is not included in build because KAKADU_VERSION is not set." >&2; \
 	fi
 
