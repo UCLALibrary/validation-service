@@ -8,14 +8,18 @@ import (
 	"github.com/UCLALibrary/validation-service/validation/util"
 )
 
-type ObjTypeCheck struct{}
+type ObjTypeCheck struct {
+	profiles *util.Profiles
+}
 
 func NewObjTypeCheck(profiles *util.Profiles) (*ObjTypeCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}
 
-	return &ObjTypeCheck{}, nil
+	return &ObjTypeCheck{
+		profiles: profiles,
+	}, nil
 }
 
 func (check *ObjTypeCheck) Validate(profile string, location csv.Location, csvData [][]string) error {
