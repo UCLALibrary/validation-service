@@ -1,8 +1,7 @@
 //go:build unit
 
-// This file checks Archival Resource Keys (ARKs).
+// This file tests if the ARKCheck properly functions
 
-// Package checks consists of individual validation checks.
 package checks
 
 import (
