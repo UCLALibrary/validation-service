@@ -15,7 +15,7 @@ func TestObjTypeCheck_Validate(t *testing.T) {
 	check, err := NewObjTypeCheck(util.NewProfiles())
 	assert.NoError(t, err)
 
-	// Data variations to check the EOLCheck.Validate method against
+	// Data variations to check the ObjType.Validate method against
 	tests := []struct {
 		name     string
 		location csv.Location

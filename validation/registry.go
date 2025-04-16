@@ -2,6 +2,7 @@ package validation
 
 import (
 	"fmt"
+
 	"github.com/UCLALibrary/validation-service/validation/util"
 
 	"github.com/UCLALibrary/validation-service/validation/checks"
@@ -123,6 +124,21 @@ var constructors = map[string]constructor{
 		// Default instance if no arguments are passed
 		defaultProfiles := util.NewProfiles()
 		return checks.NewObjTypeCheck(defaultProfiles)
+	},
+	"ItemSeqCheck": func(args ...interface{}) (Validator, error) {
+		if len(args) > 0 {
+			// Check if the first argument is of the type *Profiles
+			if profiles, ok := args[0].(*util.Profiles); ok {
+				return checks.NewItemSeqCheck(profiles)
+			}
+
+			// ItemSeqCheck expects *Profiles to be passed to it
+			return nil, fmt.Errorf("invalid argument: expected *Profiles, found: %T", args[0])
+		}
+
+		// Default instance if no arguments are passed
+		defaultProfiles := util.NewProfiles()
+		return checks.NewItemSeqCheck(defaultProfiles)
 	},
 }
 

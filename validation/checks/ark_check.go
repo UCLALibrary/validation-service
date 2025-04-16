@@ -43,7 +43,9 @@ var naanProfiles = map[string]map[string]struct{}{
 // ARKCheck type is a validator that checks for a valid ARK.
 //
 // It implements the Validator interface and returns an error on failure to validate.
-type ARKCheck struct{}
+type ARKCheck struct{
+	profiles *util.Profiles
+}
 
 // NewARKCheck returns a new ARKCheck, which validates that an ARK identifier is properly formatted.
 //
@@ -53,7 +55,9 @@ func NewARKCheck(profiles *util.Profiles) (*ARKCheck, error) {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}
 
-	return &ARKCheck{}, nil
+	return &ARKCheck{
+		profiles: profiles,
+	}, nil
 }
 
 // Validate returns an error if a data cell does not have a valid ARK in it

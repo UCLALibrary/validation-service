@@ -13,7 +13,9 @@ import (
 //
 // It checks whether the field contains a valid value (either "Collection", "Work", or "Page") and ensures there are no
 // whitespace characters in the value.
-type ObjTypeCheck struct{}
+type ObjTypeCheck struct {
+	profiles *util.Profiles
+}
 
 // NewObjTypeCheck creates a new instance of ObjTypeCheck to validate the "Object Type" field for the provided profiles.
 //
@@ -23,7 +25,9 @@ func NewObjTypeCheck(profiles *util.Profiles) (*ObjTypeCheck, error) {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}
 
-	return &ObjTypeCheck{}, nil
+	return &ObjTypeCheck{
+		profiles: profiles,
+	}, nil
 }
 
 // Validate checks if the "Object Type" field in the CSV data contains a valid value and is free of whitespace.
