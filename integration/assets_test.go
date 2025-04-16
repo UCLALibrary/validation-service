@@ -1,5 +1,8 @@
 //go:build integration
 
+// Package integration holds the project's integration tests.
+//
+// This file tests the assets are available as expected.
 package integration
 
 import (

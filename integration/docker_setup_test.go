@@ -50,16 +50,27 @@ func TestMain(m *testing.M) {
 		logger.Debug("HOST_DIR ENV property exists", zap.String("hostDir", utils.HostDir))
 	}
 
+	// Set up our test environment BuildArgs and ENV
+	env := map[string]string{}
+	buildArgs := map[string]*string{
+		"SERVICE_NAME": &utils.ServiceName,
+		"LOG_LEVEL":    &utils.LogLevel,
+		"HOST_DIR":     &utils.HostDir,
+		"ARCH":         &utils.BuildArch,
+	}
+
+	// Check to see if we're running our tests using the KAKADU_VERSION property and include that if so
+	if utils.KakaduVersion != "" {
+		env["KAKADU_VERSION"] = utils.KakaduVersion
+		buildArgs["KAKADU_VERSION"] = &utils.KakaduVersion
+	}
+
 	// Define the container request
 	request := testcontainers.ContainerRequest{
 		FromDockerfile: testcontainers.FromDockerfile{
 			Context:    "..",
 			Dockerfile: "Dockerfile",
-			BuildArgs: map[string]*string{
-				"SERVICE_NAME": &utils.ServiceName,
-				"LOG_LEVEL":    &utils.LogLevel,
-				"HOST_DIR":     &utils.HostDir,
-			},
+			BuildArgs:  buildArgs,
 		},
 		ExposedPorts: []string{"8888/tcp"},
 		WaitingFor:   wait.ForHTTP("/status").WithPort("8888/tcp"),
@@ -67,6 +78,7 @@ func TestMain(m *testing.M) {
 			// Logs from the container itself (i.e., not from TestContainers) come through this configuration
 			Consumers: []testcontainers.LogConsumer{&DockerLogConsumer{}},
 		},
+		Env: env,
 	}
 
 	// Start the container
