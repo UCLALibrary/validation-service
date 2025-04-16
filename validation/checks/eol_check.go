@@ -16,7 +16,7 @@ type EOLCheck struct {
 	profiles *util.Profiles
 }
 
-// NewEOLCheck returns a new EOLCheck, which validates that no cell in the CSV data contains end-of-line
+// NewEOLCheck returns a new EOLCheck, which validates that no cell in the CSV data contains end-of-line.
 //
 // It returns an error if the provided profiles argument is nil.
 func NewEOLCheck(profiles *util.Profiles) (*EOLCheck, error) {
