@@ -14,6 +14,15 @@ jobs:
   nightly:
     runs-on: ubuntu-latest
 
+    # Set up a two build strategy, one with Kakadu and one without
+    strategy:
+      matrix:
+        kakadu: ['Include Kakadu', 'Exclude Kakadu']
+      fail-fast: false
+
+    env:
+      KAKADU_VERSION: ${{ matrix.kakadu == 'Include Kakadu' && secrets.KAKADU_VERSION || '' }}
+
     steps:
     - name: Extract service name from repo name
       run: echo "SERVICE_NAME=$(echo '${{ github.repository }}' | cut -d'/' -f2)" >> $GITHUB_ENV
@@ -32,9 +41,9 @@ jobs:
         curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | \
           sh -s -- -b $(go env GOPATH)/bin ${{ env.GO_LINTER_VERSION }}
 
-    - name: Install oapi-codegen
+    - name: Install oapi-codegen # v2.4.1
       run: |
-        go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@latest
+        go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@9c09ef9e9d4be639bd3feff31ff2c06961421272
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2 # v3.10.0
@@ -48,17 +57,22 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
+    - name: Configure Kakadu SSH key
+      if: env.ACT != 'true'
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.KAKADU_SSH_KEY }}" > ~/.ssh/kakadu_github_key
+        chmod 600 ~/.ssh/kakadu_github_key
+        ssh-keyscan github.com >> ~/.ssh/known_hosts
+        eval "$(ssh-agent -s)"
+        ssh-add ~/.ssh/kakadu_github_key
+        echo "Host github.com
+          IdentityFile ~/.ssh/kakadu_github_key
+          IdentitiesOnly yes
+          StrictHostKeyChecking accept-new" >> ~/.ssh/config
+
     # Build and test the application (also lints)
     - name: Build project
-      run: make all
-
-    - name: Build and push Docker image
-      uses: docker/build-push-action@471d1dc4e07e5cdedd4c2171150001c434f0b7a4 # v6.15.0
-      with:
-        context: .
-        file: ./Dockerfile
-        push: true
-        tags: ${{ env.DOCKER_REGISTRY_ACCOUNT }}/${{ env.SERVICE_NAME }}:nightly
-        build-args: |
-          SERVICE_NAME=${{ env.SERVICE_NAME }}
-          LOG_LEVEL=info
+      run: make all docker-push
+      env:
+        VERSION: nightly
