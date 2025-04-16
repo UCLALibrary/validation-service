@@ -1,6 +1,6 @@
-// Package checks provides individual validators used by the validation service.
-//
 // This file checks that ARK values are valid according to the spec.
+
+// Package checks provides individual validators used by the validation service.
 package checks
 
 import (
@@ -45,7 +45,9 @@ var naanProfiles = map[string]map[string]struct{}{
 // It implements the Validator interface and returns an error on failure to validate.
 type ARKCheck struct{}
 
-// NewARKCheck checks that an ARK is valid.
+// NewARKCheck returns a new ARKCheck, which validates that an ARK identifier is properly formatted.
+//
+// It returns an error if the provided profiles argument is nil.
 func NewARKCheck(profiles *util.Profiles) (*ARKCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
@@ -54,7 +56,7 @@ func NewARKCheck(profiles *util.Profiles) (*ARKCheck, error) {
 	return &ARKCheck{}, nil
 }
 
-// Validate checks that a data cell has a valid ARK in it.
+// Validate returns an error if a data cell does not have a valid ARK in it
 func (check *ARKCheck) Validate(profile string, location csv.Location, csvData [][]string) error {
 	if err := csv.IsValidLocation(location, csvData, profile); err != nil {
 		return err

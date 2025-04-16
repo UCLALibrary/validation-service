@@ -1,5 +1,3 @@
-// Package checks provides individual validators used by the validation service.
-//
 // This file checks that data cells do not have end of line (EOL) characters.
 package checks
 
@@ -18,7 +16,9 @@ type EOLCheck struct {
 	profiles *util.Profiles
 }
 
-// NewEOLCheck checks that there are no EOLs in a CSV data cell.
+// NewEOLCheck returns a new EOLCheck, which validates that no cell in the CSV data contains end-of-line
+//
+// It returns an error if the provided profiles argument is nil.
 func NewEOLCheck(profiles *util.Profiles) (*EOLCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")

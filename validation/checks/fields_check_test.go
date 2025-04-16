@@ -1,8 +1,6 @@
 //go:build unit
 
-// Package checks consists of individual validation checks.
-//
-// This file tests the required field check validator.
+// This file tests fieldsCheckValidate.
 package checks
 
 import (

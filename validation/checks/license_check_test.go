@@ -1,3 +1,6 @@
+//go:build unit
+
+// This file test licenseCheckValidate.
 package checks
 
 import (
