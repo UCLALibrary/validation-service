@@ -1,3 +1,4 @@
+// This checks if the value in Visibility is valid. 
 package checks
 
 import (
@@ -8,8 +9,14 @@ import (
 	"github.com/UCLALibrary/validation-service/validation/util"
 )
 
+// VisibilityCheck validates that a value in the "Visibility" field is valid.
+//
+// A valid "Visibility" value must be one of: "open", "ucla", or "private", and must not contain any whitespace.
 type VisibilityCheck struct{}
 
+// NewVisibilityCheck creates a new instance of VisibilityCheck.
+//
+// Returns an error if the provided profiles argument is nil.
 func NewVisibilityCheck(profiles *util.Profiles) (*VisibilityCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
@@ -18,6 +25,10 @@ func NewVisibilityCheck(profiles *util.Profiles) (*VisibilityCheck, error) {
 	return &VisibilityCheck{}, nil
 }
 
+// Validate verifies that a cell in the "Visibility" column contains a valid value.
+//
+// The value must not include whitespace and must match one of the following: "open", "ucla", or "private".
+// The function will skip validation if the header is not "Visibility" or if the row is the header row (row index 0).
 func (check *VisibilityCheck) Validate(profile string, location csv.Location, csvData [][]string) error {
 	if err := csv.IsValidLocation(location, csvData, profile); err != nil {
 		return err

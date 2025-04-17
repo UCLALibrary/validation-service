@@ -1,3 +1,4 @@
+// This file tests the filePath checks.
 package checks
 
 import (
@@ -21,7 +22,9 @@ type FilePathCheck struct {
 	profiles *util.Profiles
 }
 
-// NewFilePathCheck checks that the file exits at the given filepath in a CSV data cell.
+// NewFilePathCheck returns a new FilePathCheck, which validates that the file path specified in a CSV data cell points to an existing file.
+//
+// It returns an error if the provided profiles argument is nil.
 func NewFilePathCheck(profiles *util.Profiles) (*FilePathCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")

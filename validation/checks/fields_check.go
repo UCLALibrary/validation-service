@@ -1,5 +1,3 @@
-// Package checks provides individual validators used by the validation service.
-//
 // This file checks for the presence of required fields and data.
 package checks
 
@@ -65,7 +63,9 @@ type ReqFieldCheck struct {
 	logger   *zap.Logger
 }
 
-// NewReqFieldCheck creates a new validation check that confirms the required fields for a profile are present.
+// NewReqFieldCheck returns a new ReqFieldCheck, which validates that all required fields are present for a given profile.
+//
+// It returns an error if the provided profiles argument is nil. The logger is used to record validation details.
 func NewReqFieldCheck(profiles *util.Profiles, logger *zap.Logger) (*ReqFieldCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")

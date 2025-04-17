@@ -1,8 +1,6 @@
 //go:build unit
 
-// Package checks consists of individual validation checks.
-//
-// This file checks for EOL characters in the CSV data.
+// This file tests EOLCheck.
 package checks
 
 import (

@@ -1,8 +1,6 @@
 //go:build unit
 
-// Package checks consists of individual validation checks.
-//
-// This file checks for file existence in the CSV data.
+// This file tests filePathCheckValidate.
 package checks
 
 import (
