@@ -140,6 +140,21 @@ var constructors = map[string]constructor{
 		defaultProfiles := util.NewProfiles()
 		return checks.NewItemSeqCheck(defaultProfiles)
 	},
+	"VisibilityCheck": func(args ...interface{}) (Validator, error) {
+		if len(args) > 0 {
+			// Check if the first argument is of the type *Profiles
+			if profiles, ok := args[0].(*util.Profiles); ok {
+				return checks.NewVisibilityCheck(profiles)
+			}
+
+			// ItemSeqCheck expects *Profiles to be passed to it
+			return nil, fmt.Errorf("invalid argument: expected *Profiles, found: %T", args[0])
+		}
+
+		// Default instance if no arguments are passed
+		defaultProfiles := util.NewProfiles()
+		return checks.NewVisibilityCheck(defaultProfiles)
+	},
 }
 
 // NewRegistry creates a new registry of validators
