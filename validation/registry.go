@@ -147,7 +147,7 @@ var constructors = map[string]constructor{
 				return checks.NewVisibilityCheck(profiles)
 			}
 
-			// ItemSeqCheck expects *Profiles to be passed to it
+			// VisibilityCheck expects *Profiles to be passed to it
 			return nil, fmt.Errorf("invalid argument: expected *Profiles, found: %T", args[0])
 		}
 
