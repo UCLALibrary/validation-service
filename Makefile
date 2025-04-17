@@ -2,8 +2,13 @@
 SERVICE_NAME := validation-service
 LOG_LEVEL := info
 PORT := 8888
-VERSION := dev-SNAPSHOT
 HOST_DIR := $(shell pwd)/testdata
+
+# Overrideable variables that also take ENV into consideration
+ARCH ?= x86-64
+KAKADU_VERSION ?= ""
+VERSION ?= dev-SNAPSHOT
+ORG_NAME ?= UCLALibrary
 
 # Force the API target to run even if the openapi.yml has not been touched/changed
 ifneq ($(filter FORCE,$(MAKECMDGOALS)),)
@@ -34,27 +39,48 @@ build: api # Compiles the project's Go code into an executable
 test: # Runs the unit tests (integration tests are excluded)
 	go test -tags=unit ./... -v -args -log-level=$(LOG_LEVEL) -host-dir=$(HOST_DIR)
 
-docker-build: # Builds a Docker container for manual testing
+docker-build: clone-kakadu  # Builds a Docker container for manual testing
 	docker build . --tag $(SERVICE_NAME) --build-arg SERVICE_NAME=$(SERVICE_NAME) \
-		--build-arg VERSION=$(VERSION) --build-arg HOST_DIR=$(HOST_DIR)
+		--build-arg VERSION=$(VERSION) --build-arg HOST_DIR=$(HOST_DIR) \
+		--build-arg KAKADU_VERSION=$(KAKADU_VERSION) --build-arg ARCH=$(ARCH) \
 
 docker-run: docker-build # Runs a Docker instance, independent of the tests
 	CONTAINER_ID=$(shell docker image ls -q --filter=reference=$(SERVICE_NAME)); \
 	docker run -p $(PORT):8888 --name $(SERVICE_NAME) \
 		-e LOG_LEVEL="$(LOG_LEVEL)" \
-		-v $(HOST_DIR):$(HOST_DIR) \
+		-v "$(HOST_DIR)":"$(HOST_DIR)" \
 		-d $$CONTAINER_ID
 
 docker-log: # Tails the logs of a container started with 'docker-run'
-	docker logs -f $(shell docker ps --filter "name=$(SERVICE_NAME)" --format "{{.ID}}")
+	@CONTAINER_ID=$$(docker ps --filter "name=$(SERVICE_NAME)" --format "{{.ID}}"); \
+	if [ -n "$$CONTAINER_ID" ]; then \
+		docker logs -f $$CONTAINER_ID; \
+	else \
+		echo "No running container named '$(SERVICE_NAME)' found."; \
+	fi
 
 docker-stop: # Stops a Docker container started with 'docker-run'
-	docker rm -f $(shell docker ps --filter "name=$(SERVICE_NAME)" --format "{{.ID}}")
+	@CONTAINER_ID=$$(docker ps -a --filter "name=$(SERVICE_NAME)" --format "{{.ID}}"); \
+	if [ -n "$$CONTAINER_ID" ]; then \
+		docker rm -f $$CONTAINER_ID; \
+	else \
+		echo "No container named '$(SERVICE_NAME)' found."; \
+	fi
 
 # 'docker-test' does not require 'docker-build', fwiw, 'docker-build' is just for debugging
-docker-test: # Runs integration tests inside the Docker container
+docker-test: clone-kakadu # Runs integration tests inside the Docker container
 	go test -tags=integration ./integration -v -args -service-name=$(SERVICE_NAME) -log-level=$(LOG_LEVEL) \
-		-host-dir=$(HOST_DIR)
+		-host-dir=$(HOST_DIR) -kakadu-version=$(KAKADU_VERSION) -arch=$(ARCH)
+
+docker-push: docker-build # Builds a Docker image and pushes it to DockerHub
+	@LOWERCASED_ORG_NAME=$$(echo $(ORG_NAME) | tr '[:upper:]' '[:lower:]'); \
+	if [ -n "$(strip $(KAKADU_VERSION))" ]; then \
+		docker tag $(SERVICE_NAME):latest $$LOWERCASED_ORG_NAME/$(SERVICE_NAME)-kakadu:$(VERSION); \
+		docker push docker.io/$$LOWERCASED_ORG_NAME/$(SERVICE_NAME)-kakadu:$(VERSION); \
+	else \
+		docker tag $(SERVICE_NAME):latest $$LOWERCASED_ORG_NAME/$(SERVICE_NAME):$(VERSION); \
+		docker push docker.io/$$LOWERCASED_ORG_NAME/$(SERVICE_NAME):$(VERSION); \
+	fi
 
 clean: # Cleans up all artifacts created by the build
 	rm -rf $(SERVICE_NAME) api/api.go
@@ -70,6 +96,33 @@ run: config api build # Runs service locally, independent of Docker
 
 ci-run: config api # Runs CI locally using ACT (which must be installed)
 	pkg/scripts/act.sh $(JOB) $(SERVICE_NAME)
+
+clone-kakadu: # Optionally, downloads Kakadu from its private git repo
+	@if [ ! -d kakadu/.git ] && [ -n "$(strip $(KAKADU_VERSION))" ]; then \
+		echo "[INFO] Pulling the latest version of Kakadu into the container"; \
+		rm -rf kakadu; \
+		if [ -n "$$PERSONAL_ACCESS_TOKEN" ]; then \
+			git clone --depth 1 --filter=blob:none --sparse \
+				"https://x-access-token:$$PERSONAL_ACCESS_TOKEN@github.com/$(ORG_NAME)/kakadu.git kakadu"; \
+		else \
+			git clone --depth 1 --filter=blob:none --sparse git@github.com:$(ORG_NAME)/kakadu.git kakadu; \
+  		fi; \
+		cd kakadu && \
+		git sparse-checkout set $(KAKADU_VERSION) || { \
+			echo "Error: Failed to clone sparse Kakadu" >&2; \
+			exit 1; \
+		}; \
+	elif [ -d kakadu/.git ] && [ -n "$(strip $(KAKADU_VERSION))" ]; then \
+		echo "[INFO] Kakadu already cloned. Pulling latest changes..." >&2; \
+		cd kakadu && \
+		git pull origin $$(git symbolic-ref --short HEAD) || { \
+			echo "Error: Failed to pull latest changes for Kakadu" >&2; \
+			exit 1; \
+		}; \
+	else \
+		mkdir -p kakadu; \
+		echo "[INFO] Kakadu is not included in build because KAKADU_VERSION is not set." >&2; \
+	fi
 
 help: # Outputs information about the build's available targets
 	@awk -F ':.*?# ' '/^[a-z0-9_-]+:.*?# / && $$1 !~ /[A-Z.]/ { \
