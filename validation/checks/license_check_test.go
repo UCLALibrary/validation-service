@@ -7,8 +7,8 @@ import (
 	"github.com/UCLALibrary/validation-service/validation/csv"
 	"github.com/UCLALibrary/validation-service/validation/util"
 	"github.com/stretchr/testify/assert"
+	"slices"
 	"testing"
-	"fmt"
 )
 
 // TestVerifyLicense checks if verifyLicense throws the correct errors when given incorrect licenses
@@ -18,6 +18,8 @@ func TestVerifyLicense(t *testing.T) {
 
 	// genericLocation provides a consistent location for the purposes of test comparison.
 	var genericLocation = csv.Location{RowIndex: 1, ColIndex: 0}
+	var testValids = []string{ "http://creativecommons.org/licenses/by-nc/4.0/" }
+	var testInvalids = []string{ "https://library.ucla.edu", "http://library@edu", "http://ucla.example.edu" }
 
 	tests := []struct {
 		name     string
@@ -86,6 +88,6 @@ func TestVerifyLicense(t *testing.T) {
 			}
 		})
 	}
-	fmt.Println(check.valids)
-	fmt.Println(check.invalids)
+	assert.True(t, slices.Equal(check.valids, testValids))
+	assert.True(t, slices.Equal(check.invalids, testInvalids))
 }

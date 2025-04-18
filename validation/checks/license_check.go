@@ -13,12 +13,12 @@ import (
 	"github.com/UCLALibrary/validation-service/validation/util"
 )
 
-var valids []string
-var invalids []string
 
 // LicenseCheck validates the License field for a given profile.
 type LicenseCheck struct {
 	profiles *util.Profiles
+	valids []string
+	invalids []string
 }
 
 // NewLicenseCheck creates a new LicenseCheck instance, which validates the License field for a given profile.
@@ -29,11 +29,11 @@ func NewLicenseCheck(profiles *util.Profiles) (*LicenseCheck, error) {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}
 
-        valids = make([]string, 1)
-        invalids = make([]string, 1)
 
 	return &LicenseCheck{
 		profiles: profiles,
+		valids:   make([]string, 0),
+		invalids: make([]string, 0),
 	}, nil
 }
 
@@ -65,18 +65,18 @@ func (check *LicenseCheck) Validate(profile string, location csv.Location, csvDa
 
 	value := csvData[location.RowIndex][location.ColIndex]
 
-        if slices.Contains(valids, value) {
+        if slices.Contains(check.valids, value) {
                 return nil
-        } else if slices.Contains(invalids, value) {
+        } else if slices.Contains(check.invalids, value) {
                 return csv.NewError(errors.UrlDupeBadErr, location, profile)
         }
 
 	if err := check.verifyLicense(value, profile, location); err != nil {
-                invalids = append(invalids, value)
+                check.invalids = append(check.invalids, value)
 		return err
 	}
 
-        valids = append(valids, value)
+        check.valids = append(check.valids, value)
 	return nil
 }
 
