@@ -1,7 +1,6 @@
 //go:build unit
 
-// Package checks consists of individual validation checks.
-//
+// This tests objtypeCheckValidate.
 package checks
 
 import (
