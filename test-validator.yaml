@@ -60,10 +60,10 @@ replicaCount: 1
 imagePullSecrets:
   - name: test-validator-dockerhub-secret
 image:
-  repository: uclalibrary/validation-service
+  repository: uclalibrary/validation-service-kakadu
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.0.11"
+  tag: "0.0.12"
 podAnnotations: {}
 podSecurityContext: {}
 # fsGroup: 2000
@@ -166,7 +166,11 @@ externalsecrets:
   # Reference to ClusterSecretStore name
   ref: services-clustersecretstore
   secrets:
-    application: {}
+    application:
+      data:
+        - secretKey: KAKADU_VERSION
+          remoteRef:
+            key: /services/prodeks/test-validation/kakadu-version
     dockerhub:
       data:
         - secretKey: creds
