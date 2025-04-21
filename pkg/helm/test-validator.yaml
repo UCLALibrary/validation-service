@@ -178,7 +178,11 @@ externalsecrets:
   # Reference to ClusterSecretStore name
   ref: services-clustersecretstore
   secrets:
-    application: {}
+    application:
+      data:
+        - secretKey: KAKADU_VERSION
+          remoteRef:
+            key: /services/prodeks/test-validation/kakadu-version
     dockerhub:
       data:
         - secretKey: creds
