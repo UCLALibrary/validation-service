@@ -1,20 +1,18 @@
 //go:build integration
-
-// Package integration holds the project's integration tests.
-//
-// This file contains tests of the service's `uploadCSV` endpoint.
 package integration
 
+// This file contains tests of the service's `uploadCSV` endpoint.
 import (
 	"bytes"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
 	"regexp"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // TestUploadCSV tests the uploadCSV endpoint with a CSV file.

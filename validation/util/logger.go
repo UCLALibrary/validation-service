@@ -1,8 +1,6 @@
-// Package util provides useful resources and utilities.
-//
-// This file contains a wrapper to configure Echo to use a Zap logger instead of the default.
 package util
 
+// This file contains a wrapper to configure Echo to use a Zap logger instead of the default.
 import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"

@@ -1,10 +1,7 @@
 //go:build unit
-
-// Package validation provides tools to validate CSV data.
-//
-// This file sets up the package's testing environment.
 package validation
 
+// This file sets up the package's testing environment.
 import (
 	"flag"
 	"fmt"

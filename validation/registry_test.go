@@ -1,16 +1,15 @@
 //go:build unit
 
-// Package validation provides tools to validate CSV data.
-//
-// This file provides tests of the validation Registry.
 package validation
 
+// This file provides tests of the validation Registry.
 import (
 	"errors"
+	"testing"
+
 	"github.com/UCLALibrary/validation-service/validation/util"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap/zaptest"
-	"testing"
 )
 
 // TestNewRegistry creates a new registry for validators.

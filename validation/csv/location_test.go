@@ -1,10 +1,7 @@
 //go:build unit
-
-// Package csv has structures and utilities useful for working with CSVs.
-//
-// This file tests utilities related to working with CSV data.
 package csv
 
+// This file tests utilities related to working with CSV data.
 import (
 	"testing"
 

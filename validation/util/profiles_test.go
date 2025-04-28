@@ -1,20 +1,18 @@
 //go:build unit
-
-// Package util provides useful resources and utilities.
-//
-// This file contains tests of the validation profiles.
 package util
 
+// This file contains tests of the validation profiles.
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"log"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // TestProfiles tests basic Get/Set functionality.

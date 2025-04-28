@@ -1,10 +1,7 @@
 //go:build unit
-
-// Package csv has structures and utilities useful for working with CSVs.
-//
-// This file tests CSV errors.
 package csv
 
+// This file tests CSV errors.
 import (
 	"errors"
 	"fmt"

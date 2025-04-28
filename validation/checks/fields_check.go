@@ -1,4 +1,3 @@
-// This file checks for the presence of required fields and data.
 package checks
 
 import (

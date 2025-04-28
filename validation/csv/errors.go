@@ -1,8 +1,6 @@
-// Package csv has structures and utilities useful for working with CSVs.
-//
-// This file defines CSV errors.
 package csv
 
+// This file defines CSV errors.
 import (
 	"errors"
 	"fmt"

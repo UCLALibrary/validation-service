@@ -1,10 +1,8 @@
 //go:build unit || integration
 
-// Package utils has structures and utilities useful for running tests.
-//
-// This file contains testing utils related to packages and packaging.
 package utils
 
+// This file contains testing utils related to packages and packaging.
 import (
 	"path"
 	"runtime"

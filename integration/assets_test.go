@@ -1,17 +1,17 @@
 //go:build integration
 
 // Package integration holds the project's integration tests.
-//
-// This file tests the assets are available as expected.
 package integration
 
+// This file tests the assets are available as expected.
 import (
 	docker "context"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // TestJavascriptResources confirms the Javascript resources can be resolved.

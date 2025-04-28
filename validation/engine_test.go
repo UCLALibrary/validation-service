@@ -1,19 +1,18 @@
 //go:build unit
 
-// Package validation provides tools to validate CSV data.
-//
-// This file provides tests of the validation Engine.
 package validation
 
+// This file provides tests of the validation Engine.
 import (
+	"os"
+	"testing"
+
 	"github.com/UCLALibrary/validation-service/pkg/utils"
 	"github.com/UCLALibrary/validation-service/validation/csv"
 	"github.com/UCLALibrary/validation-service/validation/util"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap/zaptest"
-	"os"
-	"testing"
 )
 
 // TestEngine_NewEngine tests the construction of a validation engine.

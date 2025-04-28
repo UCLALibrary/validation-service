@@ -1,18 +1,16 @@
 //go:build integration
-
-// Package integration holds the project's integration tests.
-//
-// This file tests that Kakadu has been installed and is functioning as expected.
 package integration
 
+// This file tests that Kakadu has been installed and is functioning as expected.
 import (
 	"bytes"
 	docker "context"
-	"github.com/docker/docker/pkg/stdcopy"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/docker/docker/pkg/stdcopy"
+	"github.com/stretchr/testify/assert"
 )
 
 // TestKakaduInstallation checks if Kakadu is installed in the container and functioning as expected.

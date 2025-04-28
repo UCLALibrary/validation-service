@@ -1,8 +1,6 @@
-// Package csv has structures and utilities useful for working with CSVs.
-//
-// This file defines the CSV validation report and its components.
 package csv
 
+// This file defines the CSV validation report and its components.
 import (
 	"encoding/json"
 	"errors"

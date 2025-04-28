@@ -1,10 +1,8 @@
 //go:build unit
 
-// Package utils provides utilities that can be used in testing.
-//
-// This file sets up the package's testing environment.
 package utils
 
+// This file sets up the package's testing environment.
 import (
 	"flag"
 	"fmt"

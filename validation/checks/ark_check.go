@@ -1,5 +1,3 @@
-// This file checks that ARK values are valid according to the spec.
-
 // Package checks provides individual validators used by the validation service.
 package checks
 
@@ -13,7 +11,6 @@ import (
 
 	"go.uber.org/multierr"
 )
-
 // ITEM_ARK is the ARK of the current item.
 const ITEM_ARK = "Item ARK"
 
