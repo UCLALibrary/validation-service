@@ -186,13 +186,13 @@ Below are examples of how each workflow can be run (note the required `JOB=` pre
 It is also possible to run ACT while supplying a Kakadu version (causing Kakadu to be installed into the validation
 service container). This option would look like:
 
-    KAKADU_VERSION=v8_4_1-12345L make ci-run JOB=build
+    make ci-run JOB=build KAKADU_VERSION=v8_4_1-12345L
 
-    KAKADU_VERSION=v8_4_1-12345L make ci-run JOB=nightly
+    make ci-run JOB=nightly KAKADU_VERSION=v8_4_1-12345L
 
-    KAKADU_VERSION=v8_4_1-12345L make ci-run JOB=prerelease
+    make ci-run JOB=prerelease KAKADU_VERSION=v8_4_1-12345L
 
-    KAKADU_VERSION=v8_4_1-12345L make ci-run JOB=release
+    make ci-run JOB=release KAKADU_VERSION=v8_4_1-12345L
 
 In order for this to work, you must have the SSH private key that works with your `kakadu` GitHub repo in a file at:
 
