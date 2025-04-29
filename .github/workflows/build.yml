@@ -65,19 +65,20 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Import Kakadu SSH key on GitHub
-      if: env.ACT != 'true'
+      if: env.KAKADU_VERSION != '' && env.ACT != 'true'
       run: |
         mkdir -p ~/.ssh
         echo "${{ secrets.KAKADU_SSH_KEY }}" > ~/.ssh/kakadu_github_key
 
     # On ACT, we encode the SSH key using Base64 so it can be passed on the command line
     - name: Import Kakadu SSH key while running in ACT
-      if: env.ACT == 'true'
+      if: env.KAKADU_VERSION != '' && env.ACT == 'true'
       run: |
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY_B64 }}" | base64 -d > ~/.ssh/kakadu_github_key
 
     - name: Configure Kakadu SSH key
+      if: env.KAKADU_VERSION != ''
       run: |
         chmod 600 ~/.ssh/kakadu_github_key
         ssh-keyscan github.com >> ~/.ssh/known_hosts
