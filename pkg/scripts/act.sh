@@ -125,11 +125,26 @@ else
   fi
 fi
 
+# Create an args array for passing to ACT's command line script
+args=()
+
+# Configure the build to use Kakadu if KAKADU_VERSION is supplied
+if [ -n "$3" ]; then
+  args+=(-s SSH_PRIVATE_KEY_B64=$(base64 -w 0 ~/.ssh/kakadu_github_key))
+fi
+
+# Configure the secrets and variables for the build
+args+=("--secret-file" "$HOME/.act-secrets")
+args+=("--var-file" "$HOME/.act-variables")
+
 # If we're running a (pre)release we need to generate a release event, otherwise we run a basic action
 if [ "$ACTION" = "release" ]; then
-  $ACT --secret-file ~/.act-secrets --var-file ~/.act-variables -e "$(release_event released)" release
+  args+=(-e "$(release_event released)" release)
 elif [ "$ACTION" = "prerelease" ]; then
-  $ACT --secret-file ~/.act-secrets --var-file ~/.act-variables -e "$(release_event published)" release
+  args+=(-e "$(release_event published)" release)
 else
-  $ACT --secret-file ~/.act-secrets --var-file ~/.act-variables -j "$ACTION"
+  args+=(-j "$ACTION")
 fi
+
+# Run ACT with all the variables, secrets, and ENV mirroring what's available on GitHub Actions
+KAKADU_VERSION="$3" $ACT "${args[@]}"

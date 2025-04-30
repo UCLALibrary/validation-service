@@ -95,7 +95,7 @@ run: config api build # Runs service locally, independent of Docker
 	PROFILES_FILE="profiles.json" LOG_LEVEL=$(LOG_LEVEL) VERSION=$(VERSION) HOST_DIR=$(HOST_DIR) ./$(SERVICE_NAME)
 
 ci-run: config api # Runs CI locally using ACT (which must be installed)
-	pkg/scripts/act.sh $(JOB) $(SERVICE_NAME)
+	pkg/scripts/act.sh $(JOB) $(SERVICE_NAME) $(KAKADU_VERSION)
 
 clone-kakadu: # Optionally, downloads Kakadu from its private git repo
 	@if [ ! -d kakadu/.git ] && [ -n "$(strip $(KAKADU_VERSION))" ]; then \
