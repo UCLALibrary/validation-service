@@ -2,7 +2,6 @@
 
 package validation
 
-// This file provides tests of the validation Engine.
 import (
 	"os"
 	"testing"

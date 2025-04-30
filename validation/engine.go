@@ -1,7 +1,6 @@
 // Package validation provides tools to validate CSV data.
 package validation
 
-// This file provides an Engine that will use implementations of Validator to check CSV data.
 import (
 	"fmt"
 	"os"

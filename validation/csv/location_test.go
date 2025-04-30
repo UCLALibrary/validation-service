@@ -1,7 +1,6 @@
 //go:build unit
 package csv
 
-// This file tests utilities related to working with CSV data.
 import (
 	"testing"
 

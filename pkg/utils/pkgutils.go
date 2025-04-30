@@ -2,7 +2,6 @@
 
 package utils
 
-// This file contains testing utils related to packages and packaging.
 import (
 	"path"
 	"runtime"

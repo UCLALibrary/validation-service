@@ -1,7 +1,6 @@
 //go:build unit
 package csv
 
-// This file provides tests for readers and writers of CSV data.
 import (
 	"encoding/csv"
 	"go.uber.org/zap"

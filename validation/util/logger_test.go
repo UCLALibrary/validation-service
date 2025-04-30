@@ -1,7 +1,6 @@
 //go:build unit
 package util
 
-// This file contains a test to confirm the Zap middleware is working with the Echo server.
 import (
 	"github.com/UCLALibrary/validation-service/pkg/utils"
 	"go.uber.org/zap"

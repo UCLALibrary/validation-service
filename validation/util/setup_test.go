@@ -1,7 +1,6 @@
 //go:build unit
 package util
 
-// This file sets up the testing environment for the package.
 import (
 	"flag"
 	"fmt"

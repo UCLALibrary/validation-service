@@ -1,7 +1,6 @@
 //go:build integration
 package integration
 
-// This file contains utilities for working with test loggers.
 import (
 	"fmt"
 	"path/filepath"

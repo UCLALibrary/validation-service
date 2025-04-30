@@ -1,7 +1,6 @@
 // Package util provides useful resources and utilities.
 package util
 
-// This file provides a validation context structure that validators can use, if desired.
 import "github.com/UCLALibrary/validation-service/validation/csv"
 
 // Context is the core information required for a generic validation check bundled into a single struct.

@@ -1,7 +1,6 @@
 //go:build integration
 package integration
 
-// This file tests that Kakadu has been installed and is functioning as expected.
 import (
 	"bytes"
 	docker "context"

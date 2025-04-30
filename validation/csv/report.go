@@ -1,6 +1,5 @@
 package csv
 
-// This file defines the CSV validation report and its components.
 import (
 	"encoding/json"
 	"errors"

@@ -1,6 +1,5 @@
 package csv
 
-// This file defines types for working with CSV locations.
 import (
 	"fmt"
 )

@@ -1,7 +1,6 @@
 //go:build integration
 package integration
 
-// This file sets up the Docker container for integration testing.
 import (
 	"bytes"
 	docker "context"

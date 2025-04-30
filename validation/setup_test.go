@@ -1,7 +1,6 @@
 //go:build unit
 package validation
 
-// This file sets up the package's testing environment.
 import (
 	"flag"
 	"fmt"

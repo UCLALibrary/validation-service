@@ -1,7 +1,7 @@
 //go:build unit
+
 package util
 
-// This file contains tests of the validation profiles.
 import (
 	"bytes"
 	"encoding/json"

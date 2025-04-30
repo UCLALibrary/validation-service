@@ -2,7 +2,6 @@
 
 package validation
 
-// This file provides tests of the Validator.
 import (
 	"fmt"
 	"github.com/UCLALibrary/validation-service/validation/csv"

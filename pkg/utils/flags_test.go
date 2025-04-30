@@ -1,7 +1,6 @@
 //go:build unit
 package utils
 
-// This file tests that the default settings are correct on parsing.
 import (
 	"flag"
 	"os"

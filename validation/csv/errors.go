@@ -1,6 +1,5 @@
 package csv
 
-// This file defines CSV errors.
 import (
 	"errors"
 	"fmt"

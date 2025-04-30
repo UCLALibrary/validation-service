@@ -3,7 +3,6 @@
 // Package integration holds the project's integration tests.
 package integration
 
-// This file tests the assets are available as expected.
 import (
 	docker "context"
 	"fmt"

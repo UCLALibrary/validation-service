@@ -1,7 +1,6 @@
 //go:build unit
 package csv
 
-// This file tests CSV errors.
 import (
 	"errors"
 	"fmt"

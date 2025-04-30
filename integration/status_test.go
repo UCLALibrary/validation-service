@@ -1,7 +1,6 @@
 //go:build integration
 package integration
 
-// This file contains tests of the service's `getStatus` endpoint.
 import (
 	"bytes"
 	"fmt"

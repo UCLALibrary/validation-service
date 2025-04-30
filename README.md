@@ -72,11 +72,15 @@ spec hasn't changed since the last run:
 
 The usual behavior of `run` or `all` is not to run the `api` target if the OpenAPI spec has not been touched/changed.
 
-To access the Go Docs for validation-service run: 
+To create the Go Docs for validation-service run: 
 
-    make godoc
+    make docs
 
-and navigate to `http://localhost:6060/pkg/github.com/UCLALibrary/validation-service/`
+To create access the Go Docs on your local hosst run:
+
+    make docs-site 
+
+and navigate to `http://localhost:8080/pkg/github.com/UCLALibrary/validation-service/`
 
 ### Working with Docker
 
