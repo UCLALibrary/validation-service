@@ -1,4 +1,3 @@
-// This file tests the filePath checks.
 package checks
 
 import (

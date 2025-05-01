@@ -1,19 +1,16 @@
 //go:build integration
-
-// Package integration holds the project's integration tests.
-//
-// This file contains utilities for working with test loggers.
 package integration
 
 import (
 	"fmt"
+	"path/filepath"
+	"strings"
+	"sync"
+
 	"github.com/UCLALibrary/validation-service/pkg/utils"
 	"github.com/testcontainers/testcontainers-go"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"path/filepath"
-	"strings"
-	"sync"
 )
 
 // A logger to log our Docker container's logs
@@ -28,7 +25,7 @@ type DockerLogConsumer struct {
 func (consumer *DockerLogConsumer) Accept(log testcontainers.Log) {
 	consumer.mutex.Lock()
 	defer consumer.mutex.Unlock()
-	
+
 	logger.Sugar().Debug(strings.TrimSpace(string(log.Content)))
 }
 

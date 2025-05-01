@@ -1,6 +1,4 @@
 // Package csv has structures and utilities useful for working with CSVs.
-//
-// This file provides a reader and writer for CSV data.
 package csv
 
 import (

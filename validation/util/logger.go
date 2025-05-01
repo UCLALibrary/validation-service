@@ -1,6 +1,3 @@
-// Package util provides useful resources and utilities.
-//
-// This file contains a wrapper to configure Echo to use a Zap logger instead of the default.
 package util
 
 import (

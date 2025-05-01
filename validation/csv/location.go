@@ -1,6 +1,3 @@
-// Package csv has structures and utilities useful for working with CSVs.
-//
-// This file defines types for working with CSV locations.
 package csv
 
 import (

@@ -1,16 +1,15 @@
 // Package validation provides tools to validate CSV data.
-//
-// This file provides an Engine that will use implementations of Validator to check CSV data.
 package validation
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/UCLALibrary/validation-service/validation/csv"
 	"github.com/UCLALibrary/validation-service/validation/util"
 	"go.uber.org/multierr"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"os"
 )
 
 // Engine performs the CSV file validations.

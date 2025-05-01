@@ -1,6 +1,5 @@
 //go:build unit
 
-// This file tests if the ARKCheck properly functions.
 package checks
 
 import (
