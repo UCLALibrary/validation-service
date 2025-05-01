@@ -64,7 +64,8 @@ image:
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "0.0.11"
-podAnnotations: {}
+podAnnotations:
+  reloader.stakater.com/auto: "true"
 podSecurityContext: {}
 # fsGroup: 2000
 
