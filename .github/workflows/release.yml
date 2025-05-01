@@ -1,7 +1,7 @@
 name: Build and Publish Release
 
 env:
-  GO_VERSION: '1.24.0'
+  GO_VERSION: '1.24.1'
   GO_LINTER_VERSION: 'v1.64.6'
   DOCKER_REGISTRY_ACCOUNT: ${{ vars.DOCKER_REGISTRY_ACCOUNT }}
 
@@ -61,11 +61,21 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Configure Kakadu SSH key
+      - name: Import Kakadu SSH key on GitHub
         if: env.ACT != 'true'
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.KAKADU_SSH_KEY }}" > ~/.ssh/kakadu_github_key
+
+        # On ACT, we encode the SSH key using Base64 so it can be passed on the command line
+      - name: Import Kakadu SSH key while running in ACT
+        if: env.ACT == 'true'
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY_B64 }}" | base64 -d > ~/.ssh/kakadu_github_key
+
+      - name: Configure Kakadu SSH key
+        run: |
           chmod 600 ~/.ssh/kakadu_github_key
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           eval "$(ssh-agent -s)"

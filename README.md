@@ -183,6 +183,23 @@ Below are examples of how each workflow can be run (note the required `JOB=` pre
 
     make ci-run JOB=release
 
+It is also possible to run ACT while supplying a Kakadu version (causing Kakadu to be installed into the validation
+service container). This option would look like:
+
+    make ci-run JOB=build KAKADU_VERSION=v8_4_1-12345L
+
+    make ci-run JOB=nightly KAKADU_VERSION=v8_4_1-12345L
+
+    make ci-run JOB=prerelease KAKADU_VERSION=v8_4_1-12345L
+
+    make ci-run JOB=release KAKADU_VERSION=v8_4_1-12345L
+
+In order for this to work, you must have the SSH private key that works with your `kakadu` GitHub repo in a file at:
+
+    ~/.ssh/kakadu_github_key
+
+That's where our [script](pkg/scripts/act.sh) that runs ACT expects to find it.
+
 This functionality is probably most just useful for UCLA Library folks, but it's documented here in case others are
 interested in running this on their own, too.
 
