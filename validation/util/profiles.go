@@ -1,5 +1,5 @@
-// Package util provides useful resources and utilities.
-//
+package util
+
 // This file contains utilities for creating and working with validation profiles.
 //
 // Example usage:
@@ -20,8 +20,6 @@
 //	} else {
 //		fmt.Println(string(jsonData))
 //	}
-package util
-
 import (
 	"encoding/json"
 	"fmt"

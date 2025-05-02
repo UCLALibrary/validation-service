@@ -1,6 +1,5 @@
 //go:build unit
 
-// This file tests EOLCheck.
 package checks
 
 import (

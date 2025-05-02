@@ -1,3 +1,4 @@
+// Package errors contains error messages that are used by the validators.
 package errors
 
 // Error messages

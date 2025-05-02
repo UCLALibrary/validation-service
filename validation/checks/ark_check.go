@@ -1,5 +1,3 @@
-// This file checks that ARK values are valid according to the spec.
-
 // Package checks provides individual validators used by the validation service.
 package checks
 

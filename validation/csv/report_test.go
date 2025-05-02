@@ -1,6 +1,3 @@
-// Package csv has structures and utilities useful for working with CSVs.
-//
-// This file tests the CSV validation report and its components.
 package csv
 
 import (

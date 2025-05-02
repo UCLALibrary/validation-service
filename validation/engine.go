@@ -1,6 +1,4 @@
 // Package validation provides tools to validate CSV data.
-//
-// This file provides an Engine that will use implementations of Validator to check CSV data.
 package validation
 
 import (

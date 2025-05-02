@@ -1,8 +1,4 @@
 //go:build integration
-
-// Package integration holds the project's integration tests.
-//
-// This file contains tests of the service's `getStatus` endpoint.
 package integration
 
 import (

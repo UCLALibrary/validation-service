@@ -1,8 +1,4 @@
 //go:build unit
-
-// Package utils provides utilities that can be used in testing.
-//
-// This file tests that the default settings are correct on parsing.
 package utils
 
 import (

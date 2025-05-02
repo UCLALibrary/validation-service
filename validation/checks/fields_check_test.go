@@ -1,6 +1,5 @@
 //go:build unit
 
-// This file tests fieldsCheckValidate.
 package checks
 
 import (

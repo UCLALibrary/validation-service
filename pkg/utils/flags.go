@@ -1,12 +1,11 @@
 //go:build unit || integration
 
 // Package utils provides tools to help with testing.
-//
-// This file defines LogLevel and a has a convenience function for constructing levels.
 package utils
 
 import (
 	"flag"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )

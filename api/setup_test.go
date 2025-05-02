@@ -1,16 +1,13 @@
 //go:build unit
-
-// Package api consists of API handling code.
-//
-// This file sets up the testing environment for the tests.
 package api
 
 import (
 	"flag"
 	"fmt"
-	"github.com/UCLALibrary/validation-service/pkg/utils"
 	"os"
 	"testing"
+
+	"github.com/UCLALibrary/validation-service/pkg/utils"
 )
 
 // TestMain loads the flags for the tests in the package.

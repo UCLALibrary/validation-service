@@ -1,6 +1,4 @@
 //go:build unit
-
-// Package checks consists of individual validation checks.
 package checks
 
 import (
