@@ -79,7 +79,7 @@ func TestVerifyARK(t *testing.T) {
 			location:    testLocation,
 			profile:     "default",
 			expectError: true,
-			expectedErr: csv.NewError(errors.NoObjIdErr, testLocation, "default"),
+			expectedErr: csv.NewError(errors.NoObjIDErr, testLocation, "default"),
 		},
 		{
 			name:        "Invalid NAAN - less than 5 digits",
@@ -90,7 +90,7 @@ func TestVerifyARK(t *testing.T) {
 			expectedErr: multierr.Combine(
 				csv.NewError(errors.NaanTooShortErr, testLocation, "default"),
 				csv.NewError(errors.NaanProfileErr, testLocation, "default"),
-				csv.NewError(errors.NoObjIdErr, testLocation, "default"),
+				csv.NewError(errors.NoObjIDErr, testLocation, "default"),
 			),
 		},
 		{
@@ -107,7 +107,7 @@ func TestVerifyARK(t *testing.T) {
 			location:    testLocation,
 			profile:     "default",
 			expectError: true,
-			expectedErr: csv.NewError(errors.InvalidObjIdErr, testLocation, "default"),
+			expectedErr: csv.NewError(errors.InvalidObjIDErr, testLocation, "default"),
 		},
 	}
 

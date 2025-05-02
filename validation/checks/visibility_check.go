@@ -1,4 +1,4 @@
-// This checks if the value in Visibility is valid. 
+// This checks if the value in Visibility is valid.
 package checks
 
 import (

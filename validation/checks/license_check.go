@@ -5,19 +5,17 @@ import (
 	"io"
 	"net/http"
 	"regexp"
-        "slices"
-
+	"slices"
 
 	"github.com/UCLALibrary/validation-service/errors"
 	"github.com/UCLALibrary/validation-service/validation/csv"
 	"github.com/UCLALibrary/validation-service/validation/util"
 )
 
-
 // LicenseCheck validates the License field for a given profile.
 type LicenseCheck struct {
 	profiles *util.Profiles
-	valids []string
+	valids   []string
 	invalids []string
 }
 
@@ -28,7 +26,6 @@ func NewLicenseCheck(profiles *util.Profiles) (*LicenseCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}
-
 
 	return &LicenseCheck{
 		profiles: profiles,
@@ -65,18 +62,18 @@ func (check *LicenseCheck) Validate(profile string, location csv.Location, csvDa
 
 	value := csvData[location.RowIndex][location.ColIndex]
 
-        if slices.Contains(check.valids, value) {
-                return nil
-        } else if slices.Contains(check.invalids, value) {
-                return csv.NewError(errors.UrlDupeBadErr, location, profile)
-        }
+	if slices.Contains(check.valids, value) {
+		return nil
+	} else if slices.Contains(check.invalids, value) {
+		return csv.NewError(errors.URLDupeBadErr, location, profile)
+	}
 
 	if err := check.verifyLicense(value, profile, location); err != nil {
-                check.invalids = append(check.invalids, value)
+		check.invalids = append(check.invalids, value)
 		return err
 	}
 
-        check.valids = append(check.valids, value)
+	check.valids = append(check.valids, value)
 	return nil
 }
 
@@ -87,18 +84,18 @@ func (check *LicenseCheck) Validate(profile string, location csv.Location, csvDa
 func (check *LicenseCheck) verifyLicense(license string, profile string, location csv.Location) error {
 	r := regexp.MustCompile(`^^http\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_]*)?$`)
 	if !r.MatchString(license) {
-		return csv.NewError(errors.UrlFormatErr, location, profile)
+		return csv.NewError(errors.URLFormatErr, location, profile)
 	}
 
 	resp, err := http.Get(license)
 	if err != nil {
-		return csv.NewError(errors.UrlConnectErr, location, profile)
+		return csv.NewError(errors.URLConnectErr, location, profile)
 	}
 	//noinspection GoUnhandledErrorResult
 	defer resp.Body.Close()
 	_, err = io.ReadAll(resp.Body)
 	if err != nil {
-		return csv.NewError(errors.UrlReadErr, location, profile)
+		return csv.NewError(errors.URLReadErr, location, profile)
 	}
 
 	// Supplied license is valid

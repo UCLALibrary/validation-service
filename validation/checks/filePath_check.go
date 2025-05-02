@@ -12,8 +12,8 @@ import (
 	"github.com/UCLALibrary/validation-service/validation/util"
 )
 
-// FILE_NAME is the File Name of the current item.
-const FILE_NAME = "File Name"
+// FileName is the File Name of the current item.
+const FileName = "File Name"
 
 // FilePathCheck type is a validator that checks if a File exists at the specified location.
 //
@@ -45,7 +45,7 @@ func (check *FilePathCheck) Validate(profile string, location csv.Location, csvD
 
 	value := check.stripPrefix(csvData[location.RowIndex][location.ColIndex])
 
-	// obtain dir name from HOST_DIR
+	// Get dir name from HOST_DIR
 	hostDir := os.Getenv("HOST_DIR")
 	if hostDir == "" {
 		return csv.NewError(errors.NoHostDir, location, profile)
@@ -57,19 +57,19 @@ func (check *FilePathCheck) Validate(profile string, location csv.Location, csvD
 		return err
 	}
 
-	// Skip if we don't have a FILE_NAME header, or we're on the first (i.e., header) row
-	if header != FILE_NAME || location.RowIndex == 0 {
+	// Skip if we don't have a FileName header, or we're on the first (i.e., header) row
+	if header != FileName || location.RowIndex == 0 {
 		return nil
 	}
 
 	fullPath := filepath.Join(hostDir, value)
 
-	// if the file doesn't exist return an error
+	// If the file doesn't exist, return an error
 	if _, err = os.Stat(fullPath); os.IsNotExist(err) {
 		return csv.NewError(fmt.Sprintf(errors.FileNotExist, fullPath), location, profile)
-	} else {
-		return nil
 	}
+
+	return nil
 }
 
 // stripPrefix strips the prefix found in the CSV file paths so that various sub-dirs will match when compared.

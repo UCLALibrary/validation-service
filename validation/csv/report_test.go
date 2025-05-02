@@ -6,11 +6,12 @@ package csv
 import (
 	"encoding/json"
 	"errors"
+	"testing"
+	"time"
+
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/multierr"
 	"go.uber.org/zap"
-	"testing"
-	"time"
 )
 
 // TestNewReport tests creating a new validation report with the NewReport function.

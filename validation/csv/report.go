@@ -6,10 +6,11 @@ package csv
 import (
 	"encoding/json"
 	"errors"
-	"go.uber.org/multierr"
-	"go.uber.org/zap"
 	"strings"
 	"time"
+
+	"go.uber.org/multierr"
+	"go.uber.org/zap"
 )
 
 // Warning is an individual validation warning.

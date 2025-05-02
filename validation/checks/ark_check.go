@@ -14,13 +14,13 @@ import (
 	"go.uber.org/multierr"
 )
 
-// ITEM_ARK is the ARK of the current item.
-const ITEM_ARK = "Item ARK"
+// ItemARK is the ARK of the current item.
+const ItemARK = "Item ARK"
 
-// PARENT_ARK is the ARK of the parent item.
-const PARENT_ARK = "Parent ARK"
+// ParentARK is the ARK of the parent item.
+const ParentARK = "Parent ARK"
 
-// The naanProfiles mapping gives us a way to lookup valid NAANs for a profile.
+// The naanProfiles mapping gives us a way to look up valid NAANs for a profile.
 var naanProfiles = map[string]map[string]struct{}{
 	"default": {
 		"21198": {},
@@ -73,7 +73,7 @@ func (check *ARKCheck) Validate(profile string, location csv.Location, csvData [
 	}
 
 	// Skip if we don't have an ARK cell, or we're on the first (i.e., header) row
-	if header != ITEM_ARK && header != PARENT_ARK || location.RowIndex == 0 {
+	if header != ItemARK && header != ParentARK || location.RowIndex == 0 {
 		return nil
 	}
 
@@ -121,14 +121,14 @@ func (check *ARKCheck) verifyARK(ark string, location csv.Location, profile stri
 	}
 
 	if objectID == "" {
-		errs = multierr.Combine(errs, csv.NewError(errors.NoObjIdErr, location, profile))
+		errs = multierr.Combine(errs, csv.NewError(errors.NoObjIDErr, location, profile))
 		return errs
 	}
 
 	// Validate the remaining ARK structure (ObjectIdentifier + Qualifier)
 	arkRegex := regexp.MustCompile(`^([\w\-./]+)(\?.*)?$`)
 	if !arkRegex.MatchString(objectID) {
-		errs = multierr.Combine(errs, csv.NewError(errors.InvalidObjIdErr, location, profile))
+		errs = multierr.Combine(errs, csv.NewError(errors.InvalidObjIDErr, location, profile))
 	}
 
 	return errs

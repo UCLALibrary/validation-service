@@ -3,13 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/UCLALibrary/validation-service/api"
-	"github.com/UCLALibrary/validation-service/validation"
-	"github.com/UCLALibrary/validation-service/validation/csv"
-	"github.com/UCLALibrary/validation-service/validation/util"
-	"github.com/labstack/echo/v4"
-	middleware "github.com/oapi-codegen/echo-middleware"
-	"go.uber.org/zap"
 	"html/template"
 	"io"
 	"log"
@@ -19,6 +12,14 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/UCLALibrary/validation-service/api"
+	"github.com/UCLALibrary/validation-service/validation"
+	"github.com/UCLALibrary/validation-service/validation/csv"
+	"github.com/UCLALibrary/validation-service/validation/util"
+	"github.com/labstack/echo/v4"
+	middleware "github.com/oapi-codegen/echo-middleware"
+	"go.uber.org/zap"
 )
 
 // Port is the default port for our server
@@ -44,7 +45,7 @@ type TemplateRenderer struct {
 }
 
 // Render function on our TemplateRenderer implements Echo's `Renderer` interface
-func (renderer *TemplateRenderer) Render(writer io.Writer, name string, data interface{}, context echo.Context) error {
+func (renderer *TemplateRenderer) Render(writer io.Writer, name string, data interface{}, _ echo.Context) error {
 	renderer.mu.Lock()
 	defer renderer.mu.Unlock()
 	return renderer.templates.ExecuteTemplate(writer, name, data)

@@ -18,7 +18,7 @@ func ZapLoggerMiddleware(aLogger *zap.Logger) echo.MiddlewareFunc {
 		LogLatency:   true,
 		LogRemoteIP:  true,
 		LogUserAgent: true,
-		LogValuesFunc: func(c echo.Context, values middleware.RequestLoggerValues) error {
+		LogValuesFunc: func(_ echo.Context, values middleware.RequestLoggerValues) error {
 			aLogger.Debug("Request",
 				zap.String("method", values.Method),
 				zap.String("uri", values.URI),
