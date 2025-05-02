@@ -3,7 +3,7 @@
     "default": {
       "name": "default",
       "lastUpdate": "2025-01-01T12:00:00Z",
-      "validations": ["EOLCheck", "ARKCheck", "LicenseCheck", "ReqFieldCheck", "FilePathCheck", "ObjectTypeCheck", "ItemSeqCheck", "VisibilityCheck"]
+      "validations": ["EOLCheck", "ARKCheck", "LicenseCheck", "ReqFieldCheck", "FilePathCheck", "ObjectTypeCheck", "ItemSeqCheck", "VisibilityCheck", "UnicodeCheck"
     },
     "test": {
       "name": "test",
