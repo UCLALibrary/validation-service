@@ -124,6 +124,12 @@ clone-kakadu: # Optionally, downloads Kakadu from its private git repo
 		echo "[INFO] Kakadu is not included in build because KAKADU_VERSION is not set." >&2; \
 	fi
 
+docs: test# Generates documentation from the project's code
+	go doc
+
+docs-site: docs # Runs `pkgsite` to view the newly generated docs
+	pkgsite -http=localhost:8080
+
 help: # Outputs information about the build's available targets
 	@awk -F ':.*?# ' '/^[a-z0-9_-]+:.*?# / && $$1 !~ /[A-Z.]/ { \
 		printf "\033[1;32m%-20s\033[0m %s\n", $$1, $$2 \

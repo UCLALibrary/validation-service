@@ -1,8 +1,4 @@
 //go:build unit
-
-// Package util provides useful resources and utilities.
-//
-// This file sets up the testing environment for the package.
 package util
 
 import (

@@ -1,8 +1,4 @@
 //go:build unit
-
-// Package util provides useful resources and utilities.
-//
-// This file contains a test to confirm the Zap middleware is working with the Echo server.
 package util
 
 import (

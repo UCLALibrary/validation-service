@@ -1,23 +1,20 @@
-// This file checks if the provided License is correct.
 package checks
 
 import (
 	"io"
 	"net/http"
 	"regexp"
-        "slices"
-
+	"slices"
 
 	"github.com/UCLALibrary/validation-service/errors"
 	"github.com/UCLALibrary/validation-service/validation/csv"
 	"github.com/UCLALibrary/validation-service/validation/util"
 )
 
-
 // LicenseCheck validates the License field for a given profile.
 type LicenseCheck struct {
 	profiles *util.Profiles
-	valids []string
+	valids   []string
 	invalids []string
 }
 
@@ -28,7 +25,6 @@ func NewLicenseCheck(profiles *util.Profiles) (*LicenseCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}
-
 
 	return &LicenseCheck{
 		profiles: profiles,
@@ -65,18 +61,18 @@ func (check *LicenseCheck) Validate(profile string, location csv.Location, csvDa
 
 	value := csvData[location.RowIndex][location.ColIndex]
 
-        if slices.Contains(check.valids, value) {
-                return nil
-        } else if slices.Contains(check.invalids, value) {
-                return csv.NewError(errors.UrlDupeBadErr, location, profile)
-        }
+	if slices.Contains(check.valids, value) {
+		return nil
+	} else if slices.Contains(check.invalids, value) {
+		return csv.NewError(errors.UrlDupeBadErr, location, profile)
+	}
 
 	if err := check.verifyLicense(value, profile, location); err != nil {
-                check.invalids = append(check.invalids, value)
+		check.invalids = append(check.invalids, value)
 		return err
 	}
 
-        check.valids = append(check.valids, value)
+	check.valids = append(check.valids, value)
 	return nil
 }
 

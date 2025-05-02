@@ -1,6 +1,3 @@
-// Package validation provides tools to validate CSV data.
-//
-// This file provides a Validator interface that individual checks should implement.
 package validation
 
 import (

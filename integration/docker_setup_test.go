@@ -1,8 +1,4 @@
 //go:build integration
-
-// Package integration holds the project's integration tests.
-//
-// This file sets up the Docker container for integration testing.
 package integration
 
 import (
@@ -10,11 +6,12 @@ import (
 	docker "context"
 	"flag"
 	"fmt"
-	"github.com/UCLALibrary/validation-service/pkg/utils"
-	"github.com/testcontainers/testcontainers-go/log"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/UCLALibrary/validation-service/pkg/utils"
+	"github.com/testcontainers/testcontainers-go/log"
 
 	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/stretchr/testify/assert"

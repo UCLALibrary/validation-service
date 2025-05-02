@@ -1,6 +1,3 @@
-// Package checks provides individual validators used by the validation service.
-//
-// This file checks that data cells do not have end of line (EOL) characters.
 package checks
 
 import (
@@ -18,7 +15,7 @@ type ItemSeqCheck struct {
 	profiles *util.Profiles
 }
 
-// NewItemSeqCheck checks that there are no EOLs in a CSV data cell.
+// NewItemSeqCheck checks that all values in Item Sequence are positive integers.
 func NewItemSeqCheck(profiles *util.Profiles) (*ItemSeqCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")

@@ -1,15 +1,21 @@
+// Package main provides the entry point for the validation-service web server.
+// It sets up and starts an Echo-based HTTP server that handles validation of
+// CSV files against predefined profiles, and serves both JSON and HTML reports
+// based on validation results. The server also exposes static resources,
+// renders HTML templates, and provides a REST API conforming to an OpenAPI spec.
+//
+// Key features include:
+// - CSV file upload and validation
+// - Custom HTML rendering for validation reports
+// - OpenAPI-based route validation
+// - Configurable route mappings for static and dynamic content
+// - Logging and debugging using Zap
+// - Support for running in both development and Docker environments
 package main
 
 import (
 	"errors"
 	"fmt"
-	"github.com/UCLALibrary/validation-service/api"
-	"github.com/UCLALibrary/validation-service/validation"
-	"github.com/UCLALibrary/validation-service/validation/csv"
-	"github.com/UCLALibrary/validation-service/validation/util"
-	"github.com/labstack/echo/v4"
-	middleware "github.com/oapi-codegen/echo-middleware"
-	"go.uber.org/zap"
 	"html/template"
 	"io"
 	"log"
@@ -19,6 +25,14 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/UCLALibrary/validation-service/api"
+	"github.com/UCLALibrary/validation-service/validation"
+	"github.com/UCLALibrary/validation-service/validation/csv"
+	"github.com/UCLALibrary/validation-service/validation/util"
+	"github.com/labstack/echo/v4"
+	middleware "github.com/oapi-codegen/echo-middleware"
+	"go.uber.org/zap"
 )
 
 // Port is the default port for our server

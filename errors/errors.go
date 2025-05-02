@@ -1,3 +1,4 @@
+// Package errors contains error messages that are used by the validators.
 package errors
 
 // Error messages
@@ -20,7 +21,7 @@ var (
 	UrlFormatErr         = "license URL is not in a proper format (check for HTTPS)"
 	UrlConnectErr        = "problem connecting to license URL"
 	UrlReadErr           = "problem reading body of license URL"
-        UrlDupeBadErr        = "duplicate invalid license URL"
+	UrlDupeBadErr        = "duplicate invalid license URL"
 	TypeWhitespaceError  = "field contains invalid characters (e.g., spaces, line breaks)"
 	TypeValueError       = "object type field doesn't contain valid value"
 	VisibilityValueError = "visibility field doesn't contain valid value"
