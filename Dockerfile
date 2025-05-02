@@ -4,6 +4,7 @@
 
 ARG SERVICE_NAME
 ARG VERSION
+ARG MAX_UPLOAD
 ARG LOG_LEVEL
 ARG HOST_DIR
 ARG ARCH
@@ -83,6 +84,10 @@ ENV HOST_DIR=${HOST_DIR}
 # Set a version number for the application
 ARG VERSION
 ENV VERSION=${VERSION}
+
+# Set a max file size for uploads
+ARG MAX_UPLOAD
+ENV MAX_UPLOAD=${MAX_UPLOAD}
 
 # Set the location of the profiles config
 ENV PROFILES_FILE="${DATA_DIR}/profiles.json"
