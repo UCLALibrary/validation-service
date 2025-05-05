@@ -1,6 +1,6 @@
 package checks
 
-// This checks if the value in Object Type is valid. 
+// This checks if the value in Object Type is valid.
 import (
 	"regexp"
 
