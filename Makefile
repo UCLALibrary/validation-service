@@ -24,7 +24,7 @@ FORCE:
 all: config api lint build test docker-test # Does a full build of the project
 
 lint: # Checks the code for correctness / coding standards
-	golangci-lint run
+	golangci-lint run --out-format=colored-line-number --fix
 
 # We generate Go API code from the OpenAPI specification only when it has changed
 # We assume Windows developers are using WSL, so we don't define $(CP) for this

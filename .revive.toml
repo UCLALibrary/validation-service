@@ -1,0 +1,6 @@
+ignoreGeneratedHeader = false
+severity = "warning"
+
+[[rule]]
+  name = "comment-format"
+  arguments = ["error"]

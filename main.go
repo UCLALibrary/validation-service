@@ -59,7 +59,7 @@ type TemplateRenderer struct {
 }
 
 // Render function on our TemplateRenderer implements Echo's `Renderer` interface
-func (renderer *TemplateRenderer) Render(writer io.Writer, name string, data interface{}, context echo.Context) error {
+func (renderer *TemplateRenderer) Render(writer io.Writer, name string, data interface{}, _ echo.Context) error {
 	renderer.mu.Lock()
 	defer renderer.mu.Unlock()
 	return renderer.templates.ExecuteTemplate(writer, name, data)
