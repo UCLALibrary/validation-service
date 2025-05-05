@@ -1,0 +1,13 @@
+linters:
+  enable:
+    - revive
+    - gofmt
+    - goimports
+    - typecheck
+    - errcheck
+    - unparam
+    - ineffassign
+
+linters-settings:
+  revive:
+    config: .revive.toml

@@ -64,7 +64,7 @@ func (check *LicenseCheck) Validate(profile string, location csv.Location, csvDa
 	if slices.Contains(check.valids, value) {
 		return nil
 	} else if slices.Contains(check.invalids, value) {
-		return csv.NewError(errors.UrlDupeBadErr, location, profile)
+		return csv.NewError(errors.URLDupeBadErr, location, profile)
 	}
 
 	if err := check.verifyLicense(value, profile, location); err != nil {
@@ -83,18 +83,18 @@ func (check *LicenseCheck) Validate(profile string, location csv.Location, csvDa
 func (check *LicenseCheck) verifyLicense(license string, profile string, location csv.Location) error {
 	r := regexp.MustCompile(`^^http\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_]*)?$`)
 	if !r.MatchString(license) {
-		return csv.NewError(errors.UrlFormatErr, location, profile)
+		return csv.NewError(errors.URLFormatErr, location, profile)
 	}
 
 	resp, err := http.Get(license)
 	if err != nil {
-		return csv.NewError(errors.UrlConnectErr, location, profile)
+		return csv.NewError(errors.URLConnectErr, location, profile)
 	}
 	//noinspection GoUnhandledErrorResult
 	defer resp.Body.Close()
 	_, err = io.ReadAll(resp.Body)
 	if err != nil {
-		return csv.NewError(errors.UrlReadErr, location, profile)
+		return csv.NewError(errors.URLReadErr, location, profile)
 	}
 
 	// Supplied license is valid
