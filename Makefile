@@ -9,6 +9,7 @@ ARCH ?= x86-64
 KAKADU_VERSION ?= ""
 VERSION ?= dev-SNAPSHOT
 ORG_NAME ?= UCLALibrary
+MAX_UPLOAD ?= 30M
 
 # Force the API target to run even if the openapi.yml has not been touched/changed
 ifneq ($(filter FORCE,$(MAKECMDGOALS)),)
@@ -41,7 +42,7 @@ test: # Runs the unit tests (integration tests are excluded)
 
 docker-build: clone-kakadu  # Builds a Docker container for manual testing
 	docker build . --tag $(SERVICE_NAME) --build-arg SERVICE_NAME=$(SERVICE_NAME) \
-		--build-arg VERSION=$(VERSION) --build-arg HOST_DIR=$(HOST_DIR) \
+		--build-arg VERSION=$(VERSION) --build-arg HOST_DIR=$(HOST_DIR) --build-arg MAX_UPLOAD=$(MAX_UPLOAD) \
 		--build-arg KAKADU_VERSION=$(KAKADU_VERSION) --build-arg ARCH=$(ARCH) \
 
 docker-run: docker-build # Runs a Docker instance, independent of the tests
@@ -92,7 +93,8 @@ profiles.json: profiles.example.json
 config: profiles.json # Creates a profiles.json file from the example file
 
 run: config api build # Runs service locally, independent of Docker
-	PROFILES_FILE="profiles.json" LOG_LEVEL=$(LOG_LEVEL) VERSION=$(VERSION) HOST_DIR=$(HOST_DIR) ./$(SERVICE_NAME)
+	PROFILES_FILE="profiles.json" LOG_LEVEL=$(LOG_LEVEL) VERSION=$(VERSION) HOST_DIR=$(HOST_DIR) \
+		MAX_UPLOAD=$(MAX_UPLOAD) ./$(SERVICE_NAME)
 
 ci-run: config api # Runs CI locally using ACT (which must be installed)
 	pkg/scripts/act.sh $(JOB) $(SERVICE_NAME) $(KAKADU_VERSION)

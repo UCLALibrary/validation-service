@@ -1,4 +1,5 @@
 //go:build integration
+
 package integration
 
 import (
@@ -54,6 +55,7 @@ func TestMain(m *testing.M) {
 		"LOG_LEVEL":    &utils.LogLevel,
 		"HOST_DIR":     &utils.HostDir,
 		"ARCH":         &utils.BuildArch,
+		"MAX_UPLOAD":   func() *string { s := "5M"; return &s }(),
 	}
 
 	// Check to see if we're running our tests using the KAKADU_VERSION property and include that if so
@@ -140,5 +142,29 @@ func TestEnvironmentVariable(t *testing.T) {
 	assert.Equalf(
 		t, utils.HostDir, value, "The expected HOST_DIR ENV property wasn't found. Expected: %q, Found: %q",
 		utils.HostDir, value,
+	)
+}
+
+// TestMaxSizeEnvVariable checks if the MAX_UPLOAD ENV property is set and if it matches the expected value.
+func TestMaxSizeEnvVariable(t *testing.T) {
+	// Execute a command inside the container to check the MAX_UPLOAD env variable
+	context := docker.Background()
+	_, reader, err := container.Exec(context, []string{"printenv", "MAX_UPLOAD"})
+
+	if err != nil {
+		t.Fatalf("Failed to execute command inside container: %v", err)
+	}
+
+	// Separate stdout and stderr from the raw reader
+	var stdout, stderr bytes.Buffer
+	_, err = stdcopy.StdCopy(&stdout, &stderr, reader)
+	if err != nil {
+		t.Fatalf("Failed to read container output: %v", err)
+	}
+
+	value := strings.TrimSpace(stdout.String())
+	assert.Equalf(
+		t, "5M", value, "The expected MAX_UPLOAD ENV property wasn't found. Expected: %q, Found: %q",
+		"5M", value,
 	)
 }

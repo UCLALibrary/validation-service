@@ -31,6 +31,7 @@ import (
 	"github.com/UCLALibrary/validation-service/validation/csv"
 	"github.com/UCLALibrary/validation-service/validation/util"
 	"github.com/labstack/echo/v4"
+	config "github.com/labstack/echo/v4/middleware"
 	middleware "github.com/oapi-codegen/echo-middleware"
 	"go.uber.org/zap"
 )
@@ -149,6 +150,9 @@ func main() {
 	// Hide application startup messages that don't play nicely with logger
 	echoApp.HideBanner = true
 	echoApp.HidePort = true
+
+	// Configure the max allowed body upload size
+	echoApp.Use(config.BodyLimit(os.Getenv("MAX_UPLOAD")))
 
 	// Turn on Echo's debugging features if we're set to debug (mostly more info in errors)
 	if debugging := logger.Check(zap.DebugLevel, "Enable debugging"); debugging != nil {
@@ -333,7 +337,8 @@ func configTemplateRoutes(echoApp *echo.Echo, renderer *TemplateRenderer) []Rout
 	// Have the templates renderer handle incoming index requests
 	echoApp.GET(templateRoutes[0].RoutePath, func(context echo.Context) error {
 		data := map[string]interface{}{
-			"Version": os.Getenv("VERSION"),
+			"Version":   os.Getenv("VERSION"),
+			"MaxUpload": os.Getenv("MAX_UPLOAD"),
 		}
 
 		return context.Render(http.StatusOK, templateRoutes[1].RoutePath, data)
