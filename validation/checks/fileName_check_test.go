@@ -18,7 +18,7 @@ func TestFileNameCheck(t *testing.T) {
 	// genericLocation provides a consistent location for the purposes of test comparison.
 	var genericLocation = csv.Location{RowIndex: 1, ColIndex: 0}
 
-	// Data variations to check the ObjType.Validate method against
+	// Data variations to check the ObjType.Validate method against.
 	tests := []struct {
 		name     string
 		location csv.Location
@@ -39,7 +39,7 @@ func TestFileNameCheck(t *testing.T) {
 		},
 	}
 
-	// Iterate over test cases; fail if there isn't an error when we expect one or if there is an unexpected error
+	// Iterate over test cases; fail if there isn't an error when we expect one or if there is an unexpected error.
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err = check.Validate("bucketeer", tt.location, tt.data)
