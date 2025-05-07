@@ -63,7 +63,7 @@ image:
   repository: uclalibrary/validation-service-kakadu
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.0.12"
+  tag: "0.0.13"
 podAnnotations: {}
 podSecurityContext: {}
 # fsGroup: 2000
@@ -132,6 +132,7 @@ ingress:
     nginx.ingress.kubernetes.io/enable-cors: "true"
     cert-manager.io/cluster-issuer: "sectigo-acme-clusterissuer"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 30m
   hosts:
     - host: validator.library.ucla.edu
       paths:
