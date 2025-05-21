@@ -48,6 +48,11 @@ func (check *ItemSeqCheck) Validate(profile string, location csv.Location, csvDa
 
 	value := csvData[location.RowIndex][location.ColIndex]
 
+	// value of "Item Sequence" is allowed to be null
+	if value == "" {
+		return nil
+	}
+
 	// check if it is a positive int
 	n, err := strconv.Atoi(value)
 	if err != nil {

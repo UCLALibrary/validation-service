@@ -1,4 +1,5 @@
 //go:build unit
+
 package checks
 
 import (
@@ -24,6 +25,12 @@ func TestValidateItemSeq(t *testing.T) {
 			name:        "valid pos int",
 			location:    csv.Location{RowIndex: 1, ColIndex: 0},
 			data:        [][]string{{"Item Sequence"}, {"5"}},
+			expectedErr: false,
+		},
+		{
+			name:        "valid null value",
+			location:    csv.Location{RowIndex: 1, ColIndex: 0},
+			data:        [][]string{{"Item Sequence"}, {""}},
 			expectedErr: false,
 		},
 		{
