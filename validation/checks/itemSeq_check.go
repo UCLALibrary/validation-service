@@ -41,13 +41,21 @@ func (check *ItemSeqCheck) Validate(profile string, location csv.Location, csvDa
 		return err
 	}
 
-	// Skip if we don't have an object type cell, or we're on the first (i.e., header) row
+	// Skip if we don't have an Item Sequence cell, or we're on the first (i.e., header) row
 	if header != "Item Sequence" || location.RowIndex == 0 {
 		return nil
 	}
 
 	value := csvData[location.RowIndex][location.ColIndex]
 
+	objType, _ := csv.GetRowValue("Object Type", location, csvData, profile)
+
+	// value of "Item Sequence" is allowed to be null only if the Object type is not page otherwise it must be a positive integer
+	if objType == "Page" && value == "" {
+		return csv.NewError(errors.PageMustBeIntErr, location, profile)
+	} else if value == "" {
+		return nil
+	}
 	// check if it is a positive int
 	n, err := strconv.Atoi(value)
 	if err != nil {

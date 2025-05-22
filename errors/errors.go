@@ -29,4 +29,5 @@ var (
 	NotAPosIntErr        = "the Item Sequence value is not a positive integer"
 	UnicodeErr           = "field contains unicode replacement char (�)"
 	DupeUnicodeErr       = "field duplicates earlier entry with unicode replacement chari (�)"
+	PageMustBeIntErr     = "if the 'Object Type' is 'Page' the 'Item Seuqence' must be a positive int"
 )
