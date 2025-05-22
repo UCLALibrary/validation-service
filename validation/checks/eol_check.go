@@ -7,6 +7,7 @@ import (
 	"github.com/UCLALibrary/validation-service/validation/csv"
 	"github.com/UCLALibrary/validation-service/validation/util"
 )
+
 // EOLCheck type is a validator that checks for the presence of stray new lines.
 //
 // It implements the Validator interface and returns an error on failure to validate.

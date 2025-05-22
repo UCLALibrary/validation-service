@@ -3,14 +3,12 @@ package checks
 
 import (
 	"slices"
-        "strings"
-
+	"strings"
 
 	"github.com/UCLALibrary/validation-service/errors"
 	"github.com/UCLALibrary/validation-service/validation/csv"
 	"github.com/UCLALibrary/validation-service/validation/util"
 )
-
 
 // UnicodeCheck checks for unicode replacement character (U+FFFD) in CSVs
 type UnicodeCheck struct {
@@ -25,7 +23,6 @@ func NewUnicodeCheck(profiles *util.Profiles) (*UnicodeCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}
-
 
 	return &UnicodeCheck{
 		profiles: profiles,
@@ -44,15 +41,14 @@ func (check *UnicodeCheck) Validate(profile string, location csv.Location, csvDa
 
 	value := csvData[location.RowIndex][location.ColIndex]
 
-        if slices.Contains(check.invalids, value) {
-                return csv.NewError(errors.DupeUnicodeErr, location, profile)
-        }
+	if slices.Contains(check.invalids, value) {
+		return csv.NewError(errors.DupeUnicodeErr, location, profile)
+	}
 
 	if strings.ContainsRune(value, 0xFFFD) {
-                check.invalids = append(check.invalids, value)
+		check.invalids = append(check.invalids, value)
 		return csv.NewError(errors.UnicodeErr, location, profile)
 	}
 
 	return nil
 }
-

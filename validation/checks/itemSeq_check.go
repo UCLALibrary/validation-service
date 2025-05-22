@@ -55,17 +55,16 @@ func (check *ItemSeqCheck) Validate(profile string, location csv.Location, csvDa
 		return csv.NewError(errors.PageMustBeIntErr, location, profile)
 	} else if value == "" {
 		return nil
-	} else {
-		// check if it is a positive int
-		n, err := strconv.Atoi(value)
-		if err != nil {
-			return csv.NewError(errors.NotAnIntErr, location, profile)
-		}
-
-		if n <= 0 {
-			return csv.NewError(errors.NotAPosIntErr, location, profile)
-		}
-
-		return nil
 	}
+	// check if it is a positive int
+	n, err := strconv.Atoi(value)
+	if err != nil {
+		return csv.NewError(errors.NotAnIntErr, location, profile)
+	}
+
+	if n <= 0 {
+		return csv.NewError(errors.NotAPosIntErr, location, profile)
+	}
+
+	return nil
 }

@@ -69,6 +69,12 @@ func TestValidateItemSeq(t *testing.T) {
 			data:        [][]string{{"Item Sequence", "Object Type"}, {"1a", "random"}},
 			expectedErr: true,
 		},
+		{
+			name:        "invalid non int",
+			location:    csv.Location{RowIndex: 1, ColIndex: 0},
+			data:        [][]string{{"Item Sequence", "Object Type"}, {"1a", "Page"}},
+			expectedErr: true,
+		},
 	}
 
 	// Iterate over test cases; fail if there isn't an error when we expect one or if there is an unexpected error
