@@ -31,4 +31,5 @@ var (
 	DupeUnicodeErr       = "field duplicates earlier entry with unicode replacement chari (�)"
 	MediaFieldErr        = "CSV is missing one or more media metadata columns"
 	MediaValueErr        = "CSV is missing value for media metadata"
+	PageMustBeIntErr     = "if the 'Object Type' is 'Page' the 'Item Seuqence' must be a positive int"
 )
