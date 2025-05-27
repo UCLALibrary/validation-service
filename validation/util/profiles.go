@@ -1,25 +1,5 @@
 package util
 
-// This file contains utilities for creating and working with validation profiles.
-//
-// Example usage:
-//
-//	profiles := NewProfiles()
-//	if profile, err := NewProfile("example", []string{"Validation1", "Validation2"}); err != nil {
-//		require.NoError(t, err)
-//	} else {
-//		err = profiles.SetProfile(profile)
-//		require.NoError(t, err)
-//
-//		fmt.Println(profiles.GetProfile("example").GetName())
-//	}
-//
-//	snapshot := profiles.Snapshot()
-//	if jsonData, err := json.Marshal(snapshot); err != nil {
-//		require.NoError(t, err)
-//	} else {
-//		fmt.Println(string(jsonData))
-//	}
 import (
 	"encoding/json"
 	"fmt"
