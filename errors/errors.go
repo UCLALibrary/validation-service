@@ -30,5 +30,13 @@ var (
 	UnicodeErr           = "field contains unicode replacement char (�)"
 	DupeUnicodeErr       = "field duplicates earlier entry with unicode replacement chari (�)"
 	AllMediaErr          = "CSV is missing all media metadata fields"
+	WidthMissingErr      = "media.width field is missing"
+	WidthEmptyErr        = "media.width field is empty"
+	HeightMissingErr     = "media.height field is nissing"
+	HeightEmptyErr       = "media.height field is empty"
+	DurationMissingErr   = "media.durationm field is missing"
+	DurationEmptyErr     = "media.durationm field is empty"
+	FormatMissingErr     = "media.format field is missing"
+	FormatEmptyErr       = "media.format field is empty"
 	PageMustBeIntErr     = "if the 'Object Type' is 'Page' the 'Item Seuqence' must be a positive int"
 )
