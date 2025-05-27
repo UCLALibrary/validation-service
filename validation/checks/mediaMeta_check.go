@@ -1,17 +1,23 @@
 package checks
 
 import (
+	"maps"
 	"slices"
 
 	"github.com/UCLALibrary/validation-service/errors"
 	"github.com/UCLALibrary/validation-service/validation/csv"
 	"github.com/UCLALibrary/validation-service/validation/util"
+
+	"go.uber.org/multierr"
 )
 
 // LicenseCheck validates the media.* fields for the Fester profile.
 type MediaMetaCheck struct {
 	profiles *util.Profiles
-	mediaIndexes []int
+	mediaCols map[string]int
+	mediaTypes []string
+	mediaFields []string
+	allFieldsFound bool
 }
 
 // NewLicenseCheck creates a new LicenseCheck instance, which validates the License field for a given profile.
@@ -24,7 +30,10 @@ func NewMediaMetaCheck(profiles *util.Profiles) (*MediaMetaCheck, error) {
 
 	return &MediaMetaCheck{
 		profiles: profiles,
-		mediaIndexes:   make([]int, 0),
+		mediaCols: make(map[string]int),
+		mediaTypes: []string{ "mov", "aud", "aum", "aun" },
+		mediaFields: []string{ "media.width", "media.height", "media.duration", "media.format" },
+		allFieldsFound: false,
 	}, nil
 }
 
@@ -34,7 +43,6 @@ func NewMediaMetaCheck(profiles *util.Profiles) (*MediaMetaCheck, error) {
 // It checks if the header is "License" and verifies if the value is a valid URL and accessible.
 // It returns an error if the License field is invalid or there are issues with the URL.
 func (check *MediaMetaCheck) Validate(profile string, location csv.Location, csvData [][]string) error {
-	var mediaTypes = []string{ "mov", "aud", "aum", "aun" }
 
 	// media metadata fields only relevant to Fester
 	if profile != "fester" {
@@ -58,14 +66,11 @@ func (check *MediaMetaCheck) Validate(profile string, location csv.Location, csv
 
 	value := csvData[location.RowIndex][location.ColIndex]
 
-	if slices.Contains(mediaTypes, value) {
-		if err := check.verifyColumns(profile, location, csvData); err != nil {
-			return err
-		}
-		for _, colIndex := range check.mediaIndexes {
-			if csvData[location.RowIndex][colIndex] == "" || len(csvData[location.RowIndex][colIndex]) == 0 {
-				//set error
-			}
+	if slices.Contains(check.mediaTypes, value) {
+		if !check.allFieldsFound {
+			if err := check.verifyColumns(profile, location, csvData); err != nil {
+				return err
+			}	
 		}
 	} else {
 		return nil
@@ -75,16 +80,22 @@ func (check *MediaMetaCheck) Validate(profile string, location csv.Location, csv
 }
 
 func (check *MediaMetaCheck) verifyColumns(profile string, location csv.Location, csvData [][]string) error {
-	var mediaFields = []string{ "media.width", "media.height", "media.duration", "media.format" }
-	var columnCount = 0
+	var errs error
 	for colIndex, field := range csvData[0] {
-		if slices.Contains(mediaFields, field) {
-			columnCount += 1
-			check.mediaIndexes = append(check.mediaIndexes, colIndex)
+		if slices.Contains(check.mediaFields, field) {
+			check.mediaCols[field] = colIndex
 		}
 	}
-	if columnCount < 4 {
-		return csv.NewError(errors.MediaFieldErr, location, profile)
+	if len(check.mediaCols) < 4 {
+		//compare keys to media fields, compose error for all missing fields
+		if len(check.mediaCols) == 0 {
+			return csv.NewError(errors.AllMediaErr, location, profile)
+		} else {
+			keys := maps.Keys(check.mediaCols)
+			for reqField := range check.mediaFields {
+				
+			}
+		}
 	}
 	return nil
 }
