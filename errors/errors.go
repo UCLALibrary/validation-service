@@ -30,6 +30,7 @@ var (
 	UnicodeErr           = "field contains unicode replacement char (�)"
 	DupeUnicodeErr       = "field duplicates earlier entry with unicode replacement chari (�)"
 	AllMediaErr          = "CSV is missing all media metadata fields"
+	SomeMediaErr         = "CSV is missing one or more media metatdata fields (listed previously in report)"
 	WidthMissingErr      = "media.width field is missing"
 	WidthEmptyErr        = "media.width field is empty"
 	HeightMissingErr     = "media.height field is nissing"

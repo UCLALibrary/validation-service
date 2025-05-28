@@ -18,6 +18,8 @@ type MediaMetaCheck struct {
 	mediaTypes []string
 	mediaFields []string
 	allFieldsFound bool
+	allFieldsMissing bool
+	someFieldsMissin bool
 }
 
 // NewLicenseCheck creates a new LicenseCheck instance, which validates the License field for a given profile.
@@ -34,6 +36,8 @@ func NewMediaMetaCheck(profiles *util.Profiles) (*MediaMetaCheck, error) {
 		mediaTypes: []string{ "mov", "aud", "aum", "aun" },
 		mediaFields: []string{ "media.width", "media.height", "media.duration", "media.format" },
 		allFieldsFound: false,
+		allFieldsMissing: false,
+		someFieldsMissin: false,
 	}, nil
 }
 
@@ -67,6 +71,12 @@ func (check *MediaMetaCheck) Validate(profile string, location csv.Location, csv
 	value := csvData[location.RowIndex][location.ColIndex]
 
 	if slices.Contains(check.mediaTypes, value) {
+		if check.allFieldsMissing {
+			return csv.NewError(errors.AllMediaErr, location, profile)
+		}
+		if check.someFieldsMissin {
+			return csv.NewError(errors.SomeMediaErr, location, profile)
+		}
 		if !check.allFieldsFound {
 			if err := check.verifyColumns(profile, location, csvData); err != nil {
 				return err
@@ -92,6 +102,7 @@ func (check *MediaMetaCheck) verifyColumns(profile string, location csv.Location
 	if len(check.mediaCols) < 4 {
 		//compare keys to media fields, compose error for all missing fields
 		if len(check.mediaCols) == 0 {
+			check.allFieldsMissing = true
 			return csv.NewError(errors.AllMediaErr, location, profile)
 		} else {
 			keys := slices.Sorted(maps.Keys(check.mediaCols))
@@ -109,6 +120,7 @@ func (check *MediaMetaCheck) verifyColumns(profile string, location csv.Location
 					}
 				}
 			}
+			check.someFieldsMissin = true
 			return errs
 		}
 	}
