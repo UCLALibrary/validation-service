@@ -58,7 +58,7 @@ readinessProbe:
   httpGet:
     path: /status
     port: http
-replicaCount: 1
+replicaCount: 2
 imagePullSecrets:
   - name: test-validator-dockerhub-secret
 image:
