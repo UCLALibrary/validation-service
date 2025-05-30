@@ -18,7 +18,8 @@ serviceAccount:
 #
 deployment:
   enabled: true
-  strategy: Recreate
+  strategy:
+    type: Recreate
 pv:
   enabled: true
   default:
