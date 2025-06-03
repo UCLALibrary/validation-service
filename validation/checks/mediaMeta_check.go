@@ -11,7 +11,7 @@ import (
 	"go.uber.org/multierr"
 )
 
-// LicenseCheck validates the media.* fields for the Fester profile.
+// MediaMetaCheck validates the media.* fields for the Fester profile.
 type MediaMetaCheck struct {
 	profiles *util.Profiles
 	mediaCols map[string]int
@@ -19,10 +19,10 @@ type MediaMetaCheck struct {
 	mediaFields []string
 	allFieldsFound bool
 	allFieldsMissing bool
-	someFieldsMissin bool
+	someFieldsMissing bool
 }
 
-// NewLicenseCheck creates a new LicenseCheck instance, which validates the License field for a given profile.
+// NewMediaMetaCheck creates a new MediaMetaCheck instance, which validates the media.* fields for the Fester profile.
 //
 // It returns an error if the profiles argument is nil.
 func NewMediaMetaCheck(profiles *util.Profiles) (*MediaMetaCheck, error) {
@@ -37,15 +37,17 @@ func NewMediaMetaCheck(profiles *util.Profiles) (*MediaMetaCheck, error) {
 		mediaFields: []string{ "media.width", "media.height", "media.duration", "media.format" },
 		allFieldsFound: false,
 		allFieldsMissing: false,
-		someFieldsMissin: false,
+		someFieldsMissing: false,
 	}, nil
 }
 
-// Validate checks if the License field in the CSV data is correctly formatted and points to a valid URL.
+// Validate checks if the media.* fields have been added to the CSV, and if they have been populated  for A/V media entries.
 //
-// If the profile is "bucketeer", the license check is skipped.
-// It checks if the header is "License" and verifies if the value is a valid URL and accessible.
-// It returns an error if the License field is invalid or there are issues with the URL.
+// If the profile is not "fester", the media metadata check is skipped.
+// It checks if the header is "Type.typeOfResource" and verifies if the value is a A/V media type.
+// Media types vocabulary: https://github.com/UCLALibrary/californica/blob/main/config/authorities/resource_types.yml
+// Media types examined by this check: moving image (mov). sound recording (aud), sound recording-musical (aum), sound recording-nonmusical (aun)
+// It returns an error if the media width/height/duration/format fields are missing or empty.
 func (check *MediaMetaCheck) Validate(profile string, location csv.Location, csvData [][]string) error {
 
 	// media metadata fields only relevant to Fester
@@ -57,7 +59,7 @@ func (check *MediaMetaCheck) Validate(profile string, location csv.Location, csv
 		return err
 	}
 
-	// find the header and determine if it matches an license header
+	// find the header and determine if it matches an Type.typeOfResource header
 	header, err := csv.GetHeader(location, csvData, profile)
 
 	if err != nil {
@@ -71,10 +73,12 @@ func (check *MediaMetaCheck) Validate(profile string, location csv.Location, csv
 	value := csvData[location.RowIndex][location.ColIndex]
 
 	if slices.Contains(check.mediaTypes, value) {
+		//don't scan CSV if already determined no media.* fields present
 		if check.allFieldsMissing {
 			return csv.NewError(errors.AllMediaErr, location, profile)
 		}
-		if check.someFieldsMissin {
+		//don't scan CSV if already determined some media.* fields missing
+		if check.someFieldsMissing {
 			return csv.NewError(errors.SomeMediaErr, location, profile)
 		}
 		if !check.allFieldsFound {
@@ -120,7 +124,7 @@ func (check *MediaMetaCheck) verifyColumns(profile string, location csv.Location
 					}
 				}
 			}
-			check.someFieldsMissin = true
+			check.someFieldsMissing = true
 			return errs
 		}
 	}
@@ -130,6 +134,7 @@ func (check *MediaMetaCheck) verifyColumns(profile string, location csv.Location
 
 func (check *MediaMetaCheck) verifyContent(profile string, location csv.Location, csvData [][]string) error {
 	var errs error 
+	//check media.* fields, compose error for all empty fields
 	for fieldName, colIndex := range check.mediaCols {
 		if csvData[location.RowIndex][colIndex] == "" || len(csvData[location.RowIndex][colIndex]) == 0 {
                 	switch fieldName {

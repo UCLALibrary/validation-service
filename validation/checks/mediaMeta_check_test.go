@@ -11,10 +11,8 @@ import (
 
 // TestVerifyMeta checks if MediaMetaCheck.Validate throws the correct errors when given missing media metadata
 func TestVerifyMeta(t *testing.T) {
-	check, err := NewMediaMetaCheck(util.NewProfiles())
-	assert.NoError(t, err)
 
-	// genericLocation provides a consistent location for the purposes of test comparison.
+	// startLocation provides a consistent location for the purposes of test comparison.
 	var startLocation = csv.Location{RowIndex: 1, ColIndex: 0}
 
 	tests := []struct {
@@ -70,7 +68,9 @@ func TestVerifyMeta(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := check.Validate(tt.profile, tt.location, tt.data)
+			check, err := NewMediaMetaCheck(util.NewProfiles())
+			assert.NoError(t, err)
+			err = check.Validate(tt.profile, tt.location, tt.data)
 			if (err != nil && tt.result) || (err == nil && !tt.result) {
 				t.Errorf("Expected '%v' response was not found: %v", tt.name, err)
 			}
