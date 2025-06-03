@@ -18,7 +18,7 @@
     "fester": {
       "name": "fester",
       "lastUpdate": "2025-01-10T15:30:00Z",
-      "validations": ["EOLCheck", "ARKCheck"]
+      "validations": ["EOLCheck", "ARKCheck", "MediaMetaCheck"]
     }
   },
   "lastUpdate": "2025-04-08T20:59:07Z"
