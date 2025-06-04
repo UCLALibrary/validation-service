@@ -1,5 +1,5 @@
-# Global Configuration
 #---------------------------------------------
+# Global Configuration
 #
 nameOverride: "test-validator"
 fullnameOverride: "test-validator"
@@ -18,8 +18,6 @@ serviceAccount:
 #
 deployment:
   enabled: true
-  strategy:
-    type: Recreate
 pv:
   enabled: true
   default:
@@ -65,7 +63,7 @@ image:
   repository: uclalibrary/validation-service-kakadu
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.0.14"
+  tag: "0.0.15"
 podAnnotations: {}
 podSecurityContext: {}
 # fsGroup: 2000
