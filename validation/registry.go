@@ -189,7 +189,7 @@ var constructors = map[string]constructor{
 		if len(args) > 0 {
 			// Check if the first argument is of the type *Profiles
 			if profiles, ok := args[0].(*util.Profiles); ok {
-				return checks.MediaMetaCheck(profiles)
+				return checks.NewMediaMetaCheck(profiles)
 			}
 
 			// MediaMetaCheck expects *Profiles to be passed to it
@@ -198,7 +198,7 @@ var constructors = map[string]constructor{
 
 		// Default instance if no arguments are passed
 		defaultProfiles := util.NewProfiles()
-		return checks.MediaMetaCheck(defaultProfiles)
+		return checks.NewMediaMetaCheck(defaultProfiles)
 	},
 }
 

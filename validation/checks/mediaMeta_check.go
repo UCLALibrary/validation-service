@@ -13,12 +13,12 @@ import (
 
 // MediaMetaCheck validates the media.* fields for the Fester profile.
 type MediaMetaCheck struct {
-	profiles *util.Profiles
-	mediaCols map[string]int
-	mediaTypes []string
-	mediaFields []string
-	allFieldsFound bool
-	allFieldsMissing bool
+	profiles          *util.Profiles
+	mediaCols         map[string]int
+	mediaTypes        []string
+	mediaFields       []string
+	allFieldsFound    bool
+	allFieldsMissing  bool
 	someFieldsMissing bool
 }
 
@@ -31,12 +31,12 @@ func NewMediaMetaCheck(profiles *util.Profiles) (*MediaMetaCheck, error) {
 	}
 
 	return &MediaMetaCheck{
-		profiles: profiles,
-		mediaCols: make(map[string]int),
-		mediaTypes: []string{ "mov", "aud", "aum", "aun" },
-		mediaFields: []string{ "media.width", "media.height", "media.duration", "media.format" },
-		allFieldsFound: false,
-		allFieldsMissing: false,
+		profiles:          profiles,
+		mediaCols:         make(map[string]int),
+		mediaTypes:        []string{"mov", "aud", "aum", "aun"},
+		mediaFields:       []string{"media.width", "media.height", "media.duration", "media.format"},
+		allFieldsFound:    false,
+		allFieldsMissing:  false,
 		someFieldsMissing: false,
 	}, nil
 }
@@ -84,7 +84,7 @@ func (check *MediaMetaCheck) Validate(profile string, location csv.Location, csv
 		if !check.allFieldsFound {
 			if err := check.verifyColumns(profile, location, csvData); err != nil {
 				return err
-			}	
+			}
 		}
 		if err := check.verifyContent(profile, location, csvData); err != nil {
 			return err
@@ -108,45 +108,44 @@ func (check *MediaMetaCheck) verifyColumns(profile string, location csv.Location
 		if len(check.mediaCols) == 0 {
 			check.allFieldsMissing = true
 			return csv.NewError(errors.AllMediaErr, location, profile)
-		} else {
-			keys := slices.Sorted(maps.Keys(check.mediaCols))
-			for _, reqField := range check.mediaFields {
-				if !slices.Contains(keys, reqField) {
-					switch reqField {
-						case "media.width":
-							errs = multierr.Combine(errs, csv.NewError(errors.WidthMissingErr, location, profile))
-						case "media.height":
-							errs = multierr.Combine(errs, csv.NewError(errors.HeightMissingErr, location, profile))
-						case "media.duration":
-							errs = multierr.Combine(errs, csv.NewError(errors.DurationMissingErr, location, profile))
-						case "media.format":
-							errs = multierr.Combine(errs, csv.NewError(errors.FormatMissingErr, location, profile))
-					}
+		}
+		keys := slices.Sorted(maps.Keys(check.mediaCols))
+		for _, reqField := range check.mediaFields {
+			if !slices.Contains(keys, reqField) {
+				switch reqField {
+				case "media.width":
+					errs = multierr.Combine(errs, csv.NewError(errors.WidthMissingErr, location, profile))
+				case "media.height":
+					errs = multierr.Combine(errs, csv.NewError(errors.HeightMissingErr, location, profile))
+				case "media.duration":
+					errs = multierr.Combine(errs, csv.NewError(errors.DurationMissingErr, location, profile))
+				case "media.format":
+					errs = multierr.Combine(errs, csv.NewError(errors.FormatMissingErr, location, profile))
 				}
 			}
-			check.someFieldsMissing = true
-			return errs
 		}
+		check.someFieldsMissing = true
+		return errs
 	}
 	check.allFieldsFound = true
 	return nil
 }
 
 func (check *MediaMetaCheck) verifyContent(profile string, location csv.Location, csvData [][]string) error {
-	var errs error 
+	var errs error
 	//check media.* fields, compose error for all empty fields
 	for fieldName, colIndex := range check.mediaCols {
 		if csvData[location.RowIndex][colIndex] == "" || len(csvData[location.RowIndex][colIndex]) == 0 {
-                	switch fieldName {
-                		case "media.width":
-                			errs = multierr.Combine(errs, csv.NewError(errors.WidthEmptyErr, location, profile))
-                		case "media.height":
-                			errs = multierr.Combine(errs, csv.NewError(errors.HeightEmptyErr, location, profile))
-                		case "media.duration":
-                			errs = multierr.Combine(errs, csv.NewError(errors.DurationEmptyErr, location, profile))
-                		case "media.format":
-                			errs = multierr.Combine(errs, csv.NewError(errors.FormatEmptyErr, location, profile))
-                	}
+			switch fieldName {
+			case "media.width":
+				errs = multierr.Combine(errs, csv.NewError(errors.WidthEmptyErr, location, profile))
+			case "media.height":
+				errs = multierr.Combine(errs, csv.NewError(errors.HeightEmptyErr, location, profile))
+			case "media.duration":
+				errs = multierr.Combine(errs, csv.NewError(errors.DurationEmptyErr, location, profile))
+			case "media.format":
+				errs = multierr.Combine(errs, csv.NewError(errors.FormatEmptyErr, location, profile))
+			}
 		}
 	}
 	return errs
