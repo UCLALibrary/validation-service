@@ -20,7 +20,7 @@ var profileFields = map[string]map[string]struct {
 	"default": {
 		"Item ARK":      {true, []string{}, []string{}},
 		"Parent ARK":    {true, []string{}, []string{"Collection"}},
-		"File Name":     {false, []string{}, []string{"Collection"}},
+		"File Name":     {false, []string{"Page"}, []string{}},
 		"Object Type":   {true, []string{}, []string{}},
 		"Item Sequence": {true, []string{"Page"}, []string{}},
 		"Visibility":    {true, []string{}, []string{}},
@@ -39,7 +39,7 @@ var profileFields = map[string]map[string]struct {
 	"fester": {
 		"Item ARK":      {true, []string{}, []string{}},
 		"Parent ARK":    {true, []string{}, []string{"Collection"}},
-		"File Name":     {false, []string{}, []string{"Collection"}},
+		"File Name":     {false, []string{"Page"}, []string{}},
 		"Object Type":   {true, []string{}, []string{}},
 		"Item Sequence": {true, []string{"Page"}, []string{}},
 		"Visibility":    {true, []string{}, []string{}},
