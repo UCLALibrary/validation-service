@@ -46,13 +46,13 @@ func TestReqFieldCheck_Validate(t *testing.T) {
 			result: true,
 		},
 		{
-			name:     "Successful File Name check allowing missing data", // Fails b/c 'Object Type' is 'Work'
+			name:     "Successful File Name check allowing missing data", // Fails b/c 'Object Type' is 'Page'
 			profile:  "fester",
 			location: csv.Location{RowIndex: 1, ColIndex: 2},
 			data: [][]string{
 				{"Item ARK", "Parent ARK", "File Name", "Object Type", "Item Sequence", "Visibility", "Title",
 					"media.width", "media.height", "media.duration", "media.format"},
-				{"PRESENT", "PRESENT", "", "Work", "PRESENT", "PRESENT", "PRESENT", "PRESENT", "PRESENT",
+				{"PRESENT", "PRESENT", "", "Page", "PRESENT", "PRESENT", "PRESENT", "PRESENT", "PRESENT",
 					"PRESENT", "PRESENT"}},
 			result: false,
 		},
