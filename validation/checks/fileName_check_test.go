@@ -5,14 +5,14 @@ package checks
 
 import (
 	"github.com/UCLALibrary/validation-service/validation/csv"
-	"github.com/UCLALibrary/validation-service/validation/util"
+	"github.com/UCLALibrary/validation-service/validation/profiles"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 // TestObjTypeCheck_Validate tests the Validate method on ObjTypeCheck.
 func TestFileNameCheck(t *testing.T) {
-	check, err := NewFileNameCheck(util.NewProfiles())
+	check, err := NewFileNameCheck(profiles.NewProfiles())
 	assert.NoError(t, err)
 
 	// genericLocation provides a consistent location for the purposes of test comparison.

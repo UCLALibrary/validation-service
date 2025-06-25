@@ -4,9 +4,10 @@ package checks
 import (
 	"regexp"
 
+	"github.com/UCLALibrary/validation-service/validation/profiles"
+
 	"github.com/UCLALibrary/validation-service/errors"
 	"github.com/UCLALibrary/validation-service/validation/csv"
-	"github.com/UCLALibrary/validation-service/validation/util"
 )
 
 // ObjTypeCheck validates the "Object Type" field in the provided CSV data.
@@ -14,13 +15,13 @@ import (
 // It checks whether the field contains a valid value (either "Collection", "Work", or "Page") and ensures there are no
 // whitespace characters in the value.
 type ObjTypeCheck struct {
-	profiles *util.Profiles
+	profiles *profiles.Profiles
 }
 
 // NewObjTypeCheck creates a new instance of ObjTypeCheck to validate the "Object Type" field for the provided profiles.
 //
 // It returns an error if the profiles argument is nil.
-func NewObjTypeCheck(profiles *util.Profiles) (*ObjTypeCheck, error) {
+func NewObjTypeCheck(profiles *profiles.Profiles) (*ObjTypeCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}

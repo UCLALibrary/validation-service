@@ -5,7 +5,7 @@ package checks
 
 import (
 	"github.com/UCLALibrary/validation-service/validation/csv"
-	"github.com/UCLALibrary/validation-service/validation/util"
+	"github.com/UCLALibrary/validation-service/validation/profiles"
 	"github.com/stretchr/testify/assert"
 	"slices"
 	"testing"
@@ -13,13 +13,13 @@ import (
 
 // TestUnicodeCheck checks if UnicodeCheck.Validate throws the correct errors when given text with the unicode replacement char
 func TestUnicodeCheck(t *testing.T) {
-	check, err := NewUnicodeCheck(util.NewProfiles())
+	check, err := NewUnicodeCheck(profiles.NewProfiles())
 	assert.NoError(t, err)
 
 	// genericLocation provides a consistent location for the purposes of test comparison.
 	var genericLocation = csv.Location{RowIndex: 0, ColIndex: 0}
 	// slices containing expected valid and invalid URLs after table tests run
-	var testInvalids = []string{ "AgglomeÌ�ration de Drummondville" }
+	var testInvalids = []string{"AgglomeÌ�ration de Drummondville"}
 
 	tests := []struct {
 		name     string
@@ -30,23 +30,23 @@ func TestUnicodeCheck(t *testing.T) {
 	}{
 		{
 			name:     "Valid text without replacement char",
-			profile:  "default",
+			profile:  "DLP Staff",
 			location: genericLocation,
-			data:     [][]string{{"Lorem ipsum"},{"dolor sit amet"}},
+			data:     [][]string{{"Lorem ipsum"}, {"dolor sit amet"}},
 			result:   true,
 		},
 		{
 			name:     "Invalid text with replacement char",
-			profile:  "default",
+			profile:  "DLP Staff",
 			location: genericLocation,
-			data:     [][]string{{"AgglomeÌ�ration de Drummondville"},{"dolor sit amet"}},
+			data:     [][]string{{"AgglomeÌ�ration de Drummondville"}, {"dolor sit amet"}},
 			result:   false,
 		},
 		{
 			name:     "Invalid duplicate text",
-			profile:  "default",
+			profile:  "DLP Staff",
 			location: genericLocation,
-			data:     [][]string{{"AgglomeÌ�ration de Drummondville"},{"dolor sit amet"}},
+			data:     [][]string{{"AgglomeÌ�ration de Drummondville"}, {"dolor sit amet"}},
 			result:   false,
 		},
 	}

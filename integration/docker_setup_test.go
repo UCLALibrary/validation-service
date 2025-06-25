@@ -27,6 +27,8 @@ var testServerURL string
 // A reference to our Docker container
 var container testcontainers.Container
 
+var hostDir = "/usr/local/data/testdata"
+
 // TestMain spins up a Docker container with our validation service to run tests against.
 func TestMain(m *testing.M) {
 	flag.Parse()
@@ -53,7 +55,7 @@ func TestMain(m *testing.M) {
 	buildArgs := map[string]*string{
 		"SERVICE_NAME": &utils.ServiceName,
 		"LOG_LEVEL":    &utils.LogLevel,
-		"HOST_DIR":     &utils.HostDir,
+		"HOST_DIR":     &hostDir,
 		"ARCH":         &utils.BuildArch,
 		"MAX_UPLOAD":   func() *string { s := "5M"; return &s }(),
 	}
@@ -78,6 +80,12 @@ func TestMain(m *testing.M) {
 			Consumers: []testcontainers.LogConsumer{&DockerLogConsumer{}},
 		},
 		Env: env,
+		Files: []testcontainers.ContainerFile{
+			{
+				HostFilePath:      utils.HostDir,
+				ContainerFilePath: hostDir,
+			},
+		},
 	}
 
 	// Start the container
@@ -102,7 +110,7 @@ func TestMain(m *testing.M) {
 		logger.Fatal("Failed to get container port", zap.Error(portErr))
 	}
 
-	// Store the connect information for reuse in tests
+	// Store the service's URL location for reuse in tests
 	testServerURL = fmt.Sprintf("http://%s:%d", host, port.Int()) + "%s"
 
 	// Run tests
@@ -140,7 +148,7 @@ func TestEnvironmentVariable(t *testing.T) {
 
 	value := strings.TrimSpace(stdout.String())
 	assert.Equalf(
-		t, utils.HostDir, value, "The expected HOST_DIR ENV property wasn't found. Expected: %q, Found: %q",
+		t, hostDir, value, "The expected HOST_DIR ENV property wasn't found. Expected: %q, Found: %q",
 		utils.HostDir, value,
 	)
 }

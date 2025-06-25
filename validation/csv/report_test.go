@@ -25,8 +25,8 @@ func TestNewReport(t *testing.T) {
 		{
 			name: "Multiple validation errors",
 			multiErr: multierr.Combine(
-				&Error{Message: "Invalid value", Location: Location{ColIndex: 1, RowIndex: 2}, Profile: "default"},
-				&Error{Message: "Missing field", Location: Location{ColIndex: 2, RowIndex: 2}, Profile: "default"},
+				&Error{Message: "Invalid value", Location: Location{ColIndex: 1, RowIndex: 2}, Profile: "DLP Staff"},
+				&Error{Message: "Missing field", Location: Location{ColIndex: 2, RowIndex: 2}, Profile: "DLP Staff"},
 			),
 			csvData: [][]string{
 				{"Header1", "Header2", "Header3"},
@@ -35,7 +35,7 @@ func TestNewReport(t *testing.T) {
 				{"Row3Col1", "Row3Col2", "Row3Col3"},
 			},
 			expected: &Report{
-				Profile: "default",
+				Profile: "DLP Staff",
 				Warnings: []Warning{
 					{
 						Message:  "Error: Invalid value",
@@ -111,7 +111,7 @@ func TestSerializeReport(t *testing.T) {
 	var deserialized Report
 
 	report := &Report{
-		Profile: "default",
+		Profile: "DLP Staff",
 		Time:    time.Now(),
 		Warnings: []Warning{
 			{Message: "Invalid value", ColIndex: 1, RowIndex: 2, Value: "Row2Col2"},

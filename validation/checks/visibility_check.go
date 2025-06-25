@@ -3,9 +3,10 @@ package checks
 import (
 	"regexp"
 
+	"github.com/UCLALibrary/validation-service/validation/profiles"
+
 	"github.com/UCLALibrary/validation-service/errors"
 	"github.com/UCLALibrary/validation-service/validation/csv"
-	"github.com/UCLALibrary/validation-service/validation/util"
 )
 
 // VisibilityCheck validates that a value in the "Visibility" field is valid.
@@ -16,7 +17,7 @@ type VisibilityCheck struct{}
 // NewVisibilityCheck creates a new instance of VisibilityCheck.
 //
 // Returns an error if the provided profiles argument is nil.
-func NewVisibilityCheck(profiles *util.Profiles) (*VisibilityCheck, error) {
+func NewVisibilityCheck(profiles *profiles.Profiles) (*VisibilityCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}

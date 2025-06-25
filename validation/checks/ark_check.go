@@ -5,10 +5,10 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/UCLALibrary/validation-service/validation/profiles"
+
 	"github.com/UCLALibrary/validation-service/errors"
 	"github.com/UCLALibrary/validation-service/validation/csv"
-	"github.com/UCLALibrary/validation-service/validation/util"
-
 	"go.uber.org/multierr"
 )
 
@@ -20,19 +20,19 @@ const ParentARK = "Parent ARK"
 
 // The naanProfiles mapping gives us a way to look up valid NAANs for a profile.
 var naanProfiles = map[string]map[string]struct{}{
-	"default": {
+	"DLP Staff": {
 		"21198": {},
 		"13030": {},
 	},
-	"test": {
+	"Test": {
 		"21198": {},
 		"13030": {},
 	},
-	"bucketeer": {
+	"Bucketeer": {
 		"21198": {},
 		"13030": {},
 	},
-	"fester": {
+	"Fester": {
 		"21198": {},
 		"13030": {},
 	},
@@ -42,13 +42,13 @@ var naanProfiles = map[string]map[string]struct{}{
 //
 // It implements the Validator interface and returns an error on failure to validate.
 type ARKCheck struct {
-	profiles *util.Profiles
+	profiles *profiles.Profiles
 }
 
 // NewARKCheck returns a new ARKCheck, which validates that an ARK identifier is properly formatted.
 //
 // It returns an error if the provided profiles argument is nil.
-func NewARKCheck(profiles *util.Profiles) (*ARKCheck, error) {
+func NewARKCheck(profiles *profiles.Profiles) (*ARKCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}

@@ -1,4 +1,5 @@
 //go:build integration
+
 package integration
 
 import (
@@ -27,14 +28,14 @@ func TestUploadCSV(t *testing.T) {
 			csvFilePath:    "../testdata/cct-works-simple.csv",
 			expectedStatus: http.StatusCreated,
 			// expectedRegex handles JSON with or without line feeds and indentation
-			expectedRegex: `\{\s*"profile"\s*:\s*"test"\s*,\s*"time"\s*:\s*".*?"\s*,\s*"warnings"\s*:\s*\[\s*\]\s*\}`,
+			expectedRegex: `\{\s*"profile"\s*:\s*"DLP Staff"\s*,\s*"time"\s*:\s*".*?"\s*,\s*"warnings"\s*:\s*\[\s*\]\s*\}`,
 		},
 		{
 			name:           "Upload failure CSV",
 			csvFilePath:    "../testdata/upload-failures.csv",
 			expectedStatus: http.StatusCreated,
 			// expectedRegex handles JSON with or without line feeds and indentation
-			expectedRegex: `\{\s*"profile"\s*:\s*"test"\s*,\s*"time"\s*:\s*".*?"\s*,\s*"warnings"\s*:\s*\[\s*\{\s*[\s\S]*?\s*\}\s*\]\s*\}`,
+			expectedRegex: `\{\s*"profile"\s*:\s*"DLP Staff"\s*,\s*"time"\s*:\s*".*?"\s*,\s*"warnings"\s*:\s*\[\s*\{\s*[\s\S]*?\s*\}\s*\]\s*\}`,
 		},
 	}
 
@@ -64,7 +65,7 @@ func TestUploadCSV(t *testing.T) {
 			}
 
 			// Add the 'profile' field
-			_ = writer.WriteField("profile", "test")
+			_ = writer.WriteField("profile", "DLP Staff")
 
 			// Close the multipart writer
 			if err := writer.Close(); err != nil {

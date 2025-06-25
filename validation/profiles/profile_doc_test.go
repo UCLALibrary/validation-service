@@ -1,4 +1,4 @@
-package util
+package profiles
 
 import (
 	"encoding/json"
@@ -8,7 +8,10 @@ import (
 func ExampleProfiles() {
 	profiles := NewProfiles()
 
-	profile, err := NewProfile("example", []string{"Validation1", "Validation2"})
+	profile, err := NewProfile("example", []Validation{
+		{"Validation1", "Validation 1 description"},
+		{"Validation2", "Validation 2 description"},
+	})
 	if err != nil {
 		panic(err)
 	}
@@ -21,10 +24,11 @@ func ExampleProfiles() {
 	fmt.Println(profiles.GetProfile("example").GetName())
 
 	// Print the snapshot JSON
-	snapshot := profiles.Snapshot()
-	jsonData, err := json.Marshal(snapshot)
+	snapshot := profiles.snapshot()
+	bytes, err := json.Marshal(snapshot)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(string(jsonData))
+
+	fmt.Println(string(bytes))
 }

@@ -98,8 +98,8 @@ ENV LD_LIBRARY_PATH="/usr/local/lib"
 # Create a non-root user
 RUN addgroup -S "${SERVICE_NAME}" && adduser -S "${SERVICE_NAME}" -G "${SERVICE_NAME}"
 
-# Create some required directory structures
-RUN mkdir -p "${DATA_DIR}/testdata" "${DATA_DIR}/html/assets"
+# Create required directory structures
+RUN mkdir -p "${DATA_DIR}/html/assets"
 
 # Copy the templates directory into our container
 COPY "html/" "${DATA_DIR}/html/"

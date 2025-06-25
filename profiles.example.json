@@ -1,25 +1,38 @@
 {
   "profiles": {
     "default": {
-      "name": "default",
-      "lastUpdate": "2025-01-01T12:00:00Z",
-      "validations": ["EOLCheck", "ARKCheck", "LicenseCheck", "ReqFieldCheck", "FilePathCheck", "ObjectTypeCheck", "ItemSeqCheck", "VisibilityCheck", "UnicodeCheck", "FileNameCheck"]
-    },
-    "test": {
-      "name": "test",
-      "lastUpdate": "2025-01-10T15:30:00Z",
-      "validations": ["EOLCheck", "ARKCheck"]
+      "name": "DLP Staff",
+      "lastUpdate": "2025-05-06T20:59:07Z",
+      "validations": [
+        { "name": "EOLCheck", "description": "Confirms there are no stray EOL characters in a data cell" },
+        { "name": "ARKCheck", "description": "Confirms an ARK is valid and okay for UCLA use" },
+        { "name": "LicenseCheck", "description": "Confirms a license is one of those prescribed by the IIIF specs" },
+        { "name": "ReqFieldCheck", "description": "Confirms fields which are required are present in the CSV" },
+        { "name": "FilePathCheck", "description": "Confirms a file exists at the file path found in the data" },
+        { "name": "ObjectTypeCheck", "description": "Confirms 'Object Type' is either Collection, Work, or Page" },
+        { "name": "ItemSeqCheck", "description": "Confirms 'Item Sequence' only has positive integers for values" },
+        { "name": "VisibilityCheck", "description": "Confirms the Visibility field only contains an allowed value" },
+        { "name": "UnicodeCheck", "description": "Confirms there are no characters outside the UTF-8 character set" },
+        { "name": "FileNameCheck", "description": "Confirms there are no whitespaces in the 'File Name' data cell"}
+      ]
     },
     "bucketeer": {
-      "name": "bucketeer",
+      "name": "Bucketeer",
       "lastUpdate": "2025-01-01T12:00:00Z",
-      "validations": ["EOLCheck", "ARKCheck"]
+      "validations": [
+        { "name": "EOLCheck", "description": "Confirms there are no EOL characters in a CSV file" },
+        { "name": "ARKCheck", "description": "Confirms an ARK is valid and okay for UCLA use" }
+      ]
     },
     "fester": {
-      "name": "fester",
+      "name": "Fester",
       "lastUpdate": "2025-01-10T15:30:00Z",
-      "validations": ["EOLCheck", "ARKCheck", "MediaMetaCheck"]
+      "validations": [
+        { "name": "EOLCheck", "description": "Confirms there are no EOL characters in a CSV file" },
+        { "name": "ARKCheck", "description": "Confirms an ARK is valid and okay for UCLA use" },
+        { "name": "MediaMetaCheck", "description":  "Confirms required media metadata fields exist" }
+      ]
     }
   },
-  "lastUpdate": "2025-04-08T20:59:07Z"
+  "lastUpdate": "2025-05-06T20:59:07Z"
 }

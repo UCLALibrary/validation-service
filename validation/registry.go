@@ -3,7 +3,7 @@ package validation
 import (
 	"fmt"
 
-	"github.com/UCLALibrary/validation-service/validation/util"
+	"github.com/UCLALibrary/validation-service/validation/profiles"
 
 	"github.com/UCLALibrary/validation-service/validation/checks"
 	"go.uber.org/zap"
@@ -11,7 +11,7 @@ import (
 
 // Registry keeps a collection of registered validators.
 type Registry struct {
-	profiles *util.Profiles
+	profiles *profiles.Profiles
 	logger   *zap.Logger
 }
 
@@ -33,7 +33,7 @@ var constructors = map[string]constructor{
 	"EOLCheck": func(args ...interface{}) (Validator, error) {
 		if len(args) > 0 {
 			// Check if the first argument is of the type *Profiles
-			if profiles, ok := args[0].(*util.Profiles); ok {
+			if profiles, ok := args[0].(*profiles.Profiles); ok {
 				return checks.NewEOLCheck(profiles)
 			}
 
@@ -42,13 +42,13 @@ var constructors = map[string]constructor{
 		}
 
 		// Default instance if no arguments are passed
-		defaultProfiles := util.NewProfiles() // Assume a default constructor exists
+		defaultProfiles := profiles.NewProfiles() // Assume a default constructor exists
 		return checks.NewEOLCheck(defaultProfiles)
 	},
 	"ARKCheck": func(args ...interface{}) (Validator, error) {
 		if len(args) > 0 {
 			// Check if the first argument is of the type *Profiles
-			if profiles, ok := args[0].(*util.Profiles); ok {
+			if profiles, ok := args[0].(*profiles.Profiles); ok {
 				return checks.NewARKCheck(profiles)
 			}
 
@@ -57,13 +57,13 @@ var constructors = map[string]constructor{
 		}
 
 		// Default instance if no arguments are passed
-		defaultProfiles := util.NewProfiles() // Assume a default constructor exists
+		defaultProfiles := profiles.NewProfiles() // Assume a default constructor exists
 		return checks.NewEOLCheck(defaultProfiles)
 	},
 	"LicenseCheck": func(args ...interface{}) (Validator, error) {
 		if len(args) > 0 {
 			// Check if the first argument is of the type *Profiles
-			if profiles, ok := args[0].(*util.Profiles); ok {
+			if profiles, ok := args[0].(*profiles.Profiles); ok {
 				return checks.NewLicenseCheck(profiles)
 			}
 
@@ -72,33 +72,32 @@ var constructors = map[string]constructor{
 		}
 
 		// Default instance if no arguments are passed
-		defaultProfiles := util.NewProfiles() // Assume a default constructor exists
+		defaultProfiles := profiles.NewProfiles() // Assume a default constructor exists
 		return checks.NewLicenseCheck(defaultProfiles)
 	},
 	"ReqFieldCheck": func(args ...interface{}) (Validator, error) {
 		if len(args) > 0 {
-			var profiles *util.Profiles
 			var logger *zap.Logger
-			var ok bool
 
 			// Check if the first argument is of the type *Profiles
-			if profiles, ok = args[0].(*util.Profiles); !ok {
-				return nil, fmt.Errorf("invalid argument: expected *util.Profiles, found: %T", args[0])
+			profile, ok := args[0].(*profiles.Profiles)
+			if !ok {
+				return nil, fmt.Errorf("invalid argument: expected *profiles.Profiles, found: %T", args[0])
 			}
 
 			if logger, ok = args[1].(*zap.Logger); !ok {
 				return nil, fmt.Errorf("invalid argument: expected *zap.Logger, found: %T", args[1])
 			}
 
-			return checks.NewReqFieldCheck(profiles, logger)
+			return checks.NewReqFieldCheck(profile, logger)
 		}
 
-		return nil, fmt.Errorf("invalid argument: expected *util.Profiles and *zap.Logger; neither were found")
+		return nil, fmt.Errorf("invalid argument: expected *profiles.Profiles and *zap.Logger; neither were found")
 	},
 	"FilePathCheck": func(args ...interface{}) (Validator, error) {
 		if len(args) > 0 {
 			// Check if the first argument is of the type *Profiles
-			if profiles, ok := args[0].(*util.Profiles); ok {
+			if profiles, ok := args[0].(*profiles.Profiles); ok {
 				return checks.NewFilePathCheck(profiles)
 			}
 
@@ -107,13 +106,13 @@ var constructors = map[string]constructor{
 		}
 
 		// Default instance if no arguments are passed
-		defaultProfiles := util.NewProfiles()
+		defaultProfiles := profiles.NewProfiles()
 		return checks.NewFilePathCheck(defaultProfiles)
 	},
 	"ObjectTypeCheck": func(args ...interface{}) (Validator, error) {
 		if len(args) > 0 {
 			// Check if the first argument is of the type *Profiles
-			if profiles, ok := args[0].(*util.Profiles); ok {
+			if profiles, ok := args[0].(*profiles.Profiles); ok {
 				return checks.NewObjTypeCheck(profiles)
 			}
 
@@ -122,13 +121,13 @@ var constructors = map[string]constructor{
 		}
 
 		// Default instance if no arguments are passed
-		defaultProfiles := util.NewProfiles()
+		defaultProfiles := profiles.NewProfiles()
 		return checks.NewObjTypeCheck(defaultProfiles)
 	},
 	"ItemSeqCheck": func(args ...interface{}) (Validator, error) {
 		if len(args) > 0 {
 			// Check if the first argument is of the type *Profiles
-			if profiles, ok := args[0].(*util.Profiles); ok {
+			if profiles, ok := args[0].(*profiles.Profiles); ok {
 				return checks.NewItemSeqCheck(profiles)
 			}
 
@@ -137,13 +136,13 @@ var constructors = map[string]constructor{
 		}
 
 		// Default instance if no arguments are passed
-		defaultProfiles := util.NewProfiles()
+		defaultProfiles := profiles.NewProfiles()
 		return checks.NewItemSeqCheck(defaultProfiles)
 	},
 	"VisibilityCheck": func(args ...interface{}) (Validator, error) {
 		if len(args) > 0 {
 			// Check if the first argument is of the type *Profiles
-			if profiles, ok := args[0].(*util.Profiles); ok {
+			if profiles, ok := args[0].(*profiles.Profiles); ok {
 				return checks.NewVisibilityCheck(profiles)
 			}
 
@@ -152,13 +151,13 @@ var constructors = map[string]constructor{
 		}
 
 		// Default instance if no arguments are passed
-		defaultProfiles := util.NewProfiles()
+		defaultProfiles := profiles.NewProfiles()
 		return checks.NewVisibilityCheck(defaultProfiles)
 	},
 	"UnicodeCheck": func(args ...interface{}) (Validator, error) {
 		if len(args) > 0 {
 			// Check if the first argument is of the type *Profiles
-			if profiles, ok := args[0].(*util.Profiles); ok {
+			if profiles, ok := args[0].(*profiles.Profiles); ok {
 				return checks.NewUnicodeCheck(profiles)
 			}
 
@@ -167,13 +166,13 @@ var constructors = map[string]constructor{
 		}
 
 		// Default instance if no arguments are passed
-		defaultProfiles := util.NewProfiles()
+		defaultProfiles := profiles.NewProfiles()
 		return checks.NewUnicodeCheck(defaultProfiles)
 	},
 	"FileNameCheck": func(args ...interface{}) (Validator, error) {
 		if len(args) > 0 {
 			// Check if the first argument is of the type *Profiles
-			if profiles, ok := args[0].(*util.Profiles); ok {
+			if profiles, ok := args[0].(*profiles.Profiles); ok {
 				return checks.NewFileNameCheck(profiles)
 			}
 
@@ -182,13 +181,13 @@ var constructors = map[string]constructor{
 		}
 
 		// Default instance if no arguments are passed
-		defaultProfiles := util.NewProfiles()
+		defaultProfiles := profiles.NewProfiles()
 		return checks.NewFileNameCheck(defaultProfiles)
 	},
 	"MediaMetaCheck": func(args ...interface{}) (Validator, error) {
 		if len(args) > 0 {
 			// Check if the first argument is of the type *Profiles
-			if profiles, ok := args[0].(*util.Profiles); ok {
+			if profiles, ok := args[0].(*profiles.Profiles); ok {
 				return checks.NewMediaMetaCheck(profiles)
 			}
 
@@ -197,13 +196,13 @@ var constructors = map[string]constructor{
 		}
 
 		// Default instance if no arguments are passed
-		defaultProfiles := util.NewProfiles()
+		defaultProfiles := profiles.NewProfiles()
 		return checks.NewMediaMetaCheck(defaultProfiles)
 	},
 }
 
 // NewRegistry creates a new registry of validators
-func NewRegistry(profiles *util.Profiles, logger *zap.Logger) (*Registry, error) {
+func NewRegistry(profiles *profiles.Profiles, logger *zap.Logger) (*Registry, error) {
 	if profiles == nil {
 		return nil, fmt.Errorf("supplied Profiles cannot be nil")
 	}

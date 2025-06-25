@@ -1,4 +1,5 @@
 //go:build unit
+
 package csv
 
 import (
@@ -13,7 +14,7 @@ func TestNewError_NoParent(t *testing.T) {
 	var valErr *Error
 
 	location := Location{RowIndex: 5, ColIndex: 10}
-	err := NewError("Invalid value", location, "default")
+	err := NewError("Invalid value", location, "DLP Staff")
 
 	// Ensure the error is of type *validation.Error
 	assert.ErrorAs(t, err, &valErr)
@@ -22,11 +23,11 @@ func TestNewError_NoParent(t *testing.T) {
 	assert.Equal(t, "Invalid value", valErr.Message)
 	assert.Equal(t, 5, valErr.Location.RowIndex)
 	assert.Equal(t, 10, valErr.Location.ColIndex)
-	assert.Equal(t, "default", valErr.Profile)
+	assert.Equal(t, "DLP Staff", valErr.Profile)
 	assert.Nil(t, valErr.ParentErr)
 
 	// Check the error string format
-	expectedMsg := "Error: Invalid value (Row: 5, Col: 10) [profile: default]"
+	expectedMsg := "Error: Invalid value (Row: 5, Col: 10) [profile: DLP Staff]"
 	assert.Equal(t, expectedMsg, valErr.Error())
 }
 
@@ -36,7 +37,7 @@ func TestNewError_WithParent(t *testing.T) {
 
 	location := Location{RowIndex: 3, ColIndex: 7}
 	parentErr := errors.New("underlying parse error")
-	err := NewError("Invalid syntax", location, "default", parentErr)
+	err := NewError("Invalid syntax", location, "DLP Staff", parentErr)
 
 	// Ensure the error is of type *validation.Error
 	assert.ErrorAs(t, err, &valErr)
@@ -45,11 +46,11 @@ func TestNewError_WithParent(t *testing.T) {
 	assert.Equal(t, "Invalid syntax", valErr.Message)
 	assert.Equal(t, 3, valErr.Location.RowIndex)
 	assert.Equal(t, 7, valErr.Location.ColIndex)
-	assert.Equal(t, "default", valErr.Profile)
+	assert.Equal(t, "DLP Staff", valErr.Profile)
 	assert.Equal(t, parentErr, valErr.ParentErr)
 
 	// Check the error string format
-	expected := fmt.Sprintf("Error: Invalid syntax (Row: 3, Col: 7) [profile: default] Cause: %s", parentErr.Error())
+	expected := fmt.Sprintf("Error: Invalid syntax (Row: 3, Col: 7) [profile: DLP Staff] Cause: %s", parentErr.Error())
 	assert.Equal(t, expected, valErr.Error())
 }
 
@@ -59,12 +60,12 @@ func TestError_Unwrap(t *testing.T) {
 
 	location := Location{RowIndex: 2, ColIndex: 4}
 	parentErr := errors.New("file read error")
-	err := NewError("Missing delimiter", location, "default", parentErr)
+	err := NewError("Missing delimiter", location, "DLP Staff", parentErr)
 
-	// Ensure errors.Is works correctly
+	// Ensure errors.Is() works correctly
 	assert.True(t, errors.Is(err, parentErr))
 
-	// Ensure errors.As works correctly
+	// Ensure errors.As() works correctly
 	assert.ErrorAs(t, err, &valErr)
 	assert.Equal(t, parentErr, valErr.ParentErr)
 }
@@ -83,17 +84,17 @@ func TestError_ErrorFormatting(t *testing.T) {
 			name:        "No parent error",
 			message:     "Invalid header",
 			location:    Location{RowIndex: 1, ColIndex: 2},
-			profile:     "default",
+			profile:     "DLP Staff",
 			parentErr:   nil,
-			expectedStr: "Error: Invalid header (Row: 1, Col: 2) [profile: default]",
+			expectedStr: "Error: Invalid header (Row: 1, Col: 2) [profile: DLP Staff]",
 		},
 		{
 			name:        "With parent error",
 			message:     "Incorrect format",
 			location:    Location{RowIndex: 4, ColIndex: 8},
-			profile:     "default",
+			profile:     "DLP Staff",
 			parentErr:   errors.New("unexpected EOF"),
-			expectedStr: "Error: Incorrect format (Row: 4, Col: 8) [profile: default] Cause: unexpected EOF",
+			expectedStr: "Error: Incorrect format (Row: 4, Col: 8) [profile: DLP Staff] Cause: unexpected EOF",
 		},
 	}
 
@@ -123,7 +124,7 @@ func TestError_StringFormatting(t *testing.T) {
 			name:        "No parent error",
 			message:     "Invalid header",
 			location:    Location{RowIndex: 1, ColIndex: 2},
-			profile:     "default",
+			profile:     "DLP Staff",
 			parentErr:   nil,
 			expectedStr: "Error: Invalid header",
 		},
@@ -131,7 +132,7 @@ func TestError_StringFormatting(t *testing.T) {
 			name:        "With parent error",
 			message:     "Incorrect format",
 			location:    Location{RowIndex: 4, ColIndex: 8},
-			profile:     "default",
+			profile:     "DLP Staff",
 			parentErr:   errors.New("unexpected EOF"),
 			expectedStr: "Error: Incorrect format \nCause: unexpected EOF",
 		},
@@ -162,12 +163,12 @@ func TestError_Is(t *testing.T) {
 			err1: &Error{
 				Message:  "Invalid format",
 				Location: Location{RowIndex: 1, ColIndex: 2},
-				Profile:  "default",
+				Profile:  "DLP Staff",
 			},
 			err2: &Error{
 				Message:  "Invalid format",
 				Location: Location{RowIndex: 1, ColIndex: 2},
-				Profile:  "default",
+				Profile:  "DLP Staff",
 			},
 			expected: true,
 		},
@@ -176,12 +177,12 @@ func TestError_Is(t *testing.T) {
 			err1: &Error{
 				Message:  "Invalid format",
 				Location: Location{RowIndex: 1, ColIndex: 2},
-				Profile:  "default",
+				Profile:  "DLP Staff",
 			},
 			err2: &Error{
 				Message:  "Wrong data type",
 				Location: Location{RowIndex: 1, ColIndex: 2},
-				Profile:  "default",
+				Profile:  "DLP Staff",
 			},
 			expected: false,
 		},
@@ -190,12 +191,12 @@ func TestError_Is(t *testing.T) {
 			err1: &Error{
 				Message:  "Invalid format",
 				Location: Location{RowIndex: 1, ColIndex: 2},
-				Profile:  "default",
+				Profile:  "DLP Staff",
 			},
 			err2: &Error{
 				Message:  "Invalid format",
 				Location: Location{RowIndex: 3, ColIndex: 4},
-				Profile:  "default",
+				Profile:  "DLP Staff",
 			},
 			expected: false,
 		},
@@ -204,7 +205,7 @@ func TestError_Is(t *testing.T) {
 			err1: &Error{
 				Message:  "Invalid format",
 				Location: Location{RowIndex: 1, ColIndex: 2},
-				Profile:  "default",
+				Profile:  "DLP Staff",
 			},
 			err2: &Error{
 				Message:  "Invalid format",
@@ -218,7 +219,7 @@ func TestError_Is(t *testing.T) {
 			err1: &Error{
 				Message:  "Invalid format",
 				Location: Location{RowIndex: 1, ColIndex: 2},
-				Profile:  "default",
+				Profile:  "DLP Staff",
 			},
 			err2:     errors.New("random error"),
 			expected: false,
@@ -228,7 +229,7 @@ func TestError_Is(t *testing.T) {
 			err1: &Error{
 				Message:  "Invalid format",
 				Location: Location{RowIndex: 1, ColIndex: 2},
-				Profile:  "default",
+				Profile:  "DLP Staff",
 			},
 			err2:     nil,
 			expected: false,

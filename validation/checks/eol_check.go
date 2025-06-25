@@ -3,22 +3,23 @@ package checks
 import (
 	"strings"
 
+	"github.com/UCLALibrary/validation-service/validation/profiles"
+
 	"github.com/UCLALibrary/validation-service/errors"
 	"github.com/UCLALibrary/validation-service/validation/csv"
-	"github.com/UCLALibrary/validation-service/validation/util"
 )
 
 // EOLCheck type is a validator that checks for the presence of stray new lines.
 //
 // It implements the Validator interface and returns an error on failure to validate.
 type EOLCheck struct {
-	profiles *util.Profiles
+	profiles *profiles.Profiles
 }
 
 // NewEOLCheck returns a new EOLCheck, which validates that no cell in the CSV data contains end-of-line.
 //
 // It returns an error if the provided profiles argument is nil.
-func NewEOLCheck(profiles *util.Profiles) (*EOLCheck, error) {
+func NewEOLCheck(profiles *profiles.Profiles) (*EOLCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}

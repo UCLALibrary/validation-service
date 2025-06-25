@@ -5,9 +5,12 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/UCLALibrary/validation-service/validation/util"
+
+	"github.com/UCLALibrary/validation-service/validation/profiles"
+
 	"github.com/UCLALibrary/validation-service/errors"
 	"github.com/UCLALibrary/validation-service/validation/csv"
-	"github.com/UCLALibrary/validation-service/validation/util"
 	"go.uber.org/multierr"
 	"go.uber.org/zap"
 )
@@ -17,7 +20,7 @@ var profileFields = map[string]map[string]struct {
 	objTypes    []string // Data cell must be present for these 'Object Types'
 	notObjTypes []string // Data cell must be present for all but these 'Object Types'
 }{
-	"default": {
+	"DLP Staff": {
 		"Item ARK":      {true, []string{}, []string{}},
 		"Parent ARK":    {true, []string{}, []string{"Collection"}},
 		"File Name":     {false, []string{"Page"}, []string{}},
@@ -27,16 +30,16 @@ var profileFields = map[string]map[string]struct {
 		"Title":         {true, []string{}, []string{}},
 		"Summary":       {true, []string{"Collection"}, []string{}},
 	},
-	"test": {
+	"Test": {
 		"Item ARK":   {true, []string{}, []string{}},
 		"Visibility": {true, []string{}, []string{}},
 	},
-	"bucketeer": {
+	"Bucketeer": {
 		"Item ARK":   {true, []string{}, []string{}},
 		"File Name":  {true, []string{}, []string{}},
 		"Visibility": {true, []string{}, []string{}},
 	},
-	"fester": {
+	"Fester": {
 		"Item ARK":      {true, []string{}, []string{}},
 		"Parent ARK":    {true, []string{}, []string{"Collection"}},
 		"File Name":     {false, []string{"Page"}, []string{}},
@@ -58,14 +61,14 @@ type condition struct {
 //
 // It implements the Validator interface and returns an error on failure to validate.
 type ReqFieldCheck struct {
-	profiles *util.Profiles
+	profiles *profiles.Profiles
 	logger   *zap.Logger
 }
 
 // NewReqFieldCheck returns a new ReqFieldCheck, which validates that all required fields are present for a given profile.
 //
 // It returns an error if the provided profiles argument is nil. The logger is used to record validation details.
-func NewReqFieldCheck(profiles *util.Profiles, logger *zap.Logger) (*ReqFieldCheck, error) {
+func NewReqFieldCheck(profiles *profiles.Profiles, logger *zap.Logger) (*ReqFieldCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}
@@ -76,7 +79,7 @@ func NewReqFieldCheck(profiles *util.Profiles, logger *zap.Logger) (*ReqFieldChe
 	}, nil
 }
 
-// Validate checks the headers row to confirm that all the required fields for a profile are present.
+// Validate checks the header row to confirm that all the required fields for a profile are present.
 func (check *ReqFieldCheck) Validate(profile string, location csv.Location, csvData [][]string) error {
 	var multiErr error
 

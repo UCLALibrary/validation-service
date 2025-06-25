@@ -4,7 +4,7 @@ package checks
 
 import (
 	"github.com/UCLALibrary/validation-service/validation/csv"
-	"github.com/UCLALibrary/validation-service/validation/util"
+	"github.com/UCLALibrary/validation-service/validation/profiles"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -26,49 +26,49 @@ func TestVerifyMeta(t *testing.T) {
 			name:     "Non-Fester profile, skips cell evaluation",
 			profile:  "bucketeer",
 			location: startLocation,
-			data:     [][]string{{"Type.typeOfResource"},{"car"}},
+			data:     [][]string{{"Type.typeOfResource"}, {"car"}},
 			result:   true,
 		},
 		{
 			name:     "Fester profile, non-media resource type",
 			profile:  "fester",
 			location: startLocation,
-			data:     [][]string{{"Type.typeOfResource"},{"img"}},
+			data:     [][]string{{"Type.typeOfResource"}, {"img"}},
 			result:   true,
 		},
 		{
 			name:     "Fester profile, media resource, all metadata fields",
 			profile:  "fester",
 			location: startLocation,
-			data:     [][]string{{"Type.typeOfResource", "media.width", "media.height", "media.duration", "media.format"},{"mov", "5", "7", "10", "mov"}},
+			data:     [][]string{{"Type.typeOfResource", "media.width", "media.height", "media.duration", "media.format"}, {"mov", "5", "7", "10", "mov"}},
 			result:   true,
 		},
 		{
 			name:     "Fester profile, media resource, empty fields",
 			profile:  "fester",
 			location: startLocation,
-			data:     [][]string{{"Type.typeOfResource", "media.width", "media.height", "media.duration", "media.format"},{"mov", "5", "", "", "mov"}},
+			data:     [][]string{{"Type.typeOfResource", "media.width", "media.height", "media.duration", "media.format"}, {"mov", "5", "", "", "mov"}},
 			result:   false,
 		},
 		{
 			name:     "Fester profile, media resource, missing some metadat columns",
 			profile:  "fester",
 			location: startLocation,
-			data:     [][]string{{"Type.typeOfResource", "media.width", "media.height"},{"mov", "5", "7"}},
+			data:     [][]string{{"Type.typeOfResource", "media.width", "media.height"}, {"mov", "5", "7"}},
 			result:   false,
 		},
 		{
 			name:     "Fester profile, media resource, missing all metadata columns",
 			profile:  "fester",
 			location: startLocation,
-			data:     [][]string{{"Type.typeOfResource"},{"mov"}},
+			data:     [][]string{{"Type.typeOfResource"}, {"mov"}},
 			result:   false,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			check, err := NewMediaMetaCheck(util.NewProfiles())
+			check, err := NewMediaMetaCheck(profiles.NewProfiles())
 			assert.NoError(t, err)
 			err = check.Validate(tt.profile, tt.location, tt.data)
 			if (err != nil && tt.result) || (err == nil && !tt.result) {
