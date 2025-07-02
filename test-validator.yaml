@@ -65,7 +65,7 @@ image:
   repository: uclalibrary/validation-service-kakadu
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.0.17"
+  tag: "0.1.0"
 podAnnotations: {}
 podSecurityContext: {}
 # fsGroup: 2000
