@@ -3,8 +3,8 @@
 package checks
 
 import (
+	"github.com/UCLALibrary/validation-service/validation/config"
 	"github.com/UCLALibrary/validation-service/validation/csv"
-	"github.com/UCLALibrary/validation-service/validation/profiles"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -68,7 +68,7 @@ func TestVerifyMeta(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			check, err := NewMediaMetaCheck(profiles.NewProfiles())
+			check, err := NewMediaMetaCheck(config.NewProfiles())
 			assert.NoError(t, err)
 			err = check.Validate(tt.profile, tt.location, tt.data)
 			if (err != nil && tt.result) || (err == nil && !tt.result) {

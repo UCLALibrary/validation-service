@@ -1,6 +1,6 @@
 //go:build unit
 
-package profiles
+package config
 
 import (
 	"flag"

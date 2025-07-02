@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	profiles2 "github.com/UCLALibrary/validation-service/validation/profiles"
+	"github.com/UCLALibrary/validation-service/validation/config"
 
 	"github.com/UCLALibrary/validation-service/validation/csv"
 	"go.uber.org/multierr"
@@ -17,7 +17,7 @@ import (
 type Engine struct {
 	logger   *zap.Logger
 	registry *Registry
-	profiles *profiles2.Profiles
+	profiles *config.Profiles
 }
 
 // NewEngine creates a new validation engine.
@@ -46,7 +46,7 @@ func NewEngine(suppliedLogger ...*zap.Logger) (*Engine, error) {
 	}()
 
 	// Create a new Profiles instance and load its persisted data from disk
-	profiles := profiles2.NewProfiles()
+	profiles := config.NewProfiles()
 	if err = profiles.Refresh(); err != nil {
 		return nil, fmt.Errorf("failed to refresh profiles: %w", err)
 	}

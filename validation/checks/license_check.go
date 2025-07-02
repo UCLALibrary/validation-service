@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"slices"
 
-	"github.com/UCLALibrary/validation-service/validation/profiles"
+	"github.com/UCLALibrary/validation-service/validation/config"
 
 	"github.com/UCLALibrary/validation-service/errors"
 	"github.com/UCLALibrary/validation-service/validation/csv"
@@ -14,7 +14,7 @@ import (
 
 // LicenseCheck validates the License field for a given profile.
 type LicenseCheck struct {
-	profiles *profiles.Profiles
+	profiles *config.Profiles
 	valids   []string
 	invalids []string
 }
@@ -22,7 +22,7 @@ type LicenseCheck struct {
 // NewLicenseCheck creates a new LicenseCheck instance, which validates the License field for a given profile.
 //
 // It returns an error if the profiles argument is nil.
-func NewLicenseCheck(profiles *profiles.Profiles) (*LicenseCheck, error) {
+func NewLicenseCheck(profiles *config.Profiles) (*LicenseCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}

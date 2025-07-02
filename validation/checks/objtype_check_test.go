@@ -4,15 +4,15 @@
 package checks
 
 import (
+	"github.com/UCLALibrary/validation-service/validation/config"
 	"github.com/UCLALibrary/validation-service/validation/csv"
-	"github.com/UCLALibrary/validation-service/validation/profiles"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 // TestObjTypeCheck_Validate tests the Validate method on ObjTypeCheck.
 func TestObjTypeCheck_Validate(t *testing.T) {
-	check, err := NewObjTypeCheck(profiles.NewProfiles())
+	check, err := NewObjTypeCheck(config.NewProfiles())
 	assert.NoError(t, err)
 
 	// Data variations to check the ObjType.Validate method against

@@ -3,7 +3,7 @@
 package checks
 
 import (
-	"github.com/UCLALibrary/validation-service/validation/profiles"
+	"github.com/UCLALibrary/validation-service/validation/config"
 	"testing"
 
 	"github.com/UCLALibrary/validation-service/validation/csv"
@@ -12,7 +12,7 @@ import (
 
 // TestValidateItemSeq tests the Validate method on ObjTypeCheck.
 func TestValidateItemSeq(t *testing.T) {
-	check, err := NewItemSeqCheck(profiles.NewProfiles())
+	check, err := NewItemSeqCheck(config.NewProfiles())
 	assert.NoError(t, err)
 
 	tests := []struct {

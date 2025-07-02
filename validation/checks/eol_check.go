@@ -3,7 +3,7 @@ package checks
 import (
 	"strings"
 
-	"github.com/UCLALibrary/validation-service/validation/profiles"
+	"github.com/UCLALibrary/validation-service/validation/config"
 
 	"github.com/UCLALibrary/validation-service/errors"
 	"github.com/UCLALibrary/validation-service/validation/csv"
@@ -13,13 +13,13 @@ import (
 //
 // It implements the Validator interface and returns an error on failure to validate.
 type EOLCheck struct {
-	profiles *profiles.Profiles
+	profiles *config.Profiles
 }
 
 // NewEOLCheck returns a new EOLCheck, which validates that no cell in the CSV data contains end-of-line.
 //
 // It returns an error if the provided profiles argument is nil.
-func NewEOLCheck(profiles *profiles.Profiles) (*EOLCheck, error) {
+func NewEOLCheck(profiles *config.Profiles) (*EOLCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}

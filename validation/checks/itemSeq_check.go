@@ -3,7 +3,7 @@ package checks
 import (
 	"strconv"
 
-	"github.com/UCLALibrary/validation-service/validation/profiles"
+	"github.com/UCLALibrary/validation-service/validation/config"
 
 	"github.com/UCLALibrary/validation-service/errors"
 	"github.com/UCLALibrary/validation-service/validation/csv"
@@ -13,11 +13,11 @@ import (
 //
 // It implements the Validator interface and returns an error on failure to validate.
 type ItemSeqCheck struct {
-	profiles *profiles.Profiles
+	profiles *config.Profiles
 }
 
 // NewItemSeqCheck checks that all values in Item Sequence are positive integers.
-func NewItemSeqCheck(profiles *profiles.Profiles) (*ItemSeqCheck, error) {
+func NewItemSeqCheck(profiles *config.Profiles) (*ItemSeqCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}

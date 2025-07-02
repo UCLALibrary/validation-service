@@ -3,7 +3,7 @@
 package checks
 
 import (
-	"github.com/UCLALibrary/validation-service/validation/profiles"
+	"github.com/UCLALibrary/validation-service/validation/config"
 	"testing"
 
 	"github.com/UCLALibrary/validation-service/errors"
@@ -17,7 +17,7 @@ var testLocation = csv.Location{}
 
 // TestVerifyARK checks if verifyARK throws the correct errors when given incorrect ARKs
 func TestVerifyARK(t *testing.T) {
-	check, err := NewARKCheck(profiles.NewProfiles())
+	check, err := NewARKCheck(config.NewProfiles())
 	assert.NoError(t, err)
 
 	tests := []struct {

@@ -3,7 +3,7 @@ package checks
 import (
 	"regexp"
 
-	"github.com/UCLALibrary/validation-service/validation/profiles"
+	"github.com/UCLALibrary/validation-service/validation/config"
 
 	"github.com/UCLALibrary/validation-service/errors"
 	"github.com/UCLALibrary/validation-service/validation/csv"
@@ -17,7 +17,7 @@ type VisibilityCheck struct{}
 // NewVisibilityCheck creates a new instance of VisibilityCheck.
 //
 // Returns an error if the provided profiles argument is nil.
-func NewVisibilityCheck(profiles *profiles.Profiles) (*VisibilityCheck, error) {
+func NewVisibilityCheck(profiles *config.Profiles) (*VisibilityCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}

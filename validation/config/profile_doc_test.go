@@ -1,4 +1,4 @@
-package profiles
+package config
 
 import (
 	"encoding/json"

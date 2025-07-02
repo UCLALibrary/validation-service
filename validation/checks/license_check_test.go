@@ -3,8 +3,8 @@
 package checks
 
 import (
+	"github.com/UCLALibrary/validation-service/validation/config"
 	"github.com/UCLALibrary/validation-service/validation/csv"
-	"github.com/UCLALibrary/validation-service/validation/profiles"
 	"github.com/stretchr/testify/assert"
 	"slices"
 	"testing"
@@ -12,7 +12,7 @@ import (
 
 // TestVerifyLicense checks if verifyLicense throws the correct errors when given incorrect licenses
 func TestVerifyLicense(t *testing.T) {
-	check, err := NewLicenseCheck(profiles.NewProfiles())
+	check, err := NewLicenseCheck(config.NewProfiles())
 	assert.NoError(t, err)
 
 	// genericLocation provides a consistent location for the purposes of test comparison.

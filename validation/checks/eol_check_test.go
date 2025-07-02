@@ -3,7 +3,7 @@
 package checks
 
 import (
-	"github.com/UCLALibrary/validation-service/validation/profiles"
+	"github.com/UCLALibrary/validation-service/validation/config"
 	"testing"
 
 	"github.com/UCLALibrary/validation-service/validation/csv"
@@ -12,7 +12,7 @@ import (
 
 // TestEOLCheck_Validate tests the Validate method on EOLCheck.
 func TestEOLCheck_Validate(t *testing.T) {
-	check, err := NewEOLCheck(profiles.NewProfiles())
+	check, err := NewEOLCheck(config.NewProfiles())
 	assert.NoError(t, err)
 
 	// Data variations to check the EOLCheck.Validate method against

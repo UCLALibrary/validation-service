@@ -4,8 +4,8 @@
 package checks
 
 import (
+	"github.com/UCLALibrary/validation-service/validation/config"
 	"github.com/UCLALibrary/validation-service/validation/csv"
-	"github.com/UCLALibrary/validation-service/validation/profiles"
 	"github.com/stretchr/testify/assert"
 	"slices"
 	"testing"
@@ -13,7 +13,7 @@ import (
 
 // TestUnicodeCheck checks if UnicodeCheck.Validate throws the correct errors when given text with the unicode replacement char
 func TestUnicodeCheck(t *testing.T) {
-	check, err := NewUnicodeCheck(profiles.NewProfiles())
+	check, err := NewUnicodeCheck(config.NewProfiles())
 	assert.NoError(t, err)
 
 	// genericLocation provides a consistent location for the purposes of test comparison.

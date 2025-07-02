@@ -1,4 +1,4 @@
-package profiles
+package config
 
 import (
 	"encoding/json"
@@ -130,6 +130,24 @@ func (profiles *Profiles) Refresh() error {
 	profiles.lastUpdate = refreshedProfiles.LastUpdate
 
 	return nil
+}
+
+// String returns a string representation of the Profiles instance.
+func (profiles *Profiles) String() (string, error) {
+	// Lock the Profiles struct for thread-safe access
+	profiles.mutex.RLock()
+	defer profiles.mutex.RUnlock()
+
+	// Take a snapshot of the current profiles for serialization
+	snapshot := profiles.snapshot()
+
+	// Serialize the snapshot to JSON
+	jsonData, jsonErr := json.MarshalIndent(snapshot, "", "  ")
+	if jsonErr != nil {
+		return "", fmt.Errorf("failed to serialize profiles to JSON: %w", jsonErr)
+	}
+
+	return string(jsonData), nil
 }
 
 // Save the Profiles to a pre-configured JSON file path location.

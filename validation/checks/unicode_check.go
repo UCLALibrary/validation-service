@@ -5,7 +5,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/UCLALibrary/validation-service/validation/profiles"
+	"github.com/UCLALibrary/validation-service/validation/config"
 
 	"github.com/UCLALibrary/validation-service/errors"
 	"github.com/UCLALibrary/validation-service/validation/csv"
@@ -13,14 +13,14 @@ import (
 
 // UnicodeCheck checks for unicode replacement character (U+FFFD) in CSVs
 type UnicodeCheck struct {
-	profiles *profiles.Profiles
+	profiles *config.Profiles
 	invalids []string
 }
 
 // NewUnicodeCheck creates a new UnicodeCheck instance, which checks for U+FFFD char in entries
 //
 // It returns an error if the profiles argument is nil.
-func NewUnicodeCheck(profiles *profiles.Profiles) (*UnicodeCheck, error) {
+func NewUnicodeCheck(profiles *config.Profiles) (*UnicodeCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}

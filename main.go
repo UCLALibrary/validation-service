@@ -14,6 +14,7 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"html/template"
@@ -26,12 +27,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/UCLALibrary/validation-service/api"
 	"github.com/UCLALibrary/validation-service/validation"
+
+	"github.com/UCLALibrary/validation-service/api"
+	"github.com/UCLALibrary/validation-service/validation/config"
 	"github.com/UCLALibrary/validation-service/validation/csv"
 	"github.com/UCLALibrary/validation-service/validation/util"
 	"github.com/labstack/echo/v4"
-	config "github.com/labstack/echo/v4/middleware"
+	accept "github.com/labstack/echo/v4/middleware"
 	middleware "github.com/oapi-codegen/echo-middleware"
 	"go.uber.org/zap"
 )
@@ -132,7 +135,7 @@ func (service *Service) UploadCSV(context echo.Context) error {
 	return context.JSON(http.StatusCreated, report)
 }
 
-// Main function starts our Echo server
+// The main function starts our Echo server.
 func main() {
 	// Create a new validation engine for our service to use
 	engine, err := validation.NewEngine()
@@ -152,7 +155,7 @@ func main() {
 	echoApp.HidePort = true
 
 	// Configure the max allowed body upload size
-	echoApp.Use(config.BodyLimit(os.Getenv("MAX_UPLOAD")))
+	echoApp.Use(accept.BodyLimit(os.Getenv("MAX_UPLOAD")))
 
 	// Turn on Echo's debugging features if we're set to debug (mostly more info in errors)
 	if debugging := logger.Check(zap.DebugLevel, "Enable debugging"); debugging != nil {
@@ -336,9 +339,25 @@ func configTemplateRoutes(echoApp *echo.Echo, renderer *TemplateRenderer) []Rout
 
 	// Have the templates renderer handle incoming index requests
 	echoApp.GET(templateRoutes[0].RoutePath, func(context echo.Context) error {
+		// Starting with just a one-time, non-refreshing serialization of Profiles
+		profiles := config.NewProfiles()
+		if configErr := profiles.Refresh(); configErr != nil {
+			return fmt.Errorf("failed to deserialize JSON to Profiles: %w", configErr)
+		}
+		serializedProfiles, profilesErr := profiles.String()
+		if profilesErr != nil {
+			return fmt.Errorf("failed to serialize Profiles to JSON: %w", profilesErr)
+		}
+
+		var profilesMap map[string]interface{}
+		if err := json.Unmarshal([]byte(serializedProfiles), &profilesMap); err != nil {
+			return fmt.Errorf("failed to deserialize JSON to a map: %w", err)
+		}
+
 		data := map[string]interface{}{
 			"Version":   os.Getenv("VERSION"),
 			"MaxUpload": os.Getenv("MAX_UPLOAD"),
+			"Profiles":  profilesMap["profiles"],
 		}
 
 		return context.Render(http.StatusOK, templateRoutes[1].RoutePath, data)
@@ -379,7 +398,7 @@ func trailingSlashMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(context echo.Context) error {
 		path := context.Request().URL.Path
 
-		// Strip trailing slashes if found in path
+		// Strip trailing slashes if found in `path`
 		if path != "/" && path[len(path)-1] == '/' {
 			context.Request().URL.Path = path[:len(path)-1]
 		}

@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/UCLALibrary/validation-service/validation/profiles"
+	"github.com/UCLALibrary/validation-service/validation/config"
 
 	"github.com/UCLALibrary/validation-service/errors"
 	"github.com/UCLALibrary/validation-service/validation/csv"
@@ -42,13 +42,13 @@ var naanProfiles = map[string]map[string]struct{}{
 //
 // It implements the Validator interface and returns an error on failure to validate.
 type ARKCheck struct {
-	profiles *profiles.Profiles
+	profiles *config.Profiles
 }
 
 // NewARKCheck returns a new ARKCheck, which validates that an ARK identifier is properly formatted.
 //
 // It returns an error if the provided profiles argument is nil.
-func NewARKCheck(profiles *profiles.Profiles) (*ARKCheck, error) {
+func NewARKCheck(profiles *config.Profiles) (*ARKCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}
@@ -77,7 +77,7 @@ func (check *ARKCheck) Validate(profile string, location csv.Location, csvData [
 
 	value := strings.TrimSpace(csvData[location.RowIndex][location.ColIndex])
 	if value == "" {
-		return nil // We let the ReqFieldCheck check for presence and just validate ARKs here
+		return nil // We let the ReqFieldCheck check for presence and validate ARKs here
 	}
 
 	// Check if the CSV data cell has a valid ARK

@@ -4,7 +4,7 @@ import (
 	"maps"
 	"slices"
 
-	"github.com/UCLALibrary/validation-service/validation/profiles"
+	"github.com/UCLALibrary/validation-service/validation/config"
 
 	"github.com/UCLALibrary/validation-service/errors"
 	"github.com/UCLALibrary/validation-service/validation/csv"
@@ -13,7 +13,7 @@ import (
 
 // MediaMetaCheck validates the media.* fields for the Fester profile.
 type MediaMetaCheck struct {
-	profiles          *profiles.Profiles
+	profiles          *config.Profiles
 	mediaCols         map[string]int
 	mediaTypes        []string
 	mediaFields       []string
@@ -25,7 +25,7 @@ type MediaMetaCheck struct {
 // NewMediaMetaCheck creates a new MediaMetaCheck instance, which validates the media.* fields for the Fester profile.
 //
 // It returns an error if the profiles argument is nil.
-func NewMediaMetaCheck(profiles *profiles.Profiles) (*MediaMetaCheck, error) {
+func NewMediaMetaCheck(profiles *config.Profiles) (*MediaMetaCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}

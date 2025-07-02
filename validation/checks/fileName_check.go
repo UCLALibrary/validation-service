@@ -3,7 +3,7 @@ package checks
 import (
 	"regexp"
 
-	"github.com/UCLALibrary/validation-service/validation/profiles"
+	"github.com/UCLALibrary/validation-service/validation/config"
 
 	"github.com/UCLALibrary/validation-service/errors"
 	"github.com/UCLALibrary/validation-service/validation/csv"
@@ -11,13 +11,13 @@ import (
 
 // FileNameCheck validates the License field for a given profile.
 type FileNameCheck struct {
-	profiles *profiles.Profiles
+	profiles *config.Profiles
 }
 
 // NewFileNameCheck creates a new FileNameCheck instance, which checks File Name entries for whitespace.
 //
 // It returns an error if the `profiles` argument is nil.
-func NewFileNameCheck(profiles *profiles.Profiles) (*FileNameCheck, error) {
+func NewFileNameCheck(profiles *config.Profiles) (*FileNameCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}

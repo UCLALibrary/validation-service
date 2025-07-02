@@ -4,15 +4,15 @@
 package checks
 
 import (
+	"github.com/UCLALibrary/validation-service/validation/config"
 	"github.com/UCLALibrary/validation-service/validation/csv"
-	"github.com/UCLALibrary/validation-service/validation/profiles"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 // TestObjTypeCheck_Validate tests the Validate method on ObjTypeCheck.
 func TestVisibilityCheck_Validate(t *testing.T) {
-	check, err := NewVisibilityCheck(profiles.NewProfiles())
+	check, err := NewVisibilityCheck(config.NewProfiles())
 	assert.NoError(t, err)
 
 	// Data variations to check the VisibilityCheck.Validate method against

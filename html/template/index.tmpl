@@ -21,7 +21,8 @@
             <div class="navbar-menu">
                 <div class="navbar-end">
                     <a class="navbar-item nav-link" onclick="showContent('csv-upload')">CSV Upload</a>
-                    <a class="navbar-item nav-link" onclick="showContent('api-docs')">API Documentation</a>
+                    <a class="navbar-item nav-link" onclick="showContent('profile-docs')">Profile Docs</a>
+                    <a class="navbar-item nav-link" onclick="showContent('api-docs')">OpenAPI Docs</a>
                 </div>
             </div>
         </div>
@@ -83,42 +84,81 @@
                     <div class="column">
                         <div class="box">
                             <h2 class="title is-5">Introduction</h2>
-                            <div class="content mb-4">This validator ensures that uploaded CSV files are free of issues
+                            <div class="content mb-3">This validator ensures that uploaded CSV files are free of issues
                                 that could disrupt their processing in our workflow services. Currently, it operates as
                                 a standalone service, but future integrations will enable automatic validation within
                                 our other services.
                             </div>
-                            <div class="content mb-4">To use the validator, upload a CSV file, such as those in the <a
+                            <div class="content mb-3">To use the validator, upload a CSV file, such as those in the <a
                                 href="https://github.com/uclalibrary/eureka" class="has-text-link">Eureka</a> GitHub
                                 repository. This service checks both data and metadata for compliance with standards
                                 (e.g., <a href="https://iiif.io/api/presentation/3.0/" class="has-text-link">IIIF
-                                Presentation</a>), even if the issues wouldn't affect our services. As a result, some
-                                CSVs that were previously accepted may be flagged as problematic.
+                                Presentation</a>), even if the issues do not affect the successful processing by our
+                                services. As a result, some CSVs that were previously accepted may be flagged as
+                                problematic.
                             </div>
-                            <h2 class="title is-5">Instructions</h2>
-                            <div class="content mb-4">
+                            <h2 class="title is-5 mt-5">Instructions</h2>
+                            <div class="content mb-3">
                                 <ul>
                                     <li>Click the "Choose File" button and navigate to the file on your file system
                                     </li>
                                     <li>Select one of the following validation profile names:
                                         <ul class=".list-unstyled">
-                                            <li>Default</li>
-                                            <li>Bucketeer</li>
+                                            <li>DLP Staff</li>
                                             <li>Fester</li>
+                                            <li>Bucketeer</li>
                                         </ul>
                                     </li>
                                     <li>Submit the form</li>
                                 </ul>
-                                <div class="content mb-4"> On submission, you should receive a validation report
+                                <div class="content mb-3"> On submission, you should receive a validation report
                                     detailing any necessary fixes for your CSV file.
                                 </div>
+                            </div>
+                            <h2 class="title is-5 mt-5">Validation Options</h2>
+                            <div class="content mb-3">
+                                To see more details about the validation profiles that are available, please view the
+                                <a href="#" onclick="showContent('profile-docs')">profile documentation</a> page.
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div id="api-docs" class="content-section" style="display: none;">
+                <h1 class="title is-3">API Endpoints</h1>
                 <redoc spec-url="openapi.yml"></redoc>
+            </div>
+            <div id="profile-docs" class="content-section" style="display: none;">
+                <h1 class="title is-3">Profile Configuration</h1>
+                <div>Validation Service profiles define which validations are applied to a given CSV. Different
+                workflows have different requirements, so profiles let us specify what “valid” means for each
+                processing context. When uploading a CSV through the Validation Service Web UI, users should select
+                the appropriate profile from the <a href="#" onclick="showContent('csv-upload')">CSV Upload</a> form's
+                validation profile dropdown.</div>
+                <h1 class="title is-3 mt-6">Profiles</h1>
+                <ul class="ml-4">
+                    {{range $key, $profile := .Profiles}}
+                        <li class="ml-4 my-2">
+                            <div class="title is-4 mb-2">&quot;{{index $profile "name"}}&quot;</div>
+                            <table class="table is-bordered is-striped is-hoverable is-size-6 mt-2 mb-6">
+                                <thead class="has-background-light">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {{range $_, $value := index $profile "validations"}}
+                                        <tr>
+                                            <td>{{index $value "name"}}</td>
+                                            <td>{{index $value "description"}}</td>
+                                        </tr>
+                                    {{end}}
+                                </tbody>
+                            </table>
+                        </li>
+                    {{end}}
+                </ul>
             </div>
         </div>
     </section>
