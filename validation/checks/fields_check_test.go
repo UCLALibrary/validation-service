@@ -3,8 +3,8 @@
 package checks
 
 import (
+	"github.com/UCLALibrary/validation-service/validation/config"
 	"github.com/UCLALibrary/validation-service/validation/csv"
-	"github.com/UCLALibrary/validation-service/validation/util"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap/zaptest"
 	"testing"
@@ -12,7 +12,7 @@ import (
 
 // TestReqFieldCheck_Validate tests the Validate method on EOLCheck.
 func TestReqFieldCheck_Validate(t *testing.T) {
-	check, err := NewReqFieldCheck(util.NewProfiles(), zaptest.NewLogger(t))
+	check, err := NewReqFieldCheck(config.NewProfiles(), zaptest.NewLogger(t))
 	assert.NoError(t, err)
 
 	// Data variations to check the EOLCheck.Validate method against
@@ -25,7 +25,7 @@ func TestReqFieldCheck_Validate(t *testing.T) {
 	}{
 		{
 			name:     "Successful Item ARK check", // Succeeds b/c Item ARK has a value (validity checked elsewhere)
-			profile:  "default",
+			profile:  "DLP Staff",
 			location: csv.Location{RowIndex: 1, ColIndex: 0},
 			data: [][]string{
 				{"Item ARK", "Parent ARK", "File Name", "Object Type", "Item Sequence", "Visibility", "Title",
@@ -36,7 +36,7 @@ func TestReqFieldCheck_Validate(t *testing.T) {
 		},
 		{
 			name:     "Successful File Name check allowing missing data", // Succeeds b/c 'Object Type' is 'Collection'
-			profile:  "fester",
+			profile:  "Fester",
 			location: csv.Location{RowIndex: 1, ColIndex: 2},
 			data: [][]string{
 				{"Item ARK", "Parent ARK", "File Name", "Object Type", "Item Sequence", "Visibility", "Title",
@@ -47,7 +47,7 @@ func TestReqFieldCheck_Validate(t *testing.T) {
 		},
 		{
 			name:     "Successful File Name check allowing missing data", // Fails b/c 'Object Type' is 'Page'
-			profile:  "fester",
+			profile:  "Fester",
 			location: csv.Location{RowIndex: 1, ColIndex: 2},
 			data: [][]string{
 				{"Item ARK", "Parent ARK", "File Name", "Object Type", "Item Sequence", "Visibility", "Title",
@@ -58,7 +58,7 @@ func TestReqFieldCheck_Validate(t *testing.T) {
 		},
 		{
 			name:     "Missing required File Name field errors", // Error because Fester always requires 'File Name'
-			profile:  "fester",
+			profile:  "Fester",
 			location: csv.Location{RowIndex: 0, ColIndex: 0},
 			data: [][]string{
 				{"Item ARK", "Parent ARK", "Object Type", "Item Sequence", "Visibility", "Title",
@@ -69,7 +69,7 @@ func TestReqFieldCheck_Validate(t *testing.T) {
 		},
 		{
 			name:     "Required missing Summary data error", // Error because 'Object Type' is 'Collection'
-			profile:  "fester",
+			profile:  "Fester",
 			location: csv.Location{RowIndex: 1, ColIndex: 10},
 			data: [][]string{
 				{"Item ARK", "Parent ARK", "Object Type", "Item Sequence", "Visibility", "Title",
@@ -80,7 +80,7 @@ func TestReqFieldCheck_Validate(t *testing.T) {
 		},
 		{
 			name:     "Successful required Summary data check", // No error because 'Object Type' is 'Work'
-			profile:  "fester",
+			profile:  "Fester",
 			location: csv.Location{RowIndex: 1, ColIndex: 10},
 			data: [][]string{
 				{"Item ARK", "Parent ARK", "Object Type", "Item Sequence", "Visibility", "Title",

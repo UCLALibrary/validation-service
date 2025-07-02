@@ -1,6 +1,6 @@
 //go:build unit
 
-package csv
+package config
 
 import (
 	"flag"

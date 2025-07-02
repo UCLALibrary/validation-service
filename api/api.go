@@ -30,7 +30,7 @@ type Report struct {
 	} `json:"warnings,omitempty"`
 }
 
-// Status A JSON document representing the service's runtime status.
+// Status A JSON document representing the service's runtime status. It's intentionally brief, for now.
 type Status struct {
 	Fester     string `json:"fester"`
 	FileSystem string `json:"filesystem"`
@@ -40,7 +40,7 @@ type Status struct {
 // StatusCreated A JSON document encapsulating the results of a validation check.
 type StatusCreated = Report
 
-// StatusOK A JSON document representing the service's runtime status.
+// StatusOK A JSON document representing the service's runtime status. It's intentionally brief, for now.
 type StatusOK = Status
 
 // UploadCSVMultipartBody defines parameters for UploadCSV.
@@ -144,9 +144,8 @@ var swaggerSpec = []string{
 	"Ofx60u6lwUlDQwnxwIFi1pt/AgAA//8k6Ir/fwsAAA==",
 }
 
-// decodeSpec decodes and decompresses the embedded Swagger specification.
-//
-// Returns an error if the base64 decoding or gzip decompression fails.
+// GetSwagger returns the content of the embedded swagger specification file
+// or error if failed to decode
 func decodeSpec() ([]byte, error) {
 	zipped, err := base64.StdEncoding.DecodeString(strings.Join(swaggerSpec, ""))
 	if err != nil {

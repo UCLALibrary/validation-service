@@ -3,20 +3,21 @@ package checks
 import (
 	"strconv"
 
+	"github.com/UCLALibrary/validation-service/validation/config"
+
 	"github.com/UCLALibrary/validation-service/errors"
 	"github.com/UCLALibrary/validation-service/validation/csv"
-	"github.com/UCLALibrary/validation-service/validation/util"
 )
 
 // ItemSeqCheck type is a validator that checks for the presence of stray new lines.
 //
 // It implements the Validator interface and returns an error on failure to validate.
 type ItemSeqCheck struct {
-	profiles *util.Profiles
+	profiles *config.Profiles
 }
 
 // NewItemSeqCheck checks that all values in Item Sequence are positive integers.
-func NewItemSeqCheck(profiles *util.Profiles) (*ItemSeqCheck, error) {
+func NewItemSeqCheck(profiles *config.Profiles) (*ItemSeqCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}

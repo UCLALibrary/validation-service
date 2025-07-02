@@ -4,16 +4,16 @@ import (
 	"maps"
 	"slices"
 
+	"github.com/UCLALibrary/validation-service/validation/config"
+
 	"github.com/UCLALibrary/validation-service/errors"
 	"github.com/UCLALibrary/validation-service/validation/csv"
-	"github.com/UCLALibrary/validation-service/validation/util"
-
 	"go.uber.org/multierr"
 )
 
 // MediaMetaCheck validates the media.* fields for the Fester profile.
 type MediaMetaCheck struct {
-	profiles          *util.Profiles
+	profiles          *config.Profiles
 	mediaCols         map[string]int
 	mediaTypes        []string
 	mediaFields       []string
@@ -25,7 +25,7 @@ type MediaMetaCheck struct {
 // NewMediaMetaCheck creates a new MediaMetaCheck instance, which validates the media.* fields for the Fester profile.
 //
 // It returns an error if the profiles argument is nil.
-func NewMediaMetaCheck(profiles *util.Profiles) (*MediaMetaCheck, error) {
+func NewMediaMetaCheck(profiles *config.Profiles) (*MediaMetaCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}

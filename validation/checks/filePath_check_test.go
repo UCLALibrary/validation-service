@@ -3,7 +3,7 @@
 package checks
 
 import (
-	"github.com/UCLALibrary/validation-service/validation/util"
+	"github.com/UCLALibrary/validation-service/validation/config"
 	"testing"
 
 	"github.com/UCLALibrary/validation-service/validation/csv"
@@ -12,7 +12,7 @@ import (
 
 // TestFilePathCheck_Validate tests the Validate method on filePath.
 func TestFilePathCheck_Validate(t *testing.T) {
-	check, err := NewFilePathCheck(util.NewProfiles())
+	check, err := NewFilePathCheck(config.NewProfiles())
 	assert.NoError(t, err)
 
 	tests := []struct {
@@ -50,7 +50,7 @@ func TestFilePathCheck_Validate(t *testing.T) {
 	// Iterate over test cases; fail if there isn't an error when we expect one or if there is an unexpected error
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := check.Validate("default", tt.location, tt.data)
+			err := check.Validate("DLP Staff", tt.location, tt.data)
 			if tt.expectedErr {
 				assert.Error(t, err)
 			} else {

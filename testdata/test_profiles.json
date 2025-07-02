@@ -3,12 +3,17 @@
     "example": {
       "name": "example",
       "lastUpdate": "2025-01-01T12:00:00Z",
-      "validations": ["Validation1", "Validation2"]
+      "validations": [
+        { "name": "Validation1", "description": "Confirms validation 1's check is performed" },
+        { "name": "Validation2", "description": "Confirms validation 2's check is performed" }
+      ]
     },
     "test": {
       "name": "test",
       "lastUpdate": "2025-01-10T15:30:00Z",
-      "validations": ["EOLCheck"]
+      "validations": [
+        { "name": "EOLCheck", "description": "Confirms there are no stray EOL characters in a data cell" }
+      ]
     }
   },
   "lastUpdate": "2025-01-10T16:00:00Z"

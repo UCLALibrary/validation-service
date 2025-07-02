@@ -1,6 +1,6 @@
 //go:build unit
 
-package util
+package config
 
 import (
 	"bytes"
@@ -18,9 +18,16 @@ import (
 // TestProfiles tests basic Get/Set functionality.
 func TestProfiles(t *testing.T) {
 	profiles := NewProfiles()
-	defaultProfile, errP1 := NewProfile("default", []string{"SpaceCheck", "ARKFormat", "EOLCheck"})
+	defaultProfile, errP1 := NewProfile("DLP Staff", []Validation{
+		{"SpaceCheck", "A space validator"},
+		{"ARKFormat", "An ARK validator"},
+		{"EOLCheck", "An EOL validator"},
+	})
 	require.NoError(t, errP1)
-	otherProfile, errP2 := NewProfile("other", []string{"SpaceCheck", "ARKFormat"})
+	otherProfile, errP2 := NewProfile("other", []Validation{
+		{"SpaceCheck", "A space validator"},
+		{"ARKFormat", "An ARK validator"},
+	})
 	require.NoError(t, errP2)
 
 	err := profiles.SetProfile(defaultProfile)
@@ -29,35 +36,35 @@ func TestProfiles(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, 2, profiles.Count())
-	assert.Equal(t, profiles.GetProfile("default").GetName(), "default")
+	assert.Equal(t, profiles.GetProfile("DLP Staff").GetName(), "DLP Staff")
 	assert.Equal(t, profiles.GetProfile("other").GetName(), "other")
-	assert.Equal(t, len(profiles.GetProfile("default").GetValidations()), 3)
+	assert.Equal(t, len(profiles.GetProfile("DLP Staff").GetValidations()), 3)
 	assert.Equal(t, len(profiles.GetProfile("other").GetValidations()), 2)
-	assert.False(t, profiles.GetProfile("default").GetLastUpdate().IsZero())
+	assert.False(t, profiles.GetProfile("DLP Staff").GetLastUpdate().IsZero())
 	assert.False(t, profiles.GetProfile("other").GetLastUpdate().IsZero())
 }
 
-// TestProfiles_Snapshot tests creating a bare-bones Snapshot through marshaling it to JSON.
+// TestProfiles_Snapshot tests creating a bare-bones snapshot through marshaling it to JSON.
 func TestProfiles_Snapshot(t *testing.T) {
 	profiles := NewProfiles()
-	snapshot := profiles.Snapshot()
+	snapshot := profiles.snapshot()
 
 	jsonData, err := json.Marshal(snapshot)
 	if err != nil {
 		log.Fatalf("Error marshaling to JSON: %v", err)
 	}
 
-	// Confirm Snapshot is okay with no profiles set (i.e., we've created the slice)
+	// Confirm the snapshot is okay with no profiles set (i.e., we've created the slice)
 	assert.Equal(t, "{\"profiles\":{},\"lastUpdate\":\"0001-01-01T00:00:00Z\"}", string(jsonData))
 }
 
 // TestProfiles_Refresh tests refreshing a Profiles instance from a persisted JSON file.
 func TestProfiles_Refresh(t *testing.T) {
 	// Set the PROFILES_FILE for testing purposes
-	err := os.Setenv(ProfilesFile, "../../testdata/test_profiles.json")
+	err := os.Setenv(ConfigFile, "../../testdata/test_profiles.json")
 	require.NoError(t, err)
 	defer func() {
-		err := os.Unsetenv(ProfilesFile)
+		err := os.Unsetenv(ConfigFile)
 		require.NoError(t, err)
 	}()
 
@@ -77,7 +84,7 @@ func TestProfiles_Refresh(t *testing.T) {
 
 // TestProfiles_Save tests saving a Profiles instance to a JSON file for persistence.
 func TestProfiles_Save(t *testing.T) {
-	var snapshot ProfilesSnapshot
+	var snapshot profilesSnapshot
 
 	// Set up a file for testing JSON persistence
 	tempFile, err := os.CreateTemp("", "profiles-*.json")
@@ -88,16 +95,19 @@ func TestProfiles_Save(t *testing.T) {
 	}(tempFile.Name())
 
 	// Set the PROFILES_FILE for testing purposes
-	err = os.Setenv(ProfilesFile, tempFile.Name())
+	err = os.Setenv(ConfigFile, tempFile.Name())
 	require.NoError(t, err)
 	defer func() {
-		err := os.Unsetenv(ProfilesFile)
+		err := os.Unsetenv(ConfigFile)
 		require.NoError(t, err)
 	}()
 
 	// Create a new Profile for testing
 	profiles := NewProfiles()
-	profile, _ := NewProfile("example", []string{"Validation1", "Validation2"})
+	profile, _ := NewProfile("example", []Validation{
+		Validation{"Validation1", "Validation 1 description"},
+		Validation{"Validation2", "Validation 2 description"},
+	})
 	_ = profiles.SetProfile(profile)
 
 	// Save profiles to a JSON file
@@ -115,14 +125,17 @@ func TestProfiles_Save(t *testing.T) {
 	assert.Equal(t, "example", snapshot.Profile["example"].Name)
 }
 
-// TestExampleCode tests the code that's used in profiles.go's inline docs.
+// TestExampleCode tests the code used in profiles.go's inline docs.
 //
-// This presents a sync challenge, but ensures the example code actually runs!
+// This presents a sync challenge but ensures the example code actually runs!
 func TestExampleCode(t *testing.T) {
 	// The function that's captured contains the example code used in the docs
 	output := captureOutput(t, func() {
 		profiles := NewProfiles()
-		if profile, err := NewProfile("example", []string{"Validation1", "Validation2"}); err == nil {
+		if profile, err := NewProfile("example", []Validation{
+			Validation{"Validation1", "Validation 1 description"},
+			Validation{"Validation2", "Validation 2 description"},
+		}); err == nil {
 			err = profiles.SetProfile(profile)
 			require.NoError(t, err)
 
@@ -131,7 +144,7 @@ func TestExampleCode(t *testing.T) {
 			require.NoError(t, err)
 		}
 
-		snapshot := profiles.Snapshot()
+		snapshot := profiles.snapshot()
 		if jsonData, err := json.Marshal(snapshot); err == nil {
 			fmt.Println(string(jsonData))
 		} else {

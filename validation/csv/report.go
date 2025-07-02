@@ -41,7 +41,7 @@ func NewReport(multiErr error, csvData [][]string, logger *zap.Logger) (*Report,
 		if ok {
 			location := err.Location
 
-			// Set report's profile if it's not already been set
+			// Set the report's profile if it's not already been set
 			if report.Profile == "" {
 				report.Profile = err.Profile
 			}

@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/UCLALibrary/validation-service/validation/config"
+
 	"github.com/UCLALibrary/validation-service/validation/csv"
-	"github.com/UCLALibrary/validation-service/validation/util"
 	"go.uber.org/multierr"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -16,7 +17,7 @@ import (
 type Engine struct {
 	logger   *zap.Logger
 	registry *Registry
-	profiles *util.Profiles
+	profiles *config.Profiles
 }
 
 // NewEngine creates a new validation engine.
@@ -45,7 +46,7 @@ func NewEngine(suppliedLogger ...*zap.Logger) (*Engine, error) {
 	}()
 
 	// Create a new Profiles instance and load its persisted data from disk
-	profiles := util.NewProfiles()
+	profiles := config.NewProfiles()
 	if err = profiles.Refresh(); err != nil {
 		return nil, fmt.Errorf("failed to refresh profiles: %w", err)
 	}
@@ -85,7 +86,7 @@ func (engine *Engine) GetValidators(profileNames ...string) ([]Validator, error)
 		return validators.Checks, nil
 	}
 
-	// Keep a record of the names of added validators (since profiles might have duplicates)
+	// Keep a record of added validator names (since profiles might have duplicates)
 	existing := make(map[string]struct{})
 
 	// For each profile we've passed in... (the most common case will just be one)

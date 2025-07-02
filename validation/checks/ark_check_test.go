@@ -3,12 +3,11 @@
 package checks
 
 import (
+	"github.com/UCLALibrary/validation-service/validation/config"
 	"testing"
 
 	"github.com/UCLALibrary/validation-service/errors"
 	"github.com/UCLALibrary/validation-service/validation/csv"
-	"github.com/UCLALibrary/validation-service/validation/util"
-
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/multierr"
 )
@@ -18,7 +17,7 @@ var testLocation = csv.Location{}
 
 // TestVerifyARK checks if verifyARK throws the correct errors when given incorrect ARKs
 func TestVerifyARK(t *testing.T) {
-	check, err := NewARKCheck(util.NewProfiles())
+	check, err := NewARKCheck(config.NewProfiles())
 	assert.NoError(t, err)
 
 	tests := []struct {
@@ -33,80 +32,80 @@ func TestVerifyARK(t *testing.T) {
 			name:        "Valid ARK with default profile",
 			ark:         "ark:/21198/xyz123",
 			location:    testLocation,
-			profile:     "default",
+			profile:     "DLP Staff",
 			expectError: false,
 		},
 		{
 			name:        "Valid ARK with CDL NAAN",
 			ark:         "ark:/13030/xyz123",
 			location:    testLocation,
-			profile:     "default",
+			profile:     "DLP Staff",
 			expectError: false,
 		},
 		{
 			name:        "Valid ARK with CDL NAAN",
 			ark:         "ark:/13030/xyz123",
 			location:    testLocation,
-			profile:     "fester",
+			profile:     "DLP Staff",
 			expectError: false,
 		},
 		{
 			name:        "Valid ARK with qualifier",
 			ark:         "ark:/21198/xyz123?version=2",
 			location:    testLocation,
-			profile:     "default",
+			profile:     "DLP Staff",
 			expectError: false,
 		},
 		{
 			name:        "Valid ARK with non-default profile",
 			ark:         "ark:/21198/abc456",
 			location:    testLocation,
-			profile:     "test",
+			profile:     "Test",
 			expectError: false,
 		},
 		{
 			name:        "Invalid ARK - missing ark:/ prefix",
 			ark:         "12345/xyz123",
 			location:    testLocation,
-			profile:     "default",
+			profile:     "DLP Staff",
 			expectError: true,
-			expectedErr: csv.NewError(errors.NoPrefixErr, testLocation, "default"),
+			expectedErr: csv.NewError(errors.NoPrefixErr, testLocation, "DLP Staff"),
 		},
 		{
 			name:        "Invalid ARK structure no object identifier",
 			ark:         "ark:/21198",
 			location:    testLocation,
-			profile:     "default",
+			profile:     "DLP Staff",
 			expectError: true,
-			expectedErr: csv.NewError(errors.NoObjIDErr, testLocation, "default"),
+			expectedErr: csv.NewError(errors.NoObjIDErr, testLocation, "DLP Staff"),
 		},
 		{
 			name:        "Invalid NAAN - less than 5 digits",
 			ark:         "ark:/123/",
 			location:    testLocation,
-			profile:     "default",
+			profile:     "DLP Staff",
 			expectError: true,
 			expectedErr: multierr.Combine(
-				csv.NewError(errors.NaanTooShortErr, testLocation, "default"),
-				csv.NewError(errors.NaanProfileErr, testLocation, "default"),
-				csv.NewError(errors.NoObjIDErr, testLocation, "default"),
+				csv.NewError(errors.NaanTooShortErr, testLocation, "DLP Staff"),
+				csv.NewError(errors.NaanProfileErr, testLocation, "DLP Staff"),
+				csv.NewError(errors.NoObjIDErr, testLocation, "DLP Staff"),
 			),
 		},
 		{
 			name:        "Invalid NAAN for default profile",
 			ark:         "ark:/12345/xyz123",
 			location:    testLocation,
-			profile:     "default",
+			profile:     "DLP Staff",
 			expectError: true,
-			expectedErr: csv.NewError(errors.NaanProfileErr, testLocation, "default"),
+			expectedErr: csv.NewError(errors.NaanProfileErr, testLocation, "DLP Staff"),
 		},
 		{
 			name:        "Invalid object identifier",
 			ark:         "ark:/21198/my identifier",
 			location:    testLocation,
-			profile:     "default",
+			profile:     "DLP Staff",
 			expectError: true,
-			expectedErr: csv.NewError(errors.InvalidObjIDErr, testLocation, "default"),
+			expectedErr: csv.NewError(errors.InvalidObjIDErr, testLocation, "DLP Staff"),
 		},
 	}
 

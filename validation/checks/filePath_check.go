@@ -6,9 +6,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/UCLALibrary/validation-service/validation/config"
+
 	"github.com/UCLALibrary/validation-service/errors"
 	"github.com/UCLALibrary/validation-service/validation/csv"
-	"github.com/UCLALibrary/validation-service/validation/util"
 )
 
 // FileName is the File Name of the current item.
@@ -18,13 +19,13 @@ const FileName = "File Name"
 //
 // It implements the Validator interface and returns an error on failure to validate.
 type FilePathCheck struct {
-	profiles *util.Profiles
+	profiles *config.Profiles
 }
 
 // NewFilePathCheck returns a new FilePathCheck, which validates that the file path specified in a CSV data cell points to an existing file.
 //
 // It returns an error if the provided profiles argument is nil.
-func NewFilePathCheck(profiles *util.Profiles) (*FilePathCheck, error) {
+func NewFilePathCheck(profiles *config.Profiles) (*FilePathCheck, error) {
 	if profiles == nil {
 		return nil, csv.NewError(errors.NilProfileErr, csv.Location{}, "nil")
 	}

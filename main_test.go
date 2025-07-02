@@ -8,6 +8,7 @@ import (
 	"github.com/UCLALibrary/validation-service/api"
 	"github.com/UCLALibrary/validation-service/pkg/utils"
 	"github.com/UCLALibrary/validation-service/validation"
+	"github.com/UCLALibrary/validation-service/validation/config"
 	"github.com/UCLALibrary/validation-service/validation/util"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/require"
@@ -31,11 +32,11 @@ func TestMain(main *testing.M) {
 // TestServerHealth checks if the Echo server initializes properly
 func TestServerHealth(t *testing.T) {
 	// Configure the location of the test profiles file
-	if err := os.Setenv(util.ProfilesFile, "testdata/test_profiles.json"); err != nil {
+	if err := os.Setenv(config.ConfigFile, "testdata/test_profiles.json"); err != nil {
 		t.Fatalf("error setting env PROFILES_FILE: %v", err)
 	}
 	defer func() {
-		err := os.Unsetenv(util.ProfilesFile)
+		err := os.Unsetenv(config.ConfigFile)
 		require.NoError(t, err)
 	}()
 
@@ -63,11 +64,11 @@ func TestServerHealth(t *testing.T) {
 // TestStatusEndpoint checks if the /status endpoint returns the expected JSON response
 func TestStatusEndpoint(t *testing.T) {
 	// Configure the location of the test profiles file
-	if err := os.Setenv(util.ProfilesFile, "testdata/test_profiles.json"); err != nil {
+	if err := os.Setenv(config.ConfigFile, "testdata/test_profiles.json"); err != nil {
 		t.Fatalf("error setting env PROFILES_FILE: %v", err)
 	}
 	defer func() {
-		err := os.Unsetenv(util.ProfilesFile)
+		err := os.Unsetenv(config.ConfigFile)
 		require.NoError(t, err)
 	}()
 

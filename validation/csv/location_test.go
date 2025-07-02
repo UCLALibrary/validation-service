@@ -1,4 +1,5 @@
 //go:build unit
+
 package csv
 
 import (
@@ -22,12 +23,12 @@ func TestIsValidLocation(t *testing.T) {
 		profile    string
 		shouldPass bool
 	}{
-		{"Valid location (row 0, col 1)", Location{RowIndex: 0, ColIndex: 1}, "default", true},
-		{"Valid location (row 1, col 0)", Location{RowIndex: 1, ColIndex: 0}, "default", true},
-		{"Invalid row index (negative)", Location{RowIndex: -1, ColIndex: 0}, "default", false},
-		{"Invalid column index (negative)", Location{RowIndex: 0, ColIndex: -1}, "default", false},
-		{"Row index out of bounds", Location{RowIndex: 2, ColIndex: 0}, "default", false},
-		{"Column index out of bounds", Location{RowIndex: 0, ColIndex: 2}, "default", false},
+		{"Valid location (row 0, col 1)", Location{RowIndex: 0, ColIndex: 1}, "DLP Staff", true},
+		{"Valid location (row 1, col 0)", Location{RowIndex: 1, ColIndex: 0}, "DLP Staff", true},
+		{"Invalid row index (negative)", Location{RowIndex: -1, ColIndex: 0}, "DLP Staff", false},
+		{"Invalid column index (negative)", Location{RowIndex: 0, ColIndex: -1}, "DLP Staff", false},
+		{"Row index out of bounds", Location{RowIndex: 2, ColIndex: 0}, "DLP Staff", false},
+		{"Column index out of bounds", Location{RowIndex: 0, ColIndex: 2}, "DLP Staff", false},
 	}
 
 	for _, test := range tests {
@@ -59,7 +60,7 @@ func TestGetHeader(t *testing.T) {
 				{"ID", "Name", "Age"},
 				{"1", "Alice", "30"},
 			},
-			profile:     "default",
+			profile:     "DLP Staff",
 			expected:    "Name",
 			expectError: false,
 		},
@@ -70,7 +71,7 @@ func TestGetHeader(t *testing.T) {
 				{"ID", "Name", "Age"},
 				{"1", "Alice", "30"},
 			},
-			profile:     "default",
+			profile:     "DLP Staff",
 			expected:    "ID",
 			expectError: false,
 		},
@@ -81,7 +82,7 @@ func TestGetHeader(t *testing.T) {
 				{"ID", "Name", "Age"},
 				{"1", "Alice", "30"},
 			},
-			profile:     "default",
+			profile:     "DLP Staff",
 			expected:    "",
 			expectError: true,
 		},
@@ -89,7 +90,7 @@ func TestGetHeader(t *testing.T) {
 			name:        "Empty first row",
 			location:    Location{ColIndex: 0},
 			csvData:     [][]string{{}, {"1", "Alice", "30"}},
-			profile:     "default",
+			profile:     "DLP Staff",
 			expected:    "",
 			expectError: true,
 		},
@@ -97,7 +98,7 @@ func TestGetHeader(t *testing.T) {
 			name:        "Empty CSV data",
 			location:    Location{ColIndex: 0},
 			csvData:     [][]string{},
-			profile:     "default",
+			profile:     "DLP Staff",
 			expected:    "",
 			expectError: true,
 		},
