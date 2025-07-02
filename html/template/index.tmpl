@@ -125,7 +125,7 @@
                 </div>
             </div>
             <div id="api-docs" class="content-section" style="display: none;">
-                <h1 class="title is-3">API Endpoints</h1>
+                <h1 class="title is-3">Service Endpoints</h1>
                 <redoc spec-url="openapi.yml"></redoc>
             </div>
             <div id="profile-docs" class="content-section" style="display: none;">
@@ -135,30 +135,32 @@
                 processing context. When uploading a CSV through the Validation Service Web UI, users should select
                 the appropriate profile from the <a href="#" onclick="showContent('csv-upload')">CSV Upload</a> form's
                 validation profile dropdown.</div>
-                <h1 class="title is-3 mt-6">Profiles</h1>
-                <ul class="ml-4">
-                    {{range $key, $profile := .Profiles}}
-                        <li class="ml-4 my-2">
-                            <div class="title is-4 mb-2">&quot;{{index $profile "name"}}&quot;</div>
-                            <table class="table is-bordered is-striped is-hoverable is-size-6 mt-2 mb-6">
-                                <thead class="has-background-light">
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Description</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {{range $_, $value := index $profile "validations"}}
+                <div class="box mt-6">
+                    <h1 class="title is-3">Profiles</h1>
+                    <ul class="ml-4">
+                        {{range $key, $profile := .Profiles}}
+                            <li class="ml-4 my-2">
+                                <div class="title is-4 mb-2">{{index $profile "name"}}</div>
+                                <table class="table is-bordered is-striped is-hoverable is-size-6 mt-2 mb-6">
+                                    <thead class="has-background-light">
                                         <tr>
-                                            <td>{{index $value "name"}}</td>
-                                            <td>{{index $value "description"}}</td>
+                                            <th>Name</th>
+                                            <th>Description</th>
                                         </tr>
-                                    {{end}}
-                                </tbody>
-                            </table>
-                        </li>
-                    {{end}}
-                </ul>
+                                    </thead>
+                                    <tbody>
+                                        {{range $_, $value := index $profile "validations"}}
+                                            <tr>
+                                                <td>{{index $value "name"}}</td>
+                                                <td>{{index $value "description"}}</td>
+                                            </tr>
+                                        {{end}}
+                                    </tbody>
+                                </table>
+                            </li>
+                        {{end}}
+                    </ul>
+                </div>
             </div>
         </div>
     </section>
