@@ -8,7 +8,7 @@ require (
 	github.com/labstack/echo/v4 v4.13.4
 	github.com/oapi-codegen/echo-middleware v1.0.2
 	github.com/oapi-codegen/runtime v1.1.2
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.0
 	github.com/testcontainers/testcontainers-go v0.38.0
 	go.uber.org/multierr v1.11.0
 	go.uber.org/zap v1.27.0
