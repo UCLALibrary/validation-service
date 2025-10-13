@@ -3,7 +3,7 @@ module github.com/UCLALibrary/validation-service
 go 1.24.3
 
 require (
-	github.com/docker/docker v28.4.0+incompatible
+	github.com/docker/docker v28.5.1+incompatible
 	github.com/getkin/kin-openapi v0.133.0
 	github.com/labstack/echo/v4 v4.13.4
 	github.com/oapi-codegen/echo-middleware v1.0.2
