@@ -39,7 +39,7 @@ RUN go build -o "/${SERVICE_NAME}"
 ##
 ## STEP 2 - BUILD KAKADU
 ##
-FROM alpine:3.22.1 AS kakadu-build
+FROM alpine:3.22.2 AS kakadu-build
 
 # Set variables for Kakadu
 ARG ARCH
@@ -64,7 +64,7 @@ RUN mkdir -p /opt/kdu/lib /opt/kdu/bin && \
 ##
 ## STEP 3 - PACKAGE
 ##
-FROM alpine:3.22.1
+FROM alpine:3.22.2
 
 # Define the location of our application data directory
 ARG DATA_DIR="/usr/local/data"
