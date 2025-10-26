@@ -1,6 +1,6 @@
 module github.com/UCLALibrary/validation-service
 
-go 1.24.3
+go 1.25.3
 
 require (
 	github.com/docker/docker v28.5.1+incompatible
