@@ -6,4 +6,4 @@ severity = "warning"
   arguments = ["error"]
 
 [rule.var-naming]
-arguments = [[], [], [{ skipPackageNameChecks = true }]]
+arguments = [[], [], [{ skip-package-name-checks = true }]]
