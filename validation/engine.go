@@ -7,10 +7,11 @@ import (
 
 	"github.com/UCLALibrary/validation-service/validation/config"
 
-	"github.com/UCLALibrary/validation-service/validation/csv"
 	"go.uber.org/multierr"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+
+	"github.com/UCLALibrary/validation-service/validation/csv"
 )
 
 // Engine performs the CSV file validations.

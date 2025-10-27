@@ -1,3 +1,4 @@
+// Package config contains tests for validation configuration.
 package config
 
 import (

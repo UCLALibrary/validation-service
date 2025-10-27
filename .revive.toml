@@ -1,9 +1,6 @@
+
 ignoreGeneratedHeader = false
 severity = "warning"
 
-[[rule]]
-  name = "comment-format"
-  arguments = ["error"]
-
-[rule.var-naming]
-arguments = [[], [], [{ skip-package-name-checks = true }]]
+[rule."var-naming"]
+arguments = [[], [], [{ skipPackageNameChecks = true }]]

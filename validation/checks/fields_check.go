@@ -9,10 +9,11 @@ import (
 
 	"github.com/UCLALibrary/validation-service/validation/util"
 
-	"github.com/UCLALibrary/validation-service/errors"
-	"github.com/UCLALibrary/validation-service/validation/csv"
 	"go.uber.org/multierr"
 	"go.uber.org/zap"
+
+	"github.com/UCLALibrary/validation-service/errors"
+	"github.com/UCLALibrary/validation-service/validation/csv"
 )
 
 var profileFields = map[string]map[string]struct {
