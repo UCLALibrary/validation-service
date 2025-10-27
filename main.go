@@ -29,14 +29,15 @@ import (
 
 	"github.com/UCLALibrary/validation-service/validation"
 
-	"github.com/UCLALibrary/validation-service/api"
-	"github.com/UCLALibrary/validation-service/validation/config"
-	"github.com/UCLALibrary/validation-service/validation/csv"
-	"github.com/UCLALibrary/validation-service/validation/util"
 	"github.com/labstack/echo/v4"
 	accept "github.com/labstack/echo/v4/middleware"
 	middleware "github.com/oapi-codegen/echo-middleware"
 	"go.uber.org/zap"
+
+	"github.com/UCLALibrary/validation-service/api"
+	"github.com/UCLALibrary/validation-service/validation/config"
+	"github.com/UCLALibrary/validation-service/validation/csv"
+	"github.com/UCLALibrary/validation-service/validation/util"
 )
 
 // Port is the default port for our server

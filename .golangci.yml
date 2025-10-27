@@ -1,9 +1,9 @@
+
+version: "2"
+
 linters:
   enable:
     - revive
-    - gofmt
-    - goimports
-    - typecheck
     - errcheck
     - unparam
     - ineffassign
@@ -11,3 +11,14 @@ linters:
 linters-settings:
   revive:
     config: .revive.toml
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  settings:
+    gofmt:
+      simplify: true
+    goimports:
+      local-prefixes:
+        - github.com/UCLALibrary/validation-service

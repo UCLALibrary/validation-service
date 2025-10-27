@@ -1,4 +1,4 @@
-// This file checks if the provided License is correct.
+// Package checks if the provided License is correct.
 package checks
 
 import (

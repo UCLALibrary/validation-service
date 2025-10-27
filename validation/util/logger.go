@@ -1,4 +1,4 @@
-package util
+package util //nolint:revive
 
 import (
 	"github.com/labstack/echo/v4"
