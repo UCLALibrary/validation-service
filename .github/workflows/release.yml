@@ -107,7 +107,7 @@ jobs:
 
       - name: Update test image version
         id: helm-values-update
-        uses: mikefarah/yq@0ecdce24e83f0fa127940334be98c86b07b0c488 # v4.48.1
+        uses: mikefarah/yq@45be35c06387d692bb6bf689919919e0e32e796f # v4.49.1
         with:
           cmd: |
             yq '.image.tag = "${{ github.event.release.tag_name }}"' 'pkg/helm/test-validator.yaml' |
@@ -141,7 +141,7 @@ jobs:
 
       - name: Update prod image version
         id: helm-values-update
-        uses: mikefarah/yq@0ecdce24e83f0fa127940334be98c86b07b0c488 # v4.48.1
+        uses: mikefarah/yq@45be35c06387d692bb6bf689919919e0e32e796f # v4.49.1
         with:
           cmd: |
             yq '.image.tag = "${{ github.event.release.tag_name }}"' 'pkg/helm/prod-validator.yaml' |
