@@ -13,7 +13,7 @@ ARG KAKADU_VERSION
 ##
 ## STEP 1 - BUILD SERVICE
 ##
-FROM golang:1.25.4-alpine3.21 AS build
+FROM golang:1.25.5-alpine3.21 AS build
 
 # Inherit SERVICE_NAME arg and set as ENV
 ARG SERVICE_NAME
@@ -39,7 +39,7 @@ RUN go build -o "/${SERVICE_NAME}"
 ##
 ## STEP 2 - BUILD KAKADU
 ##
-FROM alpine:3.22.2 AS kakadu-build
+FROM alpine:3.23.0 AS kakadu-build
 
 # Set variables for Kakadu
 ARG ARCH
@@ -64,7 +64,7 @@ RUN mkdir -p /opt/kdu/lib /opt/kdu/bin && \
 ##
 ## STEP 3 - PACKAGE
 ##
-FROM alpine:3.22.2
+FROM alpine:3.23.0
 
 # Define the location of our application data directory
 ARG DATA_DIR="/usr/local/data"
