@@ -89,8 +89,9 @@ func (profiles *Profiles) Refresh() error {
 	if err != nil {
 		return fmt.Errorf("failed to open '%s' file: %w", filePath, err)
 	}
-	//noinspection GoUnhandledErrorResult
-	defer file.Close()
+	defer func() {
+		_ = file.Close()
+	}()
 
 	// Decode the persisted JSON file into a profilesSnapshot
 	decoder := json.NewDecoder(file)

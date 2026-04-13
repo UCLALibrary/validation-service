@@ -91,8 +91,10 @@ func (check *LicenseCheck) verifyLicense(license string, profile string, locatio
 	if err != nil {
 		return csv.NewError(errors.URLConnectErr, location, profile)
 	}
-	//noinspection GoUnhandledErrorResult
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
+
 	_, err = io.ReadAll(resp.Body)
 	if err != nil {
 		return csv.NewError(errors.URLReadErr, location, profile)

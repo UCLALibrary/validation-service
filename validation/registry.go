@@ -3,9 +3,10 @@ package validation
 import (
 	"fmt"
 
+	"go.uber.org/zap"
+
 	"github.com/UCLALibrary/validation-service/validation/checks"
 	"github.com/UCLALibrary/validation-service/validation/config"
-	"go.uber.org/zap"
 )
 
 // Registry keeps a collection of registered validators.

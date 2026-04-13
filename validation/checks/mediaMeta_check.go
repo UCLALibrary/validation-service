@@ -6,9 +6,10 @@ import (
 
 	"github.com/UCLALibrary/validation-service/validation/config"
 
+	"go.uber.org/multierr"
+
 	"github.com/UCLALibrary/validation-service/errors"
 	"github.com/UCLALibrary/validation-service/validation/csv"
-	"go.uber.org/multierr"
 )
 
 // MediaMetaCheck validates the media.* fields for the Fester profile.

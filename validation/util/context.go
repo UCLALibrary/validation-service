@@ -1,5 +1,5 @@
 // Package util provides useful resources and utilities.
-package util
+package util //nolint:revive
 
 import "github.com/UCLALibrary/validation-service/validation/csv"
 

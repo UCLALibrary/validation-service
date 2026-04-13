@@ -7,9 +7,10 @@ import (
 
 	"github.com/UCLALibrary/validation-service/validation/config"
 
+	"go.uber.org/multierr"
+
 	"github.com/UCLALibrary/validation-service/errors"
 	"github.com/UCLALibrary/validation-service/validation/csv"
-	"go.uber.org/multierr"
 )
 
 // ItemARK is the ARK of the current item.
