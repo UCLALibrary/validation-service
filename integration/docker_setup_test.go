@@ -105,13 +105,11 @@ func TestMain(m *testing.M) {
 		logger.Fatal("Failed to get container host", zap.Error(hostErr))
 	}
 
-	port, portErr := container.MappedPort(context, "8888")
-	if portErr != nil {
-		logger.Fatal("Failed to get container port", zap.Error(portErr))
+	mappedPort, err := container.MappedPort(context, "8888")
+	if err != nil {
+		logger.Fatal("Failed to get container port", zap.Error(err))
 	}
-
-	// Store the service's URL location for reuse in tests
-	testServerURL = fmt.Sprintf("http://%s:%d", host, port.Int()) + "%s"
+	testServerURL = fmt.Sprintf("http://%s:%s", host, mappedPort.Port()) + "%s"
 
 	// Run tests
 	code := m.Run()
