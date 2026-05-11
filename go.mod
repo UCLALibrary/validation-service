@@ -4,7 +4,7 @@ go 1.26.2
 
 require (
 	github.com/docker/docker v28.5.2+incompatible
-	github.com/getkin/kin-openapi v0.137.0
+	github.com/getkin/kin-openapi v0.138.0
 	github.com/labstack/echo/v4 v4.15.2
 	github.com/oapi-codegen/echo-middleware v1.0.2
 	github.com/oapi-codegen/runtime v1.4.0
