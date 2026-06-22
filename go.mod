@@ -7,7 +7,7 @@ require (
 	github.com/getkin/kin-openapi v0.139.0
 	github.com/labstack/echo/v4 v4.15.2
 	github.com/oapi-codegen/echo-middleware v1.0.2
-	github.com/oapi-codegen/runtime v1.4.1
+	github.com/oapi-codegen/runtime v1.4.2
 	github.com/stretchr/testify v1.11.1
 	github.com/testcontainers/testcontainers-go v0.42.0
 	go.uber.org/multierr v1.11.0
