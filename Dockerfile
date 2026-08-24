@@ -13,7 +13,7 @@ ARG KAKADU_VERSION
 ##
 ## STEP 1 - BUILD SERVICE
 ##
-FROM golang:1.26.3-alpine3.23 AS build
+FROM golang:1.27.0-alpine3.23 AS build
 
 # Inherit SERVICE_NAME arg and set as ENV
 ARG SERVICE_NAME
